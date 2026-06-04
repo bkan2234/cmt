@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cari Takip Pro v3.0.1 Sheets Lisanslı</title>
+<title>Cari Takip Pro v3.0.2 Sheets Lisanslı</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -176,7 +176,7 @@ tr:hover td{background:#fafafa}
 .fav-unit-row select{width:auto!important;min-height:32px!important;font-size:12px!important;padding:5px 7px!important}
 
 
-/* v3.0.1 Sheets Lisanslı uygulama içi sürüm etiketi */
+/* v3.0.2 Sheets Lisanslı uygulama içi sürüm etiketi */
 .app-version-fixed{
   position:fixed;
   right:10px;
@@ -193,11 +193,11 @@ tr:hover td{background:#fafafa}
 @media(max-width:780px){.app-version-fixed{bottom:64px;right:10px}}
 
 
-/* v3.0.1 Sheets Lisanslı stok tam sayı */
+/* v3.0.2 Sheets Lisanslı stok tam sayı */
 #st-tb .num, #st-h-tb .num{font-variant-numeric:tabular-nums}
 
 
-/* v3.0.1 Sheets Lisanslı stok üst formları kaldırıldı, listeden direkt düzenleme */
+/* v3.0.2 Sheets Lisanslı stok üst formları kaldırıldı, listeden direkt düzenleme */
 #page-stok > .g2:first-of-type{display:none!important}
 .stok-inline-input{
   width:88px!important;
@@ -211,11 +211,11 @@ tr:hover td{background:#fafafa}
 }
 
 
-/* v3.0.1 Sheets Lisanslı JSON yedek kartı sadece yedek sayfasında */
+/* v3.0.2 Sheets Lisanslı JSON yedek kartı sadece yedek sayfasında */
 .json-yedek-gizli{display:none!important}
 
 
-/* v3.0.1 Sheets Lisanslı kullanıcı sayfa yetkileri */
+/* v3.0.2 Sheets Lisanslı kullanıcı sayfa yetkileri */
 .page-perm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
 .page-perm-item{display:flex;align-items:center;gap:7px;border:1px solid #e5e7eb;background:#fff;border-radius:10px;padding:8px;font-size:12px;font-weight:600;color:#374151}
 .page-perm-item input{width:auto!important;min-height:auto!important}
@@ -223,7 +223,7 @@ tr:hover td{background:#fafafa}
 @media(max-width:780px){.page-perm-grid{grid-template-columns:1fr}}
 
 
-/* v3.0.1 Sheets Lisanslı stok toplu kayıt + son stok değiştirilemez */
+/* v3.0.2 Sheets Lisanslı stok toplu kayıt + son stok değiştirilemez */
 .stok-readonly-box{
   display:inline-block;
   min-width:70px;
@@ -247,10 +247,10 @@ tr:hover td{background:#fafafa}
 @media(max-width:780px){.kat-edit-row{grid-template-columns:1fr}.kat-edit-row .btn-row{display:grid!important;grid-template-columns:1fr 1fr!important}}
 
 
-/* v3.0.1 Sheets Lisanslı Cloud Ekranı */
+/* v3.0.2 Sheets Lisanslı Cloud Ekranı */
 #cloud-license-screen{
   position:fixed;inset:0;background:linear-gradient(135deg,#1a2744,#1d6f42);
-  z-index:999999;display:none;align-items:center;justify-content:center;padding:16px
+  z-index:999999;display:flex;align-items:center;justify-content:center;padding:16px
 }
 .cloud-license-box{background:#fff;width:420px;max-width:96vw;border-radius:18px;padding:24px;box-shadow:0 25px 80px rgba(0,0,0,.35)}
 .cloud-license-box h2{margin:0 0 6px;font-size:22px;color:#111827}
@@ -264,6 +264,22 @@ tr:hover td{background:#fafafa}
 </style>
 </head>
 <body>
+<!-- Cloud Lisans Ekranı v3.0.2 -->
+<div id="cloud-license-screen">
+  <div class="cloud-license-box">
+    <h2>Cari Takip Pro Cloud</h2>
+    <p>Bu ticari sürüm lisans anahtarıyla çalışır. Veriler müşteriye özel Google Sheet dosyasına kaydedilir.</p>
+    <label>Cloud API Linki</label>
+    <input id="cloud-api-url" placeholder="Apps Script /exec linki">
+    <label>Lisans Anahtarı</label>
+    <input id="cloud-license-key" placeholder="CTP-XXXX-XXXX">
+    <button class="btn btn-g" onclick="cloudActivateLicense()" style="width:100%;justify-content:center">Lisansı Aktifleştir</button>
+    <button class="btn" onclick="cloudClearLicense()" style="width:100%;justify-content:center;margin-top:8px">Lisans Bilgilerini Sıfırla</button>
+    <div class="cloud-license-msg" id="cloud-license-msg"></div>
+  </div>
+</div>
+<div class="cloud-badge">v3.0.2 Sheets</div>
+
 
 <!-- LOGIN -->
 <div id="login-screen">
@@ -285,7 +301,7 @@ tr:hover td{background:#fafafa}
   <div class="sidebar">
     <div class="sb-logo">
       <div class="ic"><i class="ti ti-building-store"></i></div>
-      <span>Cari Takip <small style="font-size:10px;color:#9ca3af">v3.0.1 Sheets Lisanslı</small></span>
+      <span>Cari Takip <small style="font-size:10px;color:#9ca3af">v3.0.2 Sheets Lisanslı</small></span>
     </div>
     <div class="sb-nav">
       <div class="sb-label">Ana Ekran</div>
@@ -2035,8 +2051,8 @@ function faturaYazdir() {
 </style>
   </head><body>${icerik}<script>setTimeout(()=>{window.print();window.close();},400);<\/script>
 <script>
-/* ==== v3.0.1 SHEETS LİSANSLI BULUT SİSTEMİ ==== */
-const CLOUD_APP_VERSION = 'v3.0.1 Sheets Lisanslı';
+/* ==== v3.0.2 SHEETS LİSANSLI BULUT SİSTEMİ ==== */
+const CLOUD_APP_VERSION = 'v3.0.2 Sheets Lisanslı';
 
 function cloudMsg(text, ok){
   const el=document.getElementById('cloud-license-msg');
@@ -2074,6 +2090,28 @@ function cloudJsonp(params){
   });
 }
 
+function cloudNormalizeUsers(){
+  try{
+    if(!window.DB) return;
+    if(!Array.isArray(DB.users)) DB.users=[];
+    if(DB.users.length===0 && typeof passHash==='function'){
+      DB.users=[
+        {id:1,username:'admin',pass:passHash('1234'),role:'admin',active:true,lastLogin:''},
+        {id:2,username:'kullanici',pass:passHash('1234'),role:'personel',active:true,lastLogin:''},
+        {id:3,username:'izle',pass:passHash('1234'),role:'viewer',active:true,lastLogin:''}
+      ];
+    }
+    DB.users.forEach(u=>{
+      if(u && u.pass && !String(u.pass).startsWith('h') && typeof passHash==='function'){
+        u.pass = passHash(u.pass);
+      }
+      if(u && !u.pages && typeof normalizeUserPages==='function'){
+        u.pages = normalizeUserPages(u);
+      }
+    });
+  }catch(e){}
+}
+
 async function cloudCheckLicense(){
   const key=cloudLicenseKey();
   if(!key) return {ok:false,error:'Lisans anahtarı yok'};
@@ -2097,20 +2135,22 @@ async function cloudActivateLicense(){
     }
     localStorage.setItem('ct_cloud_tenant_name', r.customerName || '');
     localStorage.setItem('ct_cloud_expires_at', r.expiresAt || '');
+    await cloudLoadFromCustomerSheet(false);
     document.getElementById('cloud-license-screen').style.display='none';
-    await cloudLoadFromCustomerSheet(true);
+    cloudMsg('Lisans aktif. Giriş yapabilirsin.', true);
   }catch(e){
     cloudMsg(e.message || 'Lisans kontrol hatası.', false);
   }
 }
 
-function cloudClearAndShow(){
+function cloudClearLicense(){
   localStorage.removeItem('ct_cloud_api_url');
   localStorage.removeItem('ct_cloud_license_key');
   localStorage.removeItem('ct_cloud_tenant_name');
   localStorage.removeItem('ct_cloud_expires_at');
   const api=document.getElementById('cloud-api-url'); if(api) api.value='';
   const key=document.getElementById('cloud-license-key'); if(key) key.value='';
+  document.getElementById('cloud-license-screen').style.display='flex';
   cloudMsg('Lisans bilgileri sıfırlandı.', true);
 }
 
@@ -2128,14 +2168,19 @@ function cloudShowLicenseIfNeeded(){
   const api=cloudApiUrl(), key=cloudLicenseKey();
   if(!api || !key){ cloudShowLicense(); return; }
 
-  cloudCheckLicense().then(r=>{
+  const apiInp=document.getElementById('cloud-api-url'); if(apiInp) apiInp.value=api;
+  const keyInp=document.getElementById('cloud-license-key'); if(keyInp) keyInp.value=key;
+
+  cloudCheckLicense().then(async r=>{
     if(!r.ok){
       cloudShowLicense();
       cloudMsg(r.error || 'Lisans geçersiz.', false);
     }else{
       localStorage.setItem('ct_cloud_tenant_name', r.customerName || '');
       localStorage.setItem('ct_cloud_expires_at', r.expiresAt || '');
-      cloudLoadFromCustomerSheet(false);
+      await cloudLoadFromCustomerSheet(false);
+      const screen=document.getElementById('cloud-license-screen');
+      if(screen) screen.style.display='none';
     }
   }).catch(err=>{
     cloudShowLicense();
@@ -2149,12 +2194,17 @@ async function cloudLoadFromCustomerSheet(showAlert){
     if(!r.ok){ if(showAlert) alert(r.error || 'Buluttan yükleme hatası'); return false; }
     if(r.data){
       window.DB=r.data;
-      if(typeof dbSave==='function') dbSave();
+      cloudNormalizeUsers();
+      localStorage.setItem('cari_pro_v3',JSON.stringify(DB));
       if(typeof renderDashboard==='function') renderDashboard();
       if(typeof renderF==='function') renderF();
       if(typeof renderU==='function') renderU();
       if(typeof renderStok==='function') renderStok();
+      if(typeof renderKullanicilar==='function') renderKullanicilar();
       if(showAlert) alert('Müşteri bulut verisi yüklendi.');
+    }else{
+      cloudNormalizeUsers();
+      localStorage.setItem('cari_pro_v3',JSON.stringify(DB));
     }
     return true;
   }catch(e){
@@ -2167,6 +2217,7 @@ async function cloudSaveToCustomerSheet(showAlert){
   try{
     const api=cloudApiUrl();
     if(!api){ if(showAlert) alert('Cloud API linki yok'); return false; }
+    cloudNormalizeUsers();
     const body={action:'save',licenseKey:cloudLicenseKey(),deviceId:cloudDeviceId(),data:window.DB};
     const res=await fetch(api,{method:'POST',body:JSON.stringify(body)});
     const text=await res.text();
@@ -2191,13 +2242,20 @@ function cloudAutoSave(){
 (function(){
   const oldDbSave = window.dbSave;
   window.dbSave = function(){
+    cloudNormalizeUsers();
     if(oldDbSave) oldDbSave();
     cloudAutoSave();
   };
-  const oldManuel = window.manuelYedekle;
+
+  const oldLogin = window.login;
+  window.login = function(){
+    cloudNormalizeUsers();
+    if(oldLogin) return oldLogin();
+  };
+
   window.manuelYedekle = function(){ cloudSaveToCustomerSheet(true); };
-  const oldBulut = window.bulutYukle;
   window.bulutYukle = function(){ cloudLoadFromCustomerSheet(true); };
+
   window.addEventListener('load', ()=>setTimeout(cloudShowLicenseIfNeeded, 500));
 })();
 </script>
@@ -3245,7 +3303,7 @@ sepeteTutarAktar = function(){
 };
 
 
-/* ==== v3.0.1 Sheets Lisanslı SİPARİŞ SEKME + KATEGORİLİ ÜRÜN KATALOĞU ==== */
+/* ==== v3.0.2 Sheets Lisanslı SİPARİŞ SEKME + KATEGORİLİ ÜRÜN KATALOĞU ==== */
 let aktifUrunKategori='';
 
 function urunKategoriBarRender(){
@@ -3392,7 +3450,7 @@ initApp=function(){
 };
 
 
-/* ==== v3.0.1 Sheets Lisanslı FATURA ÖNİZLEME + OTOMATİK TUTAR AKTARIM FIX ==== */
+/* ==== v3.0.2 Sheets Lisanslı FATURA ÖNİZLEME + OTOMATİK TUTAR AKTARIM FIX ==== */
 function sepetSatirMiktar(x){
   return +(x.miktar ?? x.mik ?? x.qty ?? x.adet ?? 1) || 1;
 }
@@ -3558,9 +3616,9 @@ goPage = function(id,el){
 };
 
 
-/* ==== v3.0.1 Sheets Lisanslı SİPARİŞ FATURA BUTONU + TAM OTOMATİK TUTAR ==== */
+/* ==== v3.0.2 Sheets Lisanslı SİPARİŞ FATURA BUTONU + TAM OTOMATİK TUTAR ==== */
 function appVersionYaz(){
-  const v='v3.0.1 Sheets Lisanslı';
+  const v='v3.0.2 Sheets Lisanslı';
   document.querySelectorAll('.app-version').forEach(e=>e.textContent=v);
   if(!document.getElementById('app-version-fixed')){
     const d=document.createElement('div');
@@ -3666,7 +3724,7 @@ initApp = function(){
 };
 
 
-/* ==== v3.0.1 Sheets Lisanslı STOK TAM SAYI GÖSTERİM FIX ==== */
+/* ==== v3.0.2 Sheets Lisanslı STOK TAM SAYI GÖSTERİM FIX ==== */
 function stokTam(n){
   const x = Math.round(Number(n) || 0);
   return String(x);
@@ -3773,7 +3831,7 @@ initApp = function(){
 };
 
 
-/* ==== v3.0.1 Sheets Lisanslı STOK DÜZELTME ==== */
+/* ==== v3.0.2 Sheets Lisanslı STOK DÜZELTME ==== */
 function stokSelectleriDoldur(){
   const selects=['st-urun-sec','st-duz-urun'];
   selects.forEach(id=>{
@@ -3848,7 +3906,7 @@ initApp = function(){
 };
 
 
-/* ==== v3.0.1 Sheets Lisanslı STOK DURUM TABLOSUNDAN DÜZELTME ==== */
+/* ==== v3.0.2 Sheets Lisanslı STOK DURUM TABLOSUNDAN DÜZELTME ==== */
 function stokDuzeltModalAc(id){
   const u=DB.urunler.find(x=>String(x.id)===String(id));
   if(!u) return;
@@ -3958,7 +4016,7 @@ initApp = function(){
 };
 
 
-/* ==== v3.0.1 Sheets Lisanslı STOK HESAP KESİN FIX + GELİŞMİŞ DÜZELTME ==== */
+/* ==== v3.0.2 Sheets Lisanslı STOK HESAP KESİN FIX + GELİŞMİŞ DÜZELTME ==== */
 function stokSayi(n){ return Math.round(Number(n)||0); }
 
 /* ÖNEMLİ: Stok artık hareketleri tekrar toplayarak değil, ürünün gerçek stok alanından okunur.
@@ -4154,7 +4212,7 @@ initApp = function(){
 };
 
 
-/* ==== v3.0.1 Sheets Lisanslı STOK LİSTESİNDEN DİREKT DÜZELTME ==== */
+/* ==== v3.0.2 Sheets Lisanslı STOK LİSTESİNDEN DİREKT DÜZELTME ==== */
 function stokSayiV247(n){
   return Math.round(Number(n) || 0);
 }
@@ -4271,7 +4329,7 @@ initApp = function(){
 };
 
 
-/* ==== v3.0.1 Sheets Lisanslı SİPARİŞTE VARSAYILAN BİRİM KOLİ ==== */
+/* ==== v3.0.2 Sheets Lisanslı SİPARİŞTE VARSAYILAN BİRİM KOLİ ==== */
 function urunBirimSecenekleri(u){
   const opts=[];
   // Sipariş eklerken varsayılan Koli olsun diye Koli ilk sıraya alındı
@@ -4321,7 +4379,7 @@ favoriSepeteEkle = function(id){
 };
 
 
-/* ==== v3.0.1 Sheets Lisanslı FATURA FİRMA BİLGİLERİ + SEVKİYAT ADRESİ ==== */
+/* ==== v3.0.2 Sheets Lisanslı FATURA FİRMA BİLGİLERİ + SEVKİYAT ADRESİ ==== */
 function firmaTeslimatAlaniniBagla(){
   // Eski kayıtlarda alan yoksa boş bırakır
   if(!Array.isArray(DB.firmalar)) return;
@@ -4517,7 +4575,7 @@ initApp = function(){
 };
 
 
-/* ==== v3.0.1 Sheets Lisanslı JSON YEDEK SADECE YEDEK SAYFASINDA GÖRÜNSÜN ==== */
+/* ==== v3.0.2 Sheets Lisanslı JSON YEDEK SADECE YEDEK SAYFASINDA GÖRÜNSÜN ==== */
 function jsonYedekKartlariniDuzenle(){
   document.querySelectorAll('.card').forEach(card=>{
     const text = (card.textContent || '').toUpperCase();
@@ -4549,7 +4607,7 @@ initApp = function(){
 document.addEventListener('DOMContentLoaded',()=>setTimeout(jsonYedekKartlariniDuzenle,200));
 
 
-/* ==== v3.0.1 Sheets Lisanslı KULLANICI SAYFA GÖRME YETKİLERİ ==== */
+/* ==== v3.0.2 Sheets Lisanslı KULLANICI SAYFA GÖRME YETKİLERİ ==== */
 const PAGE_LIST_V252 = [
   ['dashboard','Dashboard'],
   ['firmalar','Firmalar'],
@@ -4764,7 +4822,7 @@ initApp = function(){
 };
 
 
-/* ==== v3.0.1 Sheets Lisanslı ŞEHİR / İLÇE OTOMATİK LİSTE ==== */
+/* ==== v3.0.2 Sheets Lisanslı ŞEHİR / İLÇE OTOMATİK LİSTE ==== */
 const IL_LISTESI_V254 = [
   'Adana','Adıyaman','Afyonkarahisar','Ağrı','Amasya','Ankara','Antalya','Artvin','Aydın','Balıkesir',
   'Bilecik','Bingöl','Bitlis','Bolu','Burdur','Bursa','Çanakkale','Çankırı','Çorum','Denizli',
@@ -4941,7 +4999,7 @@ initApp = function(){
 };
 
 
-/* ==== v3.0.1 Sheets Lisanslı STOK TOPLU KAYDET + SON STOK KİLİTLİ + KATEGORİ DÜZENLEME ==== */
+/* ==== v3.0.2 Sheets Lisanslı STOK TOPLU KAYDET + SON STOK KİLİTLİ + KATEGORİ DÜZENLEME ==== */
 function stokInt(n){ return Math.round(Number(n)||0); }
 
 function stokInputDegisti(el){
