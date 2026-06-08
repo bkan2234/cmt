@@ -275,8 +275,8 @@ tr:hover td{background:#fafafa}
       <div class="ic"><i class="ti ti-building-store"></i></div>
       <div><span>Cari Takip Pro</span><div class="login-sub">Şarküteri & Market Cari Sistemi</div></div>
     </div>
-    <div class="fg"><label>Kullanıcı Adı</label><input id="l-user" value="" onkeydown="if(event.key==='Enter')login()"></div>
-    <div class="fg"><label>Şifre</label><input id="l-pass" type="password" value="" onkeydown="if(event.key==='Enter')login()"></div>
+    <div class="fg"><label>Kullanıcı Adı</label><input id="l-user" value="admin" onkeydown="if(event.key==='Enter')login()"></div>
+    <div class="fg"><label>Şifre</label><input id="l-pass" type="password" value="1234" onkeydown="if(event.key==='Enter')login()"></div>
     <div class="login-err" id="l-err"><i class="ti ti-alert-circle"></i> Hatalı kullanıcı adı veya şifre</div>
     <button class="btn btn-g" onclick="login()" style="width:100%;margin-top:14px;justify-content:center;padding:10px"><i class="ti ti-login"></i> Giriş Yap</button>
     <p style="font-size:11px;color:#9ca3af;margin-top:12px;text-align:center">Varsayılan: admin / 1234</p>
@@ -6430,6 +6430,271 @@ initApp = function(){
   document.addEventListener('DOMContentLoaded', bootFinal);
   window.addEventListener('load', function(){ setTimeout(bootFinal,300); });
   setTimeout(bootFinal,800);
+})();
+</script>
+
+<script>
+/* ==== Cari Takip Pro Ek Paket v3.1.11: Beni Hatırla + WhatsApp + Fiyat Listesi ==== */
+(function(){
+  'use strict';
+  const REMEMBER_KEY='ctp_remember_login_v311';
+  const REMEMBER_USER='ctp_remember_user_v311';
+  const REMEMBER_AUTO='ctp_remember_auto_v311';
+
+  function $(id){return document.getElementById(id);} 
+  function safe(v){return String(v==null?'':v).trim();}
+  function money(n){
+    try{ if(typeof tl==='function') return tl(n); }catch(e){}
+    return new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY'}).format(+n||0);
+  }
+  function todayStr(){
+    try{ if(typeof today==='function') return today(); }catch(e){}
+    return new Date().toISOString().slice(0,10);
+  }
+  function msgBox(text){ alert(text); }
+  function encodeMsg(t){return encodeURIComponent(t).replace(/%0A/g,'%0A');}
+  function normalizePhone(raw){
+    let p=safe(raw).replace(/[^0-9]/g,'');
+    if(!p) return '';
+    if(p.startsWith('00')) p=p.slice(2);
+    if(p.startsWith('0')) p='90'+p.slice(1);
+    if(p.length===10) p='90'+p;
+    return p;
+  }
+  function openWhatsApp(text, phone){
+    const cleanPhone=normalizePhone(phone);
+    const url=cleanPhone
+      ? ('https://wa.me/'+cleanPhone+'?text='+encodeMsg(text))
+      : ('https://wa.me/?text='+encodeMsg(text));
+    window.open(url,'_blank');
+  }
+  function copyText(text){
+    try{ navigator.clipboard && navigator.clipboard.writeText(text); }catch(e){}
+  }
+  function firstExisting(ids){
+    for(const id of ids){ const el=$(id); if(el) return el; }
+    return null;
+  }
+
+  function addRememberToLegacyLogin(){
+    const pass=$('l-pass');
+    if(!pass || $('ctp-remember-row')) return;
+    const row=document.createElement('label');
+    row.id='ctp-remember-row';
+    row.style.cssText='display:flex;align-items:center;gap:8px;text-transform:none;font-size:12px;color:#374151;font-weight:600;margin-top:8px;margin-bottom:4px;letter-spacing:0';
+    row.innerHTML='<input id="ctp-remember" type="checkbox" style="width:auto;min-height:auto"> Beni hatırla';
+    const parent=pass.closest('.fg') || pass.parentNode;
+    parent.insertAdjacentElement('afterend', row);
+    const chk=$('ctp-remember');
+    const remembered=localStorage.getItem(REMEMBER_KEY)==='1';
+    chk.checked=remembered;
+    const u=$('l-user');
+    const savedUser=localStorage.getItem(REMEMBER_USER)||'';
+    if(remembered && u && savedUser) u.value=savedUser;
+  }
+
+  function addRememberToCloudLogin(){
+    const email=$('ctp-email');
+    const box=document.querySelector('.cloud-license-box');
+    if(!email || !box || $('ctp-cloud-remember-row')) return;
+    const row=document.createElement('label');
+    row.id='ctp-cloud-remember-row';
+    row.style.cssText='display:flex;align-items:center;gap:8px;text-transform:none;font-size:12px;color:#374151;font-weight:700;margin:6px 0 4px;letter-spacing:0';
+    row.innerHTML='<input id="ctp-cloud-remember" type="checkbox" style="width:auto;min-height:auto"> Beni hatırla';
+    const msg=$('ctp-email-msg');
+    (msg||email).insertAdjacentElement('beforebegin', row);
+    const chk=$('ctp-cloud-remember');
+    const remembered=localStorage.getItem(REMEMBER_KEY)==='1';
+    chk.checked=remembered;
+    const savedUser=localStorage.getItem(REMEMBER_USER)||localStorage.getItem('ct_cloud_login_email')||'';
+    if(remembered && savedUser && !email.value) email.value=savedUser;
+    chk.addEventListener('change',()=>{
+      localStorage.setItem(REMEMBER_KEY, chk.checked?'1':'0');
+      if(chk.checked) localStorage.setItem(REMEMBER_USER, safe(email.value));
+    });
+    email.addEventListener('input',()=>{
+      if(chk.checked) localStorage.setItem(REMEMBER_USER, safe(email.value));
+    });
+  }
+
+  function patchLoginRemember(){
+    if(window.__ctpRememberPatched) return;
+    if(typeof window.login==='function'){
+      const oldLogin=window.login;
+      window.login=function(){
+        const beforeApp=$('app')?.style.display;
+        const ret=oldLogin.apply(this,arguments);
+        setTimeout(function(){
+          const ok=$('app') && $('app').style.display==='block';
+          const chk=$('ctp-remember');
+          const user=safe($('l-user')?.value);
+          if(chk && chk.checked && ok){
+            localStorage.setItem(REMEMBER_KEY,'1');
+            localStorage.setItem(REMEMBER_AUTO,'1');
+            localStorage.setItem(REMEMBER_USER,user);
+          }else if(chk && !chk.checked){
+            localStorage.removeItem(REMEMBER_KEY);
+            localStorage.removeItem(REMEMBER_AUTO);
+          }
+        },120);
+        return ret;
+      };
+      window.__ctpRememberPatched=true;
+    }
+  }
+
+  function tryAutoLegacyLogin(){
+    if(sessionStorage.getItem('ctp_auto_login_once_v311')==='1') return;
+    if(localStorage.getItem(REMEMBER_KEY)!=='1' || localStorage.getItem(REMEMBER_AUTO)!=='1') return;
+    const u=$('l-user');
+    const savedUser=localStorage.getItem(REMEMBER_USER)||'';
+    if(u && savedUser) u.value=savedUser;
+    sessionStorage.setItem('ctp_auto_login_once_v311','1');
+    // Güvenlik için şifreyi saklamıyoruz. Varsayılan şifre kutuda varsa sistem kendisi giriş yapabilir.
+    if($('l-pass') && $('l-pass').value && typeof window.login==='function'){
+      try{ window.login(); }catch(e){}
+    }
+  }
+
+  function siparisToplam(){
+    try{
+      if(typeof sepetIskontoHesabiKalici==='function') return sepetIskontoHesabiKalici().sonTutar || 0;
+      if(typeof sepetIskontoHesabi==='function') return sepetIskontoHesabi().sonTutar || 0;
+    }catch(e){}
+    try{return (sepet||[]).reduce((s,x)=>s+((+x.mik||+x.miktar||1)*(+x.fiy||+x.fiyat||0)),0);}catch(e){return 0;}
+  }
+
+  window.ctpWhatsappSiparisGonder=function(){
+    try{
+      if(typeof selSiparisF==='undefined' || !selSiparisF) return msgBox('Önce sipariş için firma seçmelisin.');
+      if(typeof sepet==='undefined' || !sepet || !sepet.length) return msgBox('Sepete ürün eklemelisin.');
+      const lines=[];
+      lines.push('Merhaba,');
+      lines.push('');
+      lines.push('Sipariş Bilgileri');
+      lines.push('Firma: '+safe(selSiparisF.ad));
+      lines.push('Tarih: '+todayStr());
+      const belge=safe($('s-belge')?.value); if(belge) lines.push('Belge: '+belge);
+      lines.push('');
+      sepet.forEach(function(x){
+        const ad=safe(x.ad||x.urun||x.name);
+        const mik=(+x.mik||+x.miktar||1);
+        const bir=safe(x.bir||x.birim||'');
+        const fiyat=(+x.fiy||+x.fiyat||0);
+        const tutar=mik*fiyat;
+        lines.push('• '+ad+' — '+mik+' '+bir+' — '+money(tutar));
+      });
+      lines.push('');
+      lines.push('Toplam: '+money(siparisToplam()));
+      const acik=safe($('s-acik')?.value); if(acik) lines.push('Not: '+acik);
+      lines.push('');
+      lines.push('Cari Takip Pro');
+      const text=lines.join('\n');
+      copyText(text);
+      openWhatsApp(text, selSiparisF.tel);
+    }catch(e){ msgBox('WhatsApp sipariş mesajı oluşturulamadı: '+(e.message||e)); }
+  };
+
+  window.ctpWhatsappBorcGonder=function(){
+    try{
+      if(typeof cSelF==='undefined' || !cSelF) return msgBox('Önce Cari Hesap ekranından firma seçmelisin.');
+      const bakiye=(typeof fbak==='function') ? fbak(cSelF.kod) : 0;
+      const lines=[];
+      lines.push('Merhaba,');
+      lines.push('');
+      lines.push('Cari Hesap Bilgisi');
+      lines.push('Firma: '+safe(cSelF.ad));
+      lines.push('Bakiye: '+money(bakiye));
+      if(bakiye>0) lines.push('Ödenmesi gereken bakiye bulunmaktadır.');
+      else if(bakiye<0) lines.push('Hesabınızda alacak bakiyesi görünmektedir.');
+      else lines.push('Cari bakiyeniz sıfırdır.');
+      lines.push('');
+      lines.push('Bilgilerinize sunarız.');
+      lines.push('Cari Takip Pro');
+      const text=lines.join('\n');
+      copyText(text);
+      openWhatsApp(text, cSelF.tel);
+    }catch(e){ msgBox('WhatsApp borç mesajı oluşturulamadı: '+(e.message||e)); }
+  };
+
+  window.ctpWhatsappFiyatListesi=function(){
+    try{
+      if(typeof DB==='undefined' || !DB || !Array.isArray(DB.urunler) || !DB.urunler.length) return msgBox('Ürün listesi boş.');
+      const q=safe($('u-ara')?.value).toLowerCase();
+      let list=DB.urunler.filter(u=>!q || safe(u.ad).toLowerCase().includes(q));
+      if(typeof aktifUrunKategori!=='undefined' && aktifUrunKategori) list=list.filter(u=>u.kat===aktifUrunKategori);
+      if(!list.length) return msgBox('Filtreye uygun ürün bulunamadı.');
+      const groups={};
+      list.forEach(u=>{ const k=safe(u.kat)||'Genel'; (groups[k]=groups[k]||[]).push(u); });
+      const lines=[];
+      lines.push('Ürün Fiyat Listesi');
+      lines.push('Tarih: '+todayStr());
+      lines.push('');
+      Object.keys(groups).sort().forEach(k=>{
+        lines.push('*'+k+'*');
+        groups[k].sort((a,b)=>safe(a.ad).localeCompare(safe(b.ad),'tr')).forEach(u=>{
+          const fiyat=typeof urunAnaFiyat==='function'?urunAnaFiyat(u):(u.fiy||0);
+          const bir=safe(u.bir)||'Adet';
+          lines.push('• '+safe(u.ad)+' — '+money(fiyat)+' / '+bir);
+          if(u.fiyKg) lines.push('  Kg: '+money(u.fiyKg));
+          if(u.fiyAdet) lines.push('  Adet: '+money(u.fiyAdet));
+          if(u.fiyKoli) lines.push('  Koli: '+money(u.fiyKoli));
+        });
+        lines.push('');
+      });
+      lines.push('Cari Takip Pro');
+      const text=lines.join('\n');
+      copyText(text);
+      openWhatsApp(text,'');
+    }catch(e){ msgBox('Fiyat listesi oluşturulamadı: '+(e.message||e)); }
+  };
+
+  function addButtons(){
+    addRememberToLegacyLogin();
+    addRememberToCloudLogin();
+    patchLoginRemember();
+
+    // Sipariş WhatsApp butonu
+    const siparisCard=document.querySelector('#page-siparis .card:nth-of-type(2) .btn-row') || document.querySelector('#page-siparis .btn-row');
+    if(siparisCard && !document.getElementById('ctp-wa-siparis-btn')){
+      const btn=document.createElement('button');
+      btn.id='ctp-wa-siparis-btn';
+      btn.type='button';
+      btn.className='btn btn-g';
+      btn.style.justifyContent='center';
+      btn.innerHTML='<i class="ti ti-brand-whatsapp"></i> WhatsApp Sipariş Gönder';
+      btn.onclick=window.ctpWhatsappSiparisGonder;
+      siparisCard.appendChild(btn);
+    }
+
+    // Cari borç WhatsApp butonu
+    const cariActions=document.querySelector('#page-cari .btn-row');
+    if(cariActions && !document.getElementById('ctp-wa-borc-btn')){
+      const btn=document.createElement('button');
+      btn.id='ctp-wa-borc-btn';
+      btn.type='button';
+      btn.className='btn btn-g';
+      btn.innerHTML='<i class="ti ti-brand-whatsapp"></i> WhatsApp Borç Gönder';
+      btn.onclick=window.ctpWhatsappBorcGonder;
+      cariActions.appendChild(btn);
+    }
+
+    // Ürün fiyat listesi butonu
+    const urunHead=document.querySelector('#page-urunler .card:nth-of-type(2) .card-head') || document.querySelector('#page-urunler .card-head');
+    if(urunHead && !document.getElementById('ctp-wa-fiyat-btn')){
+      const btn=document.createElement('button');
+      btn.id='ctp-wa-fiyat-btn';
+      btn.type='button';
+      btn.className='btn btn-sm btn-g';
+      btn.innerHTML='<i class="ti ti-brand-whatsapp"></i> Fiyat Listesi';
+      btn.onclick=window.ctpWhatsappFiyatListesi;
+      urunHead.appendChild(btn);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(function(){ addButtons(); tryAutoLegacyLogin(); },250); });
+  window.addEventListener('load', function(){ setTimeout(function(){ addButtons(); tryAutoLegacyLogin(); },700); });
+  setInterval(addButtons, 2000);
 })();
 </script>
 
