@@ -747,7 +747,7 @@ tr:hover td{background:#fafafa}
           <div class="fg"><label>Şifre <span style="color:#9ca3af;font-weight:400">(düzenlemede boş bırakılırsa değişmez)</span></label><input id="ku-pass" type="password" placeholder="Yeni şifre"></div>
           <div class="fg"><label>Yetki / Rol</label>
             <select id="ku-role" onchange="rolSayfaYetkiHazirla(this.value,true)">
-              <option value="admin">Admin — Tam yetki</option>
+              <option >Admin — Tam yetki</option>
               <option value="personel">Personel — Kayıt ekler, silemez</option>
               <option value="viewer">Görüntüleyici — Sadece izler</option>
             </select>
@@ -792,7 +792,7 @@ tr:hover td{background:#fafafa}
         </div>
         <div class="fg">
           <label>Gizli Anahtar</label>
-          <input id="gs-token" value="1234" placeholder="1234">
+          <input id="gs-token"  placeholder="1234">
         </div>
         <div class="btn-row">
           <button class="btn btn-g" onclick="gsBaglantiKaydet()"><i class="ti ti-device-floppy"></i> Bağlantıyı Kaydet</button>
@@ -1229,110 +1229,9 @@ function login(){
     initApp();
     applyRoleUI();
     if(document.getElementById('l-err')) document.getElementById('l-err').style.display='none';
-    ctpSessionSave();
   } else document.getElementById('l-err').style.display='flex';
 }
-function logout(){
-  if(confirm('Çıkış yapmak istiyor musunuz?')){
-    ctpSessionClear();
-    document.getElementById('app').style.display='none';
-    document.getElementById('login-screen').style.display='flex';
-    currentUser=null;
-  }
-}
-
-const CTP_SESSION_KEY='ctp_active_session_v319';
-const CTP_REMEMBER_USER_KEY='ctp_remember_user_v311';
-const CTP_REMEMBER_ON_KEY='ctp_remember_login_v311';
-const CTP_IDLE_MS=10*60*1000;
-
-function ctpSessionSave(){
-  try{
-    if(!currentUser || !currentUser.username) return;
-    var app=document.getElementById('app');
-    if(!app || app.style.display!=='block') return;
-    localStorage.setItem(CTP_SESSION_KEY, JSON.stringify({
-      username: currentUser.username,
-      last: Date.now()
-    }));
-    localStorage.setItem(CTP_REMEMBER_ON_KEY,'1');
-    localStorage.setItem(CTP_REMEMBER_USER_KEY,currentUser.username);
-  }catch(e){}
-}
-function ctpSessionClear(){
-  try{ localStorage.removeItem(CTP_SESSION_KEY); }catch(e){}
-}
-function ctpSessionRead(){
-  try{
-    var raw=localStorage.getItem(CTP_SESSION_KEY);
-    if(!raw) return null;
-    var data=JSON.parse(raw);
-    if(!data || !data.username || !data.last) return null;
-    if(Date.now()-(+data.last)>CTP_IDLE_MS){
-      ctpSessionClear();
-      return null;
-    }
-    return data;
-  }catch(e){
-    ctpSessionClear();
-    return null;
-  }
-}
-function ctpSessionRestore(){
-  try{
-    ensureUsers();
-    var uInput=document.getElementById('l-user');
-    var savedUser=localStorage.getItem(CTP_REMEMBER_USER_KEY)||'';
-    if(uInput && savedUser && !uInput.value) uInput.value=savedUser;
-
-    var data=ctpSessionRead();
-    if(!data) return false;
-
-    var user=(DB.users||[]).find(x=>String(x.username).toLowerCase()===String(data.username).toLowerCase() && x.active!==false);
-    if(!user){ ctpSessionClear(); return false; }
-
-    currentUser=user;
-    document.getElementById('login-screen').style.display='none';
-    document.getElementById('app').style.display='block';
-    document.getElementById('sb-av').textContent=user.username[0].toUpperCase();
-    document.getElementById('sb-name').textContent=user.username+' — '+roleLabel(user.role);
-    initApp();
-    applyRoleUI();
-    ctpSessionSave();
-    return true;
-  }catch(e){
-    return false;
-  }
-}
-function ctpForceIdleLogout(){
-  try{
-    ctpSessionClear();
-    currentUser=null;
-    document.getElementById('app').style.display='none';
-    document.getElementById('login-screen').style.display='flex';
-    var err=document.getElementById('l-err');
-    if(err){
-      err.style.display='flex';
-      err.innerHTML='<i class="ti ti-alert-circle"></i> 10 dakika işlem yapılmadığı için çıkış yapıldı';
-    }
-  }catch(e){}
-}
-function ctpSessionActivity(){
-  try{
-    var app=document.getElementById('app');
-    if(app && app.style.display==='block') ctpSessionSave();
-  }catch(e){}
-}
-['click','keydown','touchstart','mousemove','scroll'].forEach(function(ev){
-  window.addEventListener(ev,ctpSessionActivity,{passive:true});
-});
-setInterval(function(){
-  var app=document.getElementById('app');
-  if(!app || app.style.display!=='block') return;
-  if(!ctpSessionRead()) ctpForceIdleLogout();
-},15000);
-document.addEventListener('DOMContentLoaded',function(){setTimeout(ctpSessionRestore,300);});
-window.addEventListener('load',function(){setTimeout(ctpSessionRestore,700);});
+function logout(){if(confirm('Çıkış yapmak istiyor musunuz?')){document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';currentUser=null;}}
 
 function goPage(id,el){
   if((id==='yedek'||id==='kullanicilar') && !isAdmin()) return permissionError('Bu bölüm sadece admin içindir.');
