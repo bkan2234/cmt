@@ -898,6 +898,8 @@ tr:hover td{background:#fafafa}
         <div class="tw"><table><thead><tr><th>Cihaz ID</th><th>İlk Giriş</th><th>Son Giriş</th><th>Durum</th><th>İşlem</th></tr></thead><tbody id="musteri-cihaz-tb"><tr><td colspan="5" style="color:#9ca3af">Listelemek için Yenile butonuna bas.</td></tr></tbody></table></div>
       </div>
 
+      <div class="g2" style="align-items:start">
+        <div>
           <div class="card">
             <div class="card-head"><div class="card-title" style="color:var(--g)"><i class="ti ti-file-spreadsheet"></i> Excel'e Aktar</div></div>
             <div style="display:flex;flex-direction:column;gap:8px">
@@ -1109,15 +1111,6 @@ tr:hover td{background:#fafafa}
     </div>
   </div>
 </div>
-    <div class="fg"><label>Açıklama</label><input id="sd-acik" placeholder="Sayım düzeltmesi"></div>
-    <div class="btn-row">
-      <button class="btn btn-g" onclick="stokModalKaydet()"><i class="ti ti-device-floppy"></i> Kaydet</button>
-      <button class="btn" onclick="closeModal('stok-duz-modal')">Vazgeç</button>
-    </div>
-  </div>
-</div>
-
-
 <div id="mobile-nav">
   <button class="active" onclick="goPageMobile('dashboard',this)"><i class="ti ti-dashboard"></i>Ana</button>
   <button onclick="goPageMobile('iskonto-hesap',this)"><i class="ti ti-calculator"></i>Hesap</button>
@@ -2505,6 +2498,193 @@ function faturaYazdir() {
   #mobile-nav button[onclick*="yedek"]{display:none!important;}
 }
 </style>
+
+
+
+<!-- CTP_MOBILE_V3148_START: Mobil görünüm toparlama + yeni sekmelerin telefonda çalışması -->
+<style id="ctp-mobile-v3148-css">
+@media(max-width:780px){
+  html,body{max-width:100%!important;overflow-x:hidden!important;background:#f3f4f6!important;}
+  body.ctp-view-mobile .sidebar,
+  body.ctp-view-web.ctp-force-mobile .sidebar{display:none!important;}
+  body.ctp-view-mobile .main,
+  body.ctp-view-web.ctp-force-mobile .main{
+    margin-left:0!important;
+    padding:10px 10px 104px!important;
+    max-width:100vw!important;
+    min-width:0!important;
+    overflow-x:hidden!important;
+  }
+  body.ctp-view-mobile #mobile-nav,
+  body.ctp-view-web.ctp-force-mobile #mobile-nav{
+    display:flex!important;
+    position:fixed!important;
+    left:7px!important;
+    right:7px!important;
+    bottom:7px!important;
+    z-index:99999!important;
+    background:#fff!important;
+    border:1px solid #e5e7eb!important;
+    border-radius:22px!important;
+    box-shadow:0 10px 30px rgba(0,0,0,.20)!important;
+    padding:6px!important;
+    gap:4px!important;
+    justify-content:flex-start!important;
+    overflow-x:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  body.ctp-view-mobile #mobile-nav::-webkit-scrollbar,
+  body.ctp-view-web.ctp-force-mobile #mobile-nav::-webkit-scrollbar{display:none!important;}
+  body.ctp-view-mobile #mobile-nav button,
+  body.ctp-view-web.ctp-force-mobile #mobile-nav button{
+    flex:0 0 auto!important;
+    min-width:54px!important;
+    border:0!important;
+    background:transparent!important;
+    color:#64736b!important;
+    font-size:9.5px!important;
+    font-weight:800!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:2px!important;
+    padding:7px 5px!important;
+    border-radius:16px!important;
+    white-space:nowrap!important;
+  }
+  body.ctp-view-mobile #mobile-nav button i,
+  body.ctp-view-web.ctp-force-mobile #mobile-nav button i{font-size:20px!important;}
+  body.ctp-view-mobile #mobile-nav button.active,
+  body.ctp-view-web.ctp-force-mobile #mobile-nav button.active{background:#e8f7ed!important;color:#1d6f42!important;}
+
+  body.ctp-view-mobile .page-title,
+  body.ctp-view-web.ctp-force-mobile .page-title{font-size:20px!important;font-weight:900!important;margin:6px 2px 12px!important;}
+  body.ctp-view-mobile .card,
+  body.ctp-view-web.ctp-force-mobile .card{width:100%!important;max-width:100%!important;overflow:hidden!important;border-radius:18px!important;padding:13px!important;margin-bottom:12px!important;}
+  body.ctp-view-mobile .g2,
+  body.ctp-view-mobile .g3,
+  body.ctp-view-mobile .stats,
+  body.ctp-view-web.ctp-force-mobile .g2,
+  body.ctp-view-web.ctp-force-mobile .g3,
+  body.ctp-view-web.ctp-force-mobile .stats{display:grid!important;grid-template-columns:1fr!important;gap:10px!important;}
+  body.ctp-view-mobile .btn-row,
+  body.ctp-view-web.ctp-force-mobile .btn-row{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;width:100%!important;}
+  body.ctp-view-mobile .btn-row .btn,
+  body.ctp-view-web.ctp-force-mobile .btn-row .btn{width:100%!important;justify-content:center!important;}
+  body.ctp-view-mobile input,
+  body.ctp-view-mobile select,
+  body.ctp-view-mobile textarea,
+  body.ctp-view-web.ctp-force-mobile input,
+  body.ctp-view-web.ctp-force-mobile select,
+  body.ctp-view-web.ctp-force-mobile textarea{font-size:16px!important;min-height:44px!important;border-radius:12px!important;}
+  body.ctp-view-mobile .tw,
+  body.ctp-view-web.ctp-force-mobile .tw{max-width:100%!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;}
+  body.ctp-view-mobile table,
+  body.ctp-view-web.ctp-force-mobile table{min-width:620px!important;}
+
+  body.ctp-view-mobile #page-iskonto-hesap .card,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .card{overflow:visible!important;}
+  body.ctp-view-mobile #page-iskonto-hesap #ih-sonuc,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap #ih-sonuc{font-size:13px!important;}
+  body.ctp-view-mobile #page-iskonto-hesap .ih-result-main,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-result-main{padding:14px!important;border-radius:16px!important;text-align:center!important;}
+  body.ctp-view-mobile #page-iskonto-hesap .ih-result-price,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-result-price{font-size:24px!important;line-height:1.2!important;word-break:break-word!important;}
+  body.ctp-view-mobile #page-iskonto-hesap .ih-line,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-line{display:flex!important;gap:8px!important;justify-content:space-between!important;align-items:flex-start!important;padding:8px 0!important;border-bottom:1px solid #f3f4f6!important;}
+  body.ctp-view-mobile #page-iskonto-hesap .ih-line span,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-line span{color:#6b7280!important;}
+  body.ctp-view-mobile #page-iskonto-hesap .ih-line strong,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-line strong{text-align:right!important;max-width:58%!important;word-break:break-word!important;}
+  body.ctp-view-mobile #musteri-indir-card .btn-row,
+  body.ctp-view-web.ctp-force-mobile #musteri-indir-card .btn-row{grid-template-columns:1fr!important;}
+  body.ctp-view-mobile #page-firmalar .card-head,
+  body.ctp-view-web.ctp-force-mobile #page-firmalar .card-head{gap:8px!important;align-items:center!important;}
+}
+</style>
+<script id="ctp-mobile-v3148-js">
+(function(){
+  var mobilePages=[
+    ['dashboard','ti-dashboard','Ana'],
+    ['iskonto-hesap','ti-calculator','Hesap'],
+    ['firmalar','ti-building','Firma'],
+    ['siparis','ti-shopping-cart','Sipariş'],
+    ['hareket','ti-cash','Ödeme'],
+    ['cari','ti-list-details','Cari'],
+    ['stok','ti-box-seam','Stok']
+  ];
+  function isPhone(){return window.matchMedia&&window.matchMedia('(max-width: 780px)').matches;}
+  function forceMobileMode(){
+    if(!isPhone()) return;
+    try{localStorage.setItem('ctp_view_mode_v4','mobile');}catch(e){}
+    document.body.classList.remove('ctp-view-web');
+    document.body.classList.add('ctp-view-mobile','ctp-force-mobile');
+  }
+  function allowed(id){
+    try{ if(typeof currentAllowedPages==='function') return currentAllowedPages().indexOf(id)>=0; }catch(e){}
+    return true;
+  }
+  function navHtml(p,active){
+    return '<button '+(active?'class="active" ':'')+'data-page="'+p[0]+'" onclick="goPageMobile(\''+p[0]+'\',this)"><i class="ti '+p[1]+'"></i>'+p[2]+'</button>';
+  }
+  function ensureMobileNav(activeId){
+    var nav=document.getElementById('mobile-nav');
+    if(!nav) return;
+    var current=activeId || (document.querySelector('.page.active')||{}).id || 'page-dashboard';
+    current=String(current).replace(/^page-/,'');
+    var html=mobilePages.filter(function(p){return allowed(p[0]);}).map(function(p){return navHtml(p,p[0]===current);}).join('');
+    if(nav.getAttribute('data-v3148')!=='1' || nav.getAttribute('data-active')!==current || nav.innerHTML.indexOf('data-page="iskonto-hesap"')<0){
+      nav.innerHTML=html;
+      nav.setAttribute('data-v3148','1');
+      nav.setAttribute('data-active',current);
+    }else{
+      Array.prototype.forEach.call(nav.querySelectorAll('button'),function(b){b.classList.toggle('active',b.getAttribute('data-page')===current);});
+    }
+  }
+  function afterPage(id){
+    try{ if(id==='iskonto-hesap' && typeof window.ctpIHRender==='function') setTimeout(window.ctpIHRender,60); }catch(e){}
+    try{ if(id==='dashboard' && typeof renderDashboard==='function') setTimeout(renderDashboard,60); }catch(e){}
+    try{ if(id==='firmalar' && typeof renderF==='function') setTimeout(renderF,60); }catch(e){}
+    try{ if(id==='siparis' && typeof renderSepet==='function') setTimeout(renderSepet,60); }catch(e){}
+    try{ if(id==='cari' && typeof renderCF==='function') setTimeout(renderCF,60); }catch(e){}
+    try{ if(id==='stok' && typeof renderStok==='function') setTimeout(renderStok,60); }catch(e){}
+  }
+  var oldMobile=window.goPageMobile;
+  window.goPageMobile=function(id,el){
+    forceMobileMode();
+    if(typeof window.goPage==='function') window.goPage(id,null);
+    else if(oldMobile) oldMobile(id,el);
+    ensureMobileNav(id);
+    afterPage(id);
+    try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){window.scrollTo(0,0);}
+  };
+  var oldGo=window.goPage;
+  if(typeof oldGo==='function'){
+    window.goPage=function(id,el){
+      forceMobileMode();
+      var r=oldGo.apply(this,arguments);
+      ensureMobileNav(id);
+      afterPage(id);
+      return r;
+    };
+  }
+  var oldInit=window.initApp;
+  if(typeof oldInit==='function'){
+    window.initApp=function(){
+      forceMobileMode();
+      var r=oldInit.apply(this,arguments);
+      setTimeout(function(){forceMobileMode();ensureMobileNav();afterPage((document.querySelector('.page.active')||{}).id||'dashboard');},120);
+      return r;
+    };
+  }
+  function boot(){forceMobileMode();ensureMobileNav();afterPage((document.querySelector('.page.active')||{}).id||'dashboard');}
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){setTimeout(boot,80);}); else setTimeout(boot,80);
+  window.addEventListener('load',function(){setTimeout(boot,250);setTimeout(boot,900);});
+  window.addEventListener('resize',function(){setTimeout(boot,120);});
+})();
+</script>
+<!-- CTP_MOBILE_V3148_END -->
 
 </body></html>`);
   win.document.close();
@@ -6284,6 +6464,193 @@ body.ctp-view-mobile #ctp-view-toggle .m,body.ctp-view-web #ctp-view-toggle .w{b
 </script>
 <!-- CTP_FIRMA_VERGI_DAIRESI_MUSTERI_INDIR_V3143_END -->
 
+
+
+<!-- CTP_MOBILE_V3148_START: Mobil görünüm toparlama + yeni sekmelerin telefonda çalışması -->
+<style id="ctp-mobile-v3148-css">
+@media(max-width:780px){
+  html,body{max-width:100%!important;overflow-x:hidden!important;background:#f3f4f6!important;}
+  body.ctp-view-mobile .sidebar,
+  body.ctp-view-web.ctp-force-mobile .sidebar{display:none!important;}
+  body.ctp-view-mobile .main,
+  body.ctp-view-web.ctp-force-mobile .main{
+    margin-left:0!important;
+    padding:10px 10px 104px!important;
+    max-width:100vw!important;
+    min-width:0!important;
+    overflow-x:hidden!important;
+  }
+  body.ctp-view-mobile #mobile-nav,
+  body.ctp-view-web.ctp-force-mobile #mobile-nav{
+    display:flex!important;
+    position:fixed!important;
+    left:7px!important;
+    right:7px!important;
+    bottom:7px!important;
+    z-index:99999!important;
+    background:#fff!important;
+    border:1px solid #e5e7eb!important;
+    border-radius:22px!important;
+    box-shadow:0 10px 30px rgba(0,0,0,.20)!important;
+    padding:6px!important;
+    gap:4px!important;
+    justify-content:flex-start!important;
+    overflow-x:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  body.ctp-view-mobile #mobile-nav::-webkit-scrollbar,
+  body.ctp-view-web.ctp-force-mobile #mobile-nav::-webkit-scrollbar{display:none!important;}
+  body.ctp-view-mobile #mobile-nav button,
+  body.ctp-view-web.ctp-force-mobile #mobile-nav button{
+    flex:0 0 auto!important;
+    min-width:54px!important;
+    border:0!important;
+    background:transparent!important;
+    color:#64736b!important;
+    font-size:9.5px!important;
+    font-weight:800!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:2px!important;
+    padding:7px 5px!important;
+    border-radius:16px!important;
+    white-space:nowrap!important;
+  }
+  body.ctp-view-mobile #mobile-nav button i,
+  body.ctp-view-web.ctp-force-mobile #mobile-nav button i{font-size:20px!important;}
+  body.ctp-view-mobile #mobile-nav button.active,
+  body.ctp-view-web.ctp-force-mobile #mobile-nav button.active{background:#e8f7ed!important;color:#1d6f42!important;}
+
+  body.ctp-view-mobile .page-title,
+  body.ctp-view-web.ctp-force-mobile .page-title{font-size:20px!important;font-weight:900!important;margin:6px 2px 12px!important;}
+  body.ctp-view-mobile .card,
+  body.ctp-view-web.ctp-force-mobile .card{width:100%!important;max-width:100%!important;overflow:hidden!important;border-radius:18px!important;padding:13px!important;margin-bottom:12px!important;}
+  body.ctp-view-mobile .g2,
+  body.ctp-view-mobile .g3,
+  body.ctp-view-mobile .stats,
+  body.ctp-view-web.ctp-force-mobile .g2,
+  body.ctp-view-web.ctp-force-mobile .g3,
+  body.ctp-view-web.ctp-force-mobile .stats{display:grid!important;grid-template-columns:1fr!important;gap:10px!important;}
+  body.ctp-view-mobile .btn-row,
+  body.ctp-view-web.ctp-force-mobile .btn-row{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;width:100%!important;}
+  body.ctp-view-mobile .btn-row .btn,
+  body.ctp-view-web.ctp-force-mobile .btn-row .btn{width:100%!important;justify-content:center!important;}
+  body.ctp-view-mobile input,
+  body.ctp-view-mobile select,
+  body.ctp-view-mobile textarea,
+  body.ctp-view-web.ctp-force-mobile input,
+  body.ctp-view-web.ctp-force-mobile select,
+  body.ctp-view-web.ctp-force-mobile textarea{font-size:16px!important;min-height:44px!important;border-radius:12px!important;}
+  body.ctp-view-mobile .tw,
+  body.ctp-view-web.ctp-force-mobile .tw{max-width:100%!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;}
+  body.ctp-view-mobile table,
+  body.ctp-view-web.ctp-force-mobile table{min-width:620px!important;}
+
+  body.ctp-view-mobile #page-iskonto-hesap .card,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .card{overflow:visible!important;}
+  body.ctp-view-mobile #page-iskonto-hesap #ih-sonuc,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap #ih-sonuc{font-size:13px!important;}
+  body.ctp-view-mobile #page-iskonto-hesap .ih-result-main,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-result-main{padding:14px!important;border-radius:16px!important;text-align:center!important;}
+  body.ctp-view-mobile #page-iskonto-hesap .ih-result-price,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-result-price{font-size:24px!important;line-height:1.2!important;word-break:break-word!important;}
+  body.ctp-view-mobile #page-iskonto-hesap .ih-line,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-line{display:flex!important;gap:8px!important;justify-content:space-between!important;align-items:flex-start!important;padding:8px 0!important;border-bottom:1px solid #f3f4f6!important;}
+  body.ctp-view-mobile #page-iskonto-hesap .ih-line span,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-line span{color:#6b7280!important;}
+  body.ctp-view-mobile #page-iskonto-hesap .ih-line strong,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-line strong{text-align:right!important;max-width:58%!important;word-break:break-word!important;}
+  body.ctp-view-mobile #musteri-indir-card .btn-row,
+  body.ctp-view-web.ctp-force-mobile #musteri-indir-card .btn-row{grid-template-columns:1fr!important;}
+  body.ctp-view-mobile #page-firmalar .card-head,
+  body.ctp-view-web.ctp-force-mobile #page-firmalar .card-head{gap:8px!important;align-items:center!important;}
+}
+</style>
+<script id="ctp-mobile-v3148-js">
+(function(){
+  var mobilePages=[
+    ['dashboard','ti-dashboard','Ana'],
+    ['iskonto-hesap','ti-calculator','Hesap'],
+    ['firmalar','ti-building','Firma'],
+    ['siparis','ti-shopping-cart','Sipariş'],
+    ['hareket','ti-cash','Ödeme'],
+    ['cari','ti-list-details','Cari'],
+    ['stok','ti-box-seam','Stok']
+  ];
+  function isPhone(){return window.matchMedia&&window.matchMedia('(max-width: 780px)').matches;}
+  function forceMobileMode(){
+    if(!isPhone()) return;
+    try{localStorage.setItem('ctp_view_mode_v4','mobile');}catch(e){}
+    document.body.classList.remove('ctp-view-web');
+    document.body.classList.add('ctp-view-mobile','ctp-force-mobile');
+  }
+  function allowed(id){
+    try{ if(typeof currentAllowedPages==='function') return currentAllowedPages().indexOf(id)>=0; }catch(e){}
+    return true;
+  }
+  function navHtml(p,active){
+    return '<button '+(active?'class="active" ':'')+'data-page="'+p[0]+'" onclick="goPageMobile(\''+p[0]+'\',this)"><i class="ti '+p[1]+'"></i>'+p[2]+'</button>';
+  }
+  function ensureMobileNav(activeId){
+    var nav=document.getElementById('mobile-nav');
+    if(!nav) return;
+    var current=activeId || (document.querySelector('.page.active')||{}).id || 'page-dashboard';
+    current=String(current).replace(/^page-/,'');
+    var html=mobilePages.filter(function(p){return allowed(p[0]);}).map(function(p){return navHtml(p,p[0]===current);}).join('');
+    if(nav.getAttribute('data-v3148')!=='1' || nav.getAttribute('data-active')!==current || nav.innerHTML.indexOf('data-page="iskonto-hesap"')<0){
+      nav.innerHTML=html;
+      nav.setAttribute('data-v3148','1');
+      nav.setAttribute('data-active',current);
+    }else{
+      Array.prototype.forEach.call(nav.querySelectorAll('button'),function(b){b.classList.toggle('active',b.getAttribute('data-page')===current);});
+    }
+  }
+  function afterPage(id){
+    try{ if(id==='iskonto-hesap' && typeof window.ctpIHRender==='function') setTimeout(window.ctpIHRender,60); }catch(e){}
+    try{ if(id==='dashboard' && typeof renderDashboard==='function') setTimeout(renderDashboard,60); }catch(e){}
+    try{ if(id==='firmalar' && typeof renderF==='function') setTimeout(renderF,60); }catch(e){}
+    try{ if(id==='siparis' && typeof renderSepet==='function') setTimeout(renderSepet,60); }catch(e){}
+    try{ if(id==='cari' && typeof renderCF==='function') setTimeout(renderCF,60); }catch(e){}
+    try{ if(id==='stok' && typeof renderStok==='function') setTimeout(renderStok,60); }catch(e){}
+  }
+  var oldMobile=window.goPageMobile;
+  window.goPageMobile=function(id,el){
+    forceMobileMode();
+    if(typeof window.goPage==='function') window.goPage(id,null);
+    else if(oldMobile) oldMobile(id,el);
+    ensureMobileNav(id);
+    afterPage(id);
+    try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){window.scrollTo(0,0);}
+  };
+  var oldGo=window.goPage;
+  if(typeof oldGo==='function'){
+    window.goPage=function(id,el){
+      forceMobileMode();
+      var r=oldGo.apply(this,arguments);
+      ensureMobileNav(id);
+      afterPage(id);
+      return r;
+    };
+  }
+  var oldInit=window.initApp;
+  if(typeof oldInit==='function'){
+    window.initApp=function(){
+      forceMobileMode();
+      var r=oldInit.apply(this,arguments);
+      setTimeout(function(){forceMobileMode();ensureMobileNav();afterPage((document.querySelector('.page.active')||{}).id||'dashboard');},120);
+      return r;
+    };
+  }
+  function boot(){forceMobileMode();ensureMobileNav();afterPage((document.querySelector('.page.active')||{}).id||'dashboard');}
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){setTimeout(boot,80);}); else setTimeout(boot,80);
+  window.addEventListener('load',function(){setTimeout(boot,250);setTimeout(boot,900);});
+  window.addEventListener('resize',function(){setTimeout(boot,120);});
+})();
+</script>
+<!-- CTP_MOBILE_V3148_END -->
+
 </body>
 </html>
 
@@ -8275,7 +8642,194 @@ body.ctp-view-mobile #ctp-view-toggle .m,body.ctp-view-web #ctp-view-toggle .w{b
     var win=window.open('','_blank','width=900,height=1100');
     if(!win){alert('Yazdırma penceresi açılamadı. Tarayıcı popup iznini kontrol et.');return;}
     win.document.open();
-    win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Fatura / İrsaliye</title></head><body>'+icerik+'<script>setTimeout(function(){window.print();window.close();},500);<\/script></body></html>');
+    win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Fatura / İrsaliye</title></head><body>'+icerik+'<script>setTimeout(function(){window.print();window.close();},500);<\/script>
+
+<!-- CTP_MOBILE_V3148_START: Mobil görünüm toparlama + yeni sekmelerin telefonda çalışması -->
+<style id="ctp-mobile-v3148-css">
+@media(max-width:780px){
+  html,body{max-width:100%!important;overflow-x:hidden!important;background:#f3f4f6!important;}
+  body.ctp-view-mobile .sidebar,
+  body.ctp-view-web.ctp-force-mobile .sidebar{display:none!important;}
+  body.ctp-view-mobile .main,
+  body.ctp-view-web.ctp-force-mobile .main{
+    margin-left:0!important;
+    padding:10px 10px 104px!important;
+    max-width:100vw!important;
+    min-width:0!important;
+    overflow-x:hidden!important;
+  }
+  body.ctp-view-mobile #mobile-nav,
+  body.ctp-view-web.ctp-force-mobile #mobile-nav{
+    display:flex!important;
+    position:fixed!important;
+    left:7px!important;
+    right:7px!important;
+    bottom:7px!important;
+    z-index:99999!important;
+    background:#fff!important;
+    border:1px solid #e5e7eb!important;
+    border-radius:22px!important;
+    box-shadow:0 10px 30px rgba(0,0,0,.20)!important;
+    padding:6px!important;
+    gap:4px!important;
+    justify-content:flex-start!important;
+    overflow-x:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  body.ctp-view-mobile #mobile-nav::-webkit-scrollbar,
+  body.ctp-view-web.ctp-force-mobile #mobile-nav::-webkit-scrollbar{display:none!important;}
+  body.ctp-view-mobile #mobile-nav button,
+  body.ctp-view-web.ctp-force-mobile #mobile-nav button{
+    flex:0 0 auto!important;
+    min-width:54px!important;
+    border:0!important;
+    background:transparent!important;
+    color:#64736b!important;
+    font-size:9.5px!important;
+    font-weight:800!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:2px!important;
+    padding:7px 5px!important;
+    border-radius:16px!important;
+    white-space:nowrap!important;
+  }
+  body.ctp-view-mobile #mobile-nav button i,
+  body.ctp-view-web.ctp-force-mobile #mobile-nav button i{font-size:20px!important;}
+  body.ctp-view-mobile #mobile-nav button.active,
+  body.ctp-view-web.ctp-force-mobile #mobile-nav button.active{background:#e8f7ed!important;color:#1d6f42!important;}
+
+  body.ctp-view-mobile .page-title,
+  body.ctp-view-web.ctp-force-mobile .page-title{font-size:20px!important;font-weight:900!important;margin:6px 2px 12px!important;}
+  body.ctp-view-mobile .card,
+  body.ctp-view-web.ctp-force-mobile .card{width:100%!important;max-width:100%!important;overflow:hidden!important;border-radius:18px!important;padding:13px!important;margin-bottom:12px!important;}
+  body.ctp-view-mobile .g2,
+  body.ctp-view-mobile .g3,
+  body.ctp-view-mobile .stats,
+  body.ctp-view-web.ctp-force-mobile .g2,
+  body.ctp-view-web.ctp-force-mobile .g3,
+  body.ctp-view-web.ctp-force-mobile .stats{display:grid!important;grid-template-columns:1fr!important;gap:10px!important;}
+  body.ctp-view-mobile .btn-row,
+  body.ctp-view-web.ctp-force-mobile .btn-row{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;width:100%!important;}
+  body.ctp-view-mobile .btn-row .btn,
+  body.ctp-view-web.ctp-force-mobile .btn-row .btn{width:100%!important;justify-content:center!important;}
+  body.ctp-view-mobile input,
+  body.ctp-view-mobile select,
+  body.ctp-view-mobile textarea,
+  body.ctp-view-web.ctp-force-mobile input,
+  body.ctp-view-web.ctp-force-mobile select,
+  body.ctp-view-web.ctp-force-mobile textarea{font-size:16px!important;min-height:44px!important;border-radius:12px!important;}
+  body.ctp-view-mobile .tw,
+  body.ctp-view-web.ctp-force-mobile .tw{max-width:100%!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;}
+  body.ctp-view-mobile table,
+  body.ctp-view-web.ctp-force-mobile table{min-width:620px!important;}
+
+  body.ctp-view-mobile #page-iskonto-hesap .card,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .card{overflow:visible!important;}
+  body.ctp-view-mobile #page-iskonto-hesap #ih-sonuc,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap #ih-sonuc{font-size:13px!important;}
+  body.ctp-view-mobile #page-iskonto-hesap .ih-result-main,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-result-main{padding:14px!important;border-radius:16px!important;text-align:center!important;}
+  body.ctp-view-mobile #page-iskonto-hesap .ih-result-price,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-result-price{font-size:24px!important;line-height:1.2!important;word-break:break-word!important;}
+  body.ctp-view-mobile #page-iskonto-hesap .ih-line,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-line{display:flex!important;gap:8px!important;justify-content:space-between!important;align-items:flex-start!important;padding:8px 0!important;border-bottom:1px solid #f3f4f6!important;}
+  body.ctp-view-mobile #page-iskonto-hesap .ih-line span,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-line span{color:#6b7280!important;}
+  body.ctp-view-mobile #page-iskonto-hesap .ih-line strong,
+  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-line strong{text-align:right!important;max-width:58%!important;word-break:break-word!important;}
+  body.ctp-view-mobile #musteri-indir-card .btn-row,
+  body.ctp-view-web.ctp-force-mobile #musteri-indir-card .btn-row{grid-template-columns:1fr!important;}
+  body.ctp-view-mobile #page-firmalar .card-head,
+  body.ctp-view-web.ctp-force-mobile #page-firmalar .card-head{gap:8px!important;align-items:center!important;}
+}
+</style>
+<script id="ctp-mobile-v3148-js">
+(function(){
+  var mobilePages=[
+    ['dashboard','ti-dashboard','Ana'],
+    ['iskonto-hesap','ti-calculator','Hesap'],
+    ['firmalar','ti-building','Firma'],
+    ['siparis','ti-shopping-cart','Sipariş'],
+    ['hareket','ti-cash','Ödeme'],
+    ['cari','ti-list-details','Cari'],
+    ['stok','ti-box-seam','Stok']
+  ];
+  function isPhone(){return window.matchMedia&&window.matchMedia('(max-width: 780px)').matches;}
+  function forceMobileMode(){
+    if(!isPhone()) return;
+    try{localStorage.setItem('ctp_view_mode_v4','mobile');}catch(e){}
+    document.body.classList.remove('ctp-view-web');
+    document.body.classList.add('ctp-view-mobile','ctp-force-mobile');
+  }
+  function allowed(id){
+    try{ if(typeof currentAllowedPages==='function') return currentAllowedPages().indexOf(id)>=0; }catch(e){}
+    return true;
+  }
+  function navHtml(p,active){
+    return '<button '+(active?'class="active" ':'')+'data-page="'+p[0]+'" onclick="goPageMobile(\''+p[0]+'\',this)"><i class="ti '+p[1]+'"></i>'+p[2]+'</button>';
+  }
+  function ensureMobileNav(activeId){
+    var nav=document.getElementById('mobile-nav');
+    if(!nav) return;
+    var current=activeId || (document.querySelector('.page.active')||{}).id || 'page-dashboard';
+    current=String(current).replace(/^page-/,'');
+    var html=mobilePages.filter(function(p){return allowed(p[0]);}).map(function(p){return navHtml(p,p[0]===current);}).join('');
+    if(nav.getAttribute('data-v3148')!=='1' || nav.getAttribute('data-active')!==current || nav.innerHTML.indexOf('data-page="iskonto-hesap"')<0){
+      nav.innerHTML=html;
+      nav.setAttribute('data-v3148','1');
+      nav.setAttribute('data-active',current);
+    }else{
+      Array.prototype.forEach.call(nav.querySelectorAll('button'),function(b){b.classList.toggle('active',b.getAttribute('data-page')===current);});
+    }
+  }
+  function afterPage(id){
+    try{ if(id==='iskonto-hesap' && typeof window.ctpIHRender==='function') setTimeout(window.ctpIHRender,60); }catch(e){}
+    try{ if(id==='dashboard' && typeof renderDashboard==='function') setTimeout(renderDashboard,60); }catch(e){}
+    try{ if(id==='firmalar' && typeof renderF==='function') setTimeout(renderF,60); }catch(e){}
+    try{ if(id==='siparis' && typeof renderSepet==='function') setTimeout(renderSepet,60); }catch(e){}
+    try{ if(id==='cari' && typeof renderCF==='function') setTimeout(renderCF,60); }catch(e){}
+    try{ if(id==='stok' && typeof renderStok==='function') setTimeout(renderStok,60); }catch(e){}
+  }
+  var oldMobile=window.goPageMobile;
+  window.goPageMobile=function(id,el){
+    forceMobileMode();
+    if(typeof window.goPage==='function') window.goPage(id,null);
+    else if(oldMobile) oldMobile(id,el);
+    ensureMobileNav(id);
+    afterPage(id);
+    try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){window.scrollTo(0,0);}
+  };
+  var oldGo=window.goPage;
+  if(typeof oldGo==='function'){
+    window.goPage=function(id,el){
+      forceMobileMode();
+      var r=oldGo.apply(this,arguments);
+      ensureMobileNav(id);
+      afterPage(id);
+      return r;
+    };
+  }
+  var oldInit=window.initApp;
+  if(typeof oldInit==='function'){
+    window.initApp=function(){
+      forceMobileMode();
+      var r=oldInit.apply(this,arguments);
+      setTimeout(function(){forceMobileMode();ensureMobileNav();afterPage((document.querySelector('.page.active')||{}).id||'dashboard');},120);
+      return r;
+    };
+  }
+  function boot(){forceMobileMode();ensureMobileNav();afterPage((document.querySelector('.page.active')||{}).id||'dashboard');}
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){setTimeout(boot,80);}); else setTimeout(boot,80);
+  window.addEventListener('load',function(){setTimeout(boot,250);setTimeout(boot,900);});
+  window.addEventListener('resize',function(){setTimeout(boot,120);});
+})();
+</script>
+<!-- CTP_MOBILE_V3148_END -->
+
+</body></html>');
     win.document.close();
   };
 })();
@@ -8602,190 +9156,3 @@ try{ if(typeof DB!=='undefined' && !window.DB){ window.DB=DB; } }catch(e){}
 
 </script>
 <!-- CTP_MANUEL_ISKONTO_V3145_END -->
-
-
-
-<!-- CTP_MOBILE_V3148_START: Mobil görünüm toparlama + yeni sekmelerin telefonda çalışması -->
-<style id="ctp-mobile-v3148-css">
-@media(max-width:780px){
-  html,body{max-width:100%!important;overflow-x:hidden!important;background:#f3f4f6!important;}
-  body.ctp-view-mobile .sidebar,
-  body.ctp-view-web.ctp-force-mobile .sidebar{display:none!important;}
-  body.ctp-view-mobile .main,
-  body.ctp-view-web.ctp-force-mobile .main{
-    margin-left:0!important;
-    padding:10px 10px 104px!important;
-    max-width:100vw!important;
-    min-width:0!important;
-    overflow-x:hidden!important;
-  }
-  body.ctp-view-mobile #mobile-nav,
-  body.ctp-view-web.ctp-force-mobile #mobile-nav{
-    display:flex!important;
-    position:fixed!important;
-    left:7px!important;
-    right:7px!important;
-    bottom:7px!important;
-    z-index:99999!important;
-    background:#fff!important;
-    border:1px solid #e5e7eb!important;
-    border-radius:22px!important;
-    box-shadow:0 10px 30px rgba(0,0,0,.20)!important;
-    padding:6px!important;
-    gap:4px!important;
-    justify-content:flex-start!important;
-    overflow-x:auto!important;
-    -webkit-overflow-scrolling:touch!important;
-  }
-  body.ctp-view-mobile #mobile-nav::-webkit-scrollbar,
-  body.ctp-view-web.ctp-force-mobile #mobile-nav::-webkit-scrollbar{display:none!important;}
-  body.ctp-view-mobile #mobile-nav button,
-  body.ctp-view-web.ctp-force-mobile #mobile-nav button{
-    flex:0 0 auto!important;
-    min-width:54px!important;
-    border:0!important;
-    background:transparent!important;
-    color:#64736b!important;
-    font-size:9.5px!important;
-    font-weight:800!important;
-    display:flex!important;
-    flex-direction:column!important;
-    align-items:center!important;
-    justify-content:center!important;
-    gap:2px!important;
-    padding:7px 5px!important;
-    border-radius:16px!important;
-    white-space:nowrap!important;
-  }
-  body.ctp-view-mobile #mobile-nav button i,
-  body.ctp-view-web.ctp-force-mobile #mobile-nav button i{font-size:20px!important;}
-  body.ctp-view-mobile #mobile-nav button.active,
-  body.ctp-view-web.ctp-force-mobile #mobile-nav button.active{background:#e8f7ed!important;color:#1d6f42!important;}
-
-  body.ctp-view-mobile .page-title,
-  body.ctp-view-web.ctp-force-mobile .page-title{font-size:20px!important;font-weight:900!important;margin:6px 2px 12px!important;}
-  body.ctp-view-mobile .card,
-  body.ctp-view-web.ctp-force-mobile .card{width:100%!important;max-width:100%!important;overflow:hidden!important;border-radius:18px!important;padding:13px!important;margin-bottom:12px!important;}
-  body.ctp-view-mobile .g2,
-  body.ctp-view-mobile .g3,
-  body.ctp-view-mobile .stats,
-  body.ctp-view-web.ctp-force-mobile .g2,
-  body.ctp-view-web.ctp-force-mobile .g3,
-  body.ctp-view-web.ctp-force-mobile .stats{display:grid!important;grid-template-columns:1fr!important;gap:10px!important;}
-  body.ctp-view-mobile .btn-row,
-  body.ctp-view-web.ctp-force-mobile .btn-row{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;width:100%!important;}
-  body.ctp-view-mobile .btn-row .btn,
-  body.ctp-view-web.ctp-force-mobile .btn-row .btn{width:100%!important;justify-content:center!important;}
-  body.ctp-view-mobile input,
-  body.ctp-view-mobile select,
-  body.ctp-view-mobile textarea,
-  body.ctp-view-web.ctp-force-mobile input,
-  body.ctp-view-web.ctp-force-mobile select,
-  body.ctp-view-web.ctp-force-mobile textarea{font-size:16px!important;min-height:44px!important;border-radius:12px!important;}
-  body.ctp-view-mobile .tw,
-  body.ctp-view-web.ctp-force-mobile .tw{max-width:100%!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;}
-  body.ctp-view-mobile table,
-  body.ctp-view-web.ctp-force-mobile table{min-width:620px!important;}
-
-  body.ctp-view-mobile #page-iskonto-hesap .card,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .card{overflow:visible!important;}
-  body.ctp-view-mobile #page-iskonto-hesap #ih-sonuc,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap #ih-sonuc{font-size:13px!important;}
-  body.ctp-view-mobile #page-iskonto-hesap .ih-result-main,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-result-main{padding:14px!important;border-radius:16px!important;text-align:center!important;}
-  body.ctp-view-mobile #page-iskonto-hesap .ih-result-price,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-result-price{font-size:24px!important;line-height:1.2!important;word-break:break-word!important;}
-  body.ctp-view-mobile #page-iskonto-hesap .ih-line,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-line{display:flex!important;gap:8px!important;justify-content:space-between!important;align-items:flex-start!important;padding:8px 0!important;border-bottom:1px solid #f3f4f6!important;}
-  body.ctp-view-mobile #page-iskonto-hesap .ih-line span,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-line span{color:#6b7280!important;}
-  body.ctp-view-mobile #page-iskonto-hesap .ih-line strong,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-line strong{text-align:right!important;max-width:58%!important;word-break:break-word!important;}
-  body.ctp-view-mobile #musteri-indir-card .btn-row,
-  body.ctp-view-web.ctp-force-mobile #musteri-indir-card .btn-row{grid-template-columns:1fr!important;}
-  body.ctp-view-mobile #page-firmalar .card-head,
-  body.ctp-view-web.ctp-force-mobile #page-firmalar .card-head{gap:8px!important;align-items:center!important;}
-}
-</style>
-<script id="ctp-mobile-v3148-js">
-(function(){
-  var mobilePages=[
-    ['dashboard','ti-dashboard','Ana'],
-    ['iskonto-hesap','ti-calculator','Hesap'],
-    ['firmalar','ti-building','Firma'],
-    ['siparis','ti-shopping-cart','Sipariş'],
-    ['hareket','ti-cash','Ödeme'],
-    ['cari','ti-list-details','Cari'],
-    ['stok','ti-box-seam','Stok']
-  ];
-  function isPhone(){return window.matchMedia&&window.matchMedia('(max-width: 780px)').matches;}
-  function forceMobileMode(){
-    if(!isPhone()) return;
-    try{localStorage.setItem('ctp_view_mode_v4','mobile');}catch(e){}
-    document.body.classList.remove('ctp-view-web');
-    document.body.classList.add('ctp-view-mobile','ctp-force-mobile');
-  }
-  function allowed(id){
-    try{ if(typeof currentAllowedPages==='function') return currentAllowedPages().indexOf(id)>=0; }catch(e){}
-    return true;
-  }
-  function navHtml(p,active){
-    return '<button '+(active?'class="active" ':'')+'data-page="'+p[0]+'" onclick="goPageMobile(\''+p[0]+'\',this)"><i class="ti '+p[1]+'"></i>'+p[2]+'</button>';
-  }
-  function ensureMobileNav(activeId){
-    var nav=document.getElementById('mobile-nav');
-    if(!nav) return;
-    var current=activeId || (document.querySelector('.page.active')||{}).id || 'page-dashboard';
-    current=String(current).replace(/^page-/,'');
-    var html=mobilePages.filter(function(p){return allowed(p[0]);}).map(function(p){return navHtml(p,p[0]===current);}).join('');
-    if(nav.getAttribute('data-v3148')!=='1' || nav.getAttribute('data-active')!==current || nav.innerHTML.indexOf('data-page="iskonto-hesap"')<0){
-      nav.innerHTML=html;
-      nav.setAttribute('data-v3148','1');
-      nav.setAttribute('data-active',current);
-    }else{
-      Array.prototype.forEach.call(nav.querySelectorAll('button'),function(b){b.classList.toggle('active',b.getAttribute('data-page')===current);});
-    }
-  }
-  function afterPage(id){
-    try{ if(id==='iskonto-hesap' && typeof window.ctpIHRender==='function') setTimeout(window.ctpIHRender,60); }catch(e){}
-    try{ if(id==='dashboard' && typeof renderDashboard==='function') setTimeout(renderDashboard,60); }catch(e){}
-    try{ if(id==='firmalar' && typeof renderF==='function') setTimeout(renderF,60); }catch(e){}
-    try{ if(id==='siparis' && typeof renderSepet==='function') setTimeout(renderSepet,60); }catch(e){}
-    try{ if(id==='cari' && typeof renderCF==='function') setTimeout(renderCF,60); }catch(e){}
-    try{ if(id==='stok' && typeof renderStok==='function') setTimeout(renderStok,60); }catch(e){}
-  }
-  var oldMobile=window.goPageMobile;
-  window.goPageMobile=function(id,el){
-    forceMobileMode();
-    if(typeof window.goPage==='function') window.goPage(id,null);
-    else if(oldMobile) oldMobile(id,el);
-    ensureMobileNav(id);
-    afterPage(id);
-    try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){window.scrollTo(0,0);}
-  };
-  var oldGo=window.goPage;
-  if(typeof oldGo==='function'){
-    window.goPage=function(id,el){
-      forceMobileMode();
-      var r=oldGo.apply(this,arguments);
-      ensureMobileNav(id);
-      afterPage(id);
-      return r;
-    };
-  }
-  var oldInit=window.initApp;
-  if(typeof oldInit==='function'){
-    window.initApp=function(){
-      forceMobileMode();
-      var r=oldInit.apply(this,arguments);
-      setTimeout(function(){forceMobileMode();ensureMobileNav();afterPage((document.querySelector('.page.active')||{}).id||'dashboard');},120);
-      return r;
-    };
-  }
-  function boot(){forceMobileMode();ensureMobileNav();afterPage((document.querySelector('.page.active')||{}).id||'dashboard');}
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){setTimeout(boot,80);}); else setTimeout(boot,80);
-  window.addEventListener('load',function(){setTimeout(boot,250);setTimeout(boot,900);});
-  window.addEventListener('resize',function(){setTimeout(boot,120);});
-})();
-</script>
-<!-- CTP_MOBILE_V3148_END -->
