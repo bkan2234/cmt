@@ -5913,6 +5913,139 @@ body.ctp-view-mobile #ctp-view-toggle .m,body.ctp-view-web #ctp-view-toggle .w{b
 })();
 </script>
 <!-- CTP_VIEW_MODE_V4_END -->
+
+<!-- CTP_WA_IADE_V3128_START -->
+<style id="ctp-wa-iade-v3128-css">
+#ctp-wa-modal .modal,#ctp-iade-modal .modal{width:560px}
+.ctp-wa-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ctp-wa-preview{white-space:pre-wrap;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:10px;font-size:12px;max-height:260px;overflow:auto;color:#111827}
+.ctp-iade-info{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:10px;padding:10px;font-size:12px;line-height:1.45;margin-bottom:10px}
+@media(max-width:780px){
+  #ctp-wa-modal.modal-overlay.open,#ctp-iade-modal.modal-overlay.open{z-index:30000!important;align-items:flex-end!important;padding:0!important}
+  #ctp-wa-modal .modal,#ctp-iade-modal .modal{width:100vw!important;max-width:100vw!important;max-height:92dvh!important;border-radius:22px 22px 0 0!important;padding:16px!important}
+  .ctp-wa-row{grid-template-columns:1fr}
+  .ctp-wa-preview{max-height:200px}
+}
+</style>
+
+<div class="modal-overlay" id="ctp-wa-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title"><i class="ti ti-brand-whatsapp"></i> WhatsApp Gönder</div>
+      <button class="btn btn-sm" onclick="ctpCloseWaModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="ctp-wa-row">
+      <div class="fg">
+        <label>Gönderilecek Numara</label>
+        <select id="ctp-wa-phone-select" onchange="ctpWaPhoneSelectChanged()"></select>
+      </div>
+      <div class="fg">
+        <label>Manuel Numara</label>
+        <input id="ctp-wa-phone-manual" placeholder="05xx xxx xx xx">
+      </div>
+    </div>
+    <div class="fg">
+      <label>Mesaj Önizleme</label>
+      <div class="ctp-wa-preview" id="ctp-wa-preview"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-g" onclick="ctpWaModalSend()" style="flex:1;justify-content:center"><i class="ti ti-brand-whatsapp"></i> WhatsApp Aç</button>
+      <button class="btn" onclick="ctpWaCopyMessage()"><i class="ti ti-copy"></i> Mesajı Kopyala</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="ctp-iade-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title"><i class="ti ti-arrow-back-up"></i> Müşteri İade Girişi</div>
+      <button class="btn btn-sm" onclick="ctpCloseIadeModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="ctp-iade-info">Müşteriden ürün iadesi geldiğinde cari bakiyeden düşer. “Stoğa geri al” seçiliyse ürün stoğa giriş olarak da işlenir.</div>
+    <div class="fg"><label>Firma</label><select id="ctp-iade-firma"></select></div>
+    <div class="fg"><label>Ürün</label><select id="ctp-iade-urun" onchange="ctpIadeUrunDegisti()"></select></div>
+    <div class="ctp-wa-row">
+      <div class="fg"><label>Miktar</label><input id="ctp-iade-miktar" type="number" min="1" step="1" value="1" oninput="ctpIadeHesapla()"></div>
+      <div class="fg"><label>Birim</label><select id="ctp-iade-birim" onchange="ctpIadeBirimDegisti()"></select></div>
+    </div>
+    <div class="ctp-wa-row">
+      <div class="fg"><label>Birim Fiyat</label><input id="ctp-iade-fiyat" type="number" step="0.01" oninput="ctpIadeHesapla()"></div>
+      <div class="fg"><label>Tarih</label><input id="ctp-iade-tarih" type="date"></div>
+    </div>
+    <div class="fg"><label>Açıklama</label><input id="ctp-iade-aciklama" placeholder="Müşteri ürün iadesi"></div>
+    <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:12px;color:#374151;font-weight:700;margin-bottom:10px">
+      <input id="ctp-iade-stok" type="checkbox" checked style="width:auto;min-height:auto"> Stoğa geri al
+    </label>
+    <div class="kdv-box"><div class="kdv-row"><span>İade Toplamı:</span><strong id="ctp-iade-toplam">₺0</strong></div></div>
+    <div class="btn-row"><button class="btn btn-y" onclick="ctpIadeKaydet()" style="flex:1;justify-content:center"><i class="ti ti-device-floppy"></i> İadeyi Kaydet</button></div>
+  </div>
+</div>
+
+<script id="ctp-wa-iade-v3128-js">
+(function(){
+  'use strict';
+  var CTP_WA_TEXT='';
+  var CTP_WA_PHONE='';
+  function $(id){return document.getElementById(id)}
+  function safe(v){return String(v==null?'':v).trim()}
+  function money(n){try{if(typeof tl==='function')return tl(n)}catch(e){} return new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY'}).format(+n||0)}
+  function todaySafe(){try{if(typeof today==='function')return today()}catch(e){} return new Date().toISOString().slice(0,10)}
+  function showMsg(t){alert(t)}
+  function normalizePhone(raw){var p=safe(raw).replace(/[^0-9]/g,''); if(!p)return ''; if(p.indexOf('00')===0)p=p.slice(2); if(p.indexOf('0')===0)p='90'+p.slice(1); if(p.length===10)p='90'+p; return p}
+  function openWhatsAppFixed(text, phone){var clean=normalizePhone(phone); var url=clean?('https://wa.me/'+clean+'?text='+encodeURIComponent(text)):('https://wa.me/?text='+encodeURIComponent(text)); window.open(url,'_blank')}
+  function copyText(text){try{navigator.clipboard&&navigator.clipboard.writeText(text)}catch(e){}}
+  function currentSiparisTotals(){
+    try{if(typeof sepetFiyatlariniOnar==='function')sepetFiyatlariniOnar()}catch(e){}
+    var toplam=0; try{toplam=(sepet||[]).reduce(function(s,x){return s+((+x.miktar||+x.mik||1)*(+x.fiyat||+x.fiy||0))},0)}catch(e){}
+    var isk='0', iskTutar=0, son=toplam;
+    try{if(typeof selSiparisF!=='undefined'&&selSiparisF){var oldSelF=(typeof selF!=='undefined')?selF:null; if(typeof selF!=='undefined')selF=selSiparisF; var h=null; if(typeof sepetIskontoHesabiKalici==='function')h=sepetIskontoHesabiKalici(); else if(typeof sepetIskontoHesabi==='function')h=sepetIskontoHesabi(); if(typeof selF!=='undefined')selF=oldSelF; if(h){toplam=+h.toplam||toplam; isk=h.isk||'0'; iskTutar=+h.iskTutar||0; son=+h.sonTutar||toplam;}}}catch(e){}
+    var k=+(($('s-kdv')&&$('s-kdv').value)||0)/100;
+    var kdv=son*k;
+    return {araToplam:toplam, isk:isk, iskTutar:iskTutar, kdv:kdv, genel:son+kdv, son:son};
+  }
+  function buildSiparisMessage(){
+    if(typeof selSiparisF==='undefined'||!selSiparisF)throw new Error('Önce sipariş için firma seçmelisin.');
+    if(typeof sepet==='undefined'||!sepet||!sepet.length)throw new Error('Sepete ürün eklemelisin.');
+    var t=currentSiparisTotals();
+    var lines=['Merhaba,','','Sipariş Bilgileri','Firma: '+safe(selSiparisF.ad),'Tarih: '+(($('s-tarih')&&$('s-tarih').value)||todaySafe())];
+    var belge=safe(($('s-belge')&&$('s-belge').value)||''); if(belge)lines.push('Belge: '+belge);
+    lines.push('');
+    (sepet||[]).forEach(function(x){var ad=safe(x.ad||x.urun||x.name); var mik=(+x.miktar||+x.mik||1); var bir=safe(x.bir||x.birim||''); var fiyat=(+x.fiyat||+x.fiy||0); lines.push('• '+ad+' — '+mik+' '+bir+' — '+money(mik*fiyat));});
+    lines.push('');
+    lines.push('Ara Toplam: '+money(t.araToplam));
+    if(t.iskTutar>0)lines.push('İskonto (%'+t.isk+'): -'+money(t.iskTutar));
+    lines.push('KDV: '+money(t.kdv));
+    lines.push('Genel Toplam: '+money(t.genel));
+    var acik=safe(($('s-acik')&&$('s-acik').value)||''); if(acik)lines.push('Not: '+acik);
+    lines.push(''); lines.push('Cari Takip Pro');
+    return lines.join('\n');
+  }
+  function fillWaPhones(firma){var sel=$('ctp-wa-phone-select'); if(!sel)return; var tel=safe(firma&&firma.tel); var yet=safe(firma&&firma.yetkili); var opts=[]; if(tel)opts.push({v:tel,t:'Firma Telefonu: '+tel}); if(yet&&tel)opts.push({v:tel,t:'Yetkili '+yet+': '+tel}); opts.push({v:'MANUEL',t:'Manuel numara gir'}); opts.push({v:'',t:'Numara seçmeden WhatsApp aç'}); sel.innerHTML=opts.map(function(o){return '<option value="'+String(o.v).replace(/"/g,'&quot;')+'">'+o.t+'</option>'}).join(''); if(tel){sel.value=tel; $('ctp-wa-phone-manual').value=tel}else{sel.value='MANUEL'; $('ctp-wa-phone-manual').value=''}}
+  window.ctpWaPhoneSelectChanged=function(){var v=($('ctp-wa-phone-select')&&$('ctp-wa-phone-select').value)||''; var m=$('ctp-wa-phone-manual'); if(!m)return; if(v==='MANUEL')m.focus(); else m.value=v};
+  window.ctpCloseWaModal=function(){var m=$('ctp-wa-modal'); if(m)m.classList.remove('open')};
+  window.ctpWaCopyMessage=function(){copyText(CTP_WA_TEXT); showMsg('Mesaj kopyalandı.')};
+  window.ctpWaModalSend=function(){var s=$('ctp-wa-phone-select'), m=$('ctp-wa-phone-manual'); var phone=(s&&s.value==='MANUEL')?(m&&m.value||''):(m&&m.value||CTP_WA_PHONE); openWhatsAppFixed(CTP_WA_TEXT,phone)};
+  window.ctpOpenWaModal=function(text,firma){CTP_WA_TEXT=text; CTP_WA_PHONE=safe(firma&&firma.tel); fillWaPhones(firma); var prev=$('ctp-wa-preview'); if(prev)prev.textContent=text; var modal=$('ctp-wa-modal'); if(modal)modal.classList.add('open')};
+  window.ctpWhatsappSiparisGonder=function(){try{var text=buildSiparisMessage(); copyText(text); window.ctpOpenWaModal(text,selSiparisF)}catch(e){showMsg(e.message||e)}};
+
+  function unitOptionsForProduct(u){var opts=[]; try{if(typeof urunBirimSecenekleri==='function')opts=urunBirimSecenekleri(u)}catch(e){} if(!opts||!opts.length){if(u){if(+u.fiyKoli>0)opts.push({bir:'Koli',fiyat:+u.fiyKoli}); if(+u.fiyKg>0)opts.push({bir:'Kg',fiyat:+u.fiyKg}); if(+u.fiyAdet>0)opts.push({bir:'Adet',fiyat:+u.fiyAdet}); opts.push({bir:u.bir||'Adet',fiyat:+(u.fiy||0)})}} var seen={}; return (opts||[]).filter(function(o){if(!o||!o.bir||seen[o.bir])return false; seen[o.bir]=1; return true})}
+  function getIadeProduct(){var id=+$('ctp-iade-urun').value; return (DB.urunler||[]).find(function(u){return +u.id===id})}
+  function priceFor(u,bir){try{if(typeof kesinUrunFiyati==='function')return +kesinUrunFiyati(u,bir)||0}catch(e){} if(!u)return 0; var b=String(bir||'').toLowerCase(); if(b.indexOf('koli')>=0)return +u.fiyKoli||+u.fiy||0; if(b.indexOf('kg')>=0)return +u.fiyKg||+u.fiy||0; if(b.indexOf('adet')>=0)return +u.fiyAdet||+u.fiy||0; return +u.fiy||0}
+  window.ctpIadeUrunDegisti=function(){var u=getIadeProduct(), bir=$('ctp-iade-birim'); if(!u||!bir)return; var opts=unitOptionsForProduct(u); bir.innerHTML=opts.map(function(o){return '<option value="'+o.bir+'">'+o.bir+'</option>'}).join(''); if(!bir.value&&opts[0])bir.value=opts[0].bir; $('ctp-iade-fiyat').value=priceFor(u,bir.value).toFixed(2); window.ctpIadeHesapla()};
+  window.ctpIadeBirimDegisti=function(){var u=getIadeProduct(); $('ctp-iade-fiyat').value=priceFor(u,$('ctp-iade-birim').value).toFixed(2); window.ctpIadeHesapla()};
+  window.ctpIadeHesapla=function(){var mik=+($('ctp-iade-miktar').value||0), f=+($('ctp-iade-fiyat').value||0); var e=$('ctp-iade-toplam'); if(e)e.textContent=money(mik*f)};
+  function fillIadeSelects(){var fs=$('ctp-iade-firma'), us=$('ctp-iade-urun'); if(fs)fs.innerHTML=(DB.firmalar||[]).map(function(f){return '<option value="'+f.id+'">'+f.kod+' — '+f.ad+'</option>'}).join(''); if(us)us.innerHTML=(DB.urunler||[]).map(function(u){return '<option value="'+u.id+'">'+u.ad+'</option>'}).join(''); var d=$('ctp-iade-tarih'); if(d&&!d.value)d.value=todaySafe(); window.ctpIadeUrunDegisti()}
+  window.ctpOpenIadeModal=function(){fillIadeSelects(); var m=$('ctp-iade-modal'); if(m)m.classList.add('open')};
+  window.ctpCloseIadeModal=function(){var m=$('ctp-iade-modal'); if(m)m.classList.remove('open')};
+  window.ctpIadeKaydet=function(){try{var fid=+$('ctp-iade-firma').value, uid=+$('ctp-iade-urun').value; var f=(DB.firmalar||[]).find(function(x){return +x.id===fid}); var u=(DB.urunler||[]).find(function(x){return +x.id===uid}); var mik=Math.max(1,Math.round(+($('ctp-iade-miktar').value||1))); var bir=safe($('ctp-iade-birim').value||'Adet'); var fiyat=+($('ctp-iade-fiyat').value||0); var toplam=mik*fiyat; if(!f)return showMsg('Firma seçmelisin.'); if(!u)return showMsg('Ürün seçmelisin.'); if(!toplam)return showMsg('İade tutarı 0 olamaz.'); if(!DB.nextHId)DB.nextHId=(DB.hareketler||[]).reduce(function(m,h){return Math.max(m,+h.id||0)},0)+1; var belge='IADE-'+todaySafe().replace(/-/g,'')+'-'+DB.nextHId; var h={id:DB.nextHId++,fKod:f.kod,fAd:f.ad,tur:'IADE',tarih:$('ctp-iade-tarih').value||todaySafe(),belge:belge,vade:'',tutar:toplam,kdv:0,acik:safe($('ctp-iade-aciklama').value)||('Müşteri ürün iadesi: '+u.ad),odeme:'İade',durum:'KAPALI',urunler:[{uid:u.id,ad:u.ad,mik:mik,bir:bir,fiyat:fiyat}],sepet:[{id:u.id,uid:u.id,ad:u.ad,miktar:mik,mik:mik,bir:bir,fiyat:fiyat,fiy:fiyat}]}; DB.hareketler.push(h); if($('ctp-iade-stok').checked){try{if(typeof stokOtomatik==='function')stokOtomatik(h); else {u.stok=(+u.stok||0)+mik; if(!Array.isArray(DB.stokHareketler))DB.stokHareketler=[]; DB.stokHareketler.push({id:Date.now(),uid:u.id,ad:u.ad,tur:'GIRIS',mik:mik,tarih:h.tarih,acik:belge+' iade'})}}catch(e){}} if(typeof dbSave==='function')dbSave(); try{if(typeof renderDashboard==='function')renderDashboard()}catch(e){} try{if(typeof renderStok==='function')renderStok()}catch(e){} try{if(typeof cYukle==='function')cYukle()}catch(e){} window.ctpCloseIadeModal(); showMsg('İade kaydedildi. Cari bakiyeden düşüldü.')}catch(e){showMsg('İade kaydedilemedi: '+(e.message||e))}};
+  function addButtons(){var siparisRow=document.querySelector('#page-siparis .card:last-child .btn-row')||document.querySelector('#page-siparis .btn-row'); if(siparisRow&&!$('ctp-wa-siparis-btn-v3128')){var b=document.createElement('button'); b.id='ctp-wa-siparis-btn-v3128'; b.className='btn btn-g'; b.type='button'; b.innerHTML='<i class="ti ti-brand-whatsapp"></i> WhatsApp Sipariş Gönder'; b.onclick=window.ctpWhatsappSiparisGonder; siparisRow.appendChild(b)} var hRow=document.querySelector('#page-hareket .btn-row'); if(hRow&&!$('ctp-iade-btn-v3128')){var ib=document.createElement('button'); ib.id='ctp-iade-btn-v3128'; ib.className='btn btn-y'; ib.type='button'; ib.innerHTML='<i class="ti ti-arrow-back-up"></i> İade Girişi'; ib.onclick=window.ctpOpenIadeModal; hRow.appendChild(ib)} var nav=document.querySelector('.sb-nav'); if(nav&&!$('ctp-iade-nav-v3128')){var n=document.createElement('div'); n.id='ctp-iade-nav-v3128'; n.className='sb-item'; n.innerHTML='<i class="ti ti-arrow-back-up"></i> İade Girişi'; n.onclick=window.ctpOpenIadeModal; var sip=document.querySelector('.sb-item[onclick*="siparis"]'); if(sip&&sip.parentNode)sip.parentNode.insertBefore(n,sip.nextSibling); else nav.appendChild(n)}}
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(addButtons,400)});
+  window.addEventListener('load',function(){setTimeout(addButtons,800)});
+  setTimeout(addButtons,1200);
+})();
+</script>
+<!-- CTP_WA_IADE_V3128_END -->
+
 </body>
 </html>
 
