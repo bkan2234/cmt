@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cari Takip Pro v3.0.24 Sheets Lisanslı</title>
+<title>Cari Takip Pro v3.1.33 Depo WhatsApp Ayar</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -1607,7 +1607,7 @@ function cYukle(){
       <td class="num borc">${b?tl(b):''}</td>
       <td class="num alacak">${a?tl(a):''}</td>
       <td class="num" style="font-weight:600;color:${bak>0?'var(--r)':'var(--g)'}">${tl(bak)}</td>
-      <td>${bdur(h.dur)}</td>
+      <td>${bdur(h.dur||h.durum||'ACIK')}</td>
       <td style="white-space:nowrap"><button class="btn btn-sm" onclick="harDuzenleAc(${h.id})"><i class="ti ti-edit"></i></button> <button class="btn btn-sm" onclick="faturaGoster(${h.id})" title="Fatura"><i class="ti ti-file-invoice"></i></button></td>
     </tr>`;
   }).join('')||`<tr><td colspan="10" style="text-align:center;padding:20px;color:#9ca3af">Kayıt yok</td></tr>`;
@@ -1658,7 +1658,7 @@ function odYukle(){
   document.getElementById('od-tb').innerHTML=hs.length?hs.map(h=>{const g=daysDiff(h.vade);return`<tr>
     <td><strong>${h.fAd}</strong><br><span style="font-size:10px;color:#9ca3af">${h.fKod}</span></td>
     <td style="font-size:11px">${h.belge||'-'}</td><td>${d2s(h.tarih)}</td><td>${d2s(h.vade)}</td>
-    <td>${kbadge(g)}</td><td class="num borc">${tl(h.tutar)}</td><td>${bdur(h.dur)}</td>
+    <td>${kbadge(g)}</td><td class="num borc">${tl(h.tutar)}</td><td>${bdur(h.dur||h.durum||'ACIK')}</td>
     <td><button class="btn btn-sm" onclick="odDuzenleAc(${h.id})"><i class="ti ti-edit"></i></button></td>
   </tr>`;}).join(''):`<tr><td colspan="8" style="text-align:center;padding:20px;color:#9ca3af">Kayıt yok</td></tr>`;
 }
@@ -2055,28 +2055,82 @@ function faturaOnizle() {
 function faturaGoster(hid) {
   const h = DB.hareketler.find(x => x.id == hid);
   if (!h) return;
+
   const firma = DB.firmalar.find(f => f.kod === h.fKod);
+
+  function normUrun(x){
+    x = x || {};
+    const uid = x.uid || x.id || x.uId;
+    const u = DB.urunler.find(p => String(p.id) === String(uid) || p.ad === x.ad) || {};
+    const ad = x.ad || x.urun || x.name || u.ad || '';
+    const bir = x.bir || x.birim || u.bir || 'Adet';
+    const mik = +(x.mik ?? x.miktar ?? x.qty ?? x.adet ?? 1) || 1;
+
+    let fiy = +(x.fiy ?? x.fiyat ?? 0) || 0;
+    if(!fiy){
+      try{
+        if(typeof kesinUrunFiyati === 'function') fiy = +kesinUrunFiyati(u,bir) || 0;
+        else if(typeof urunFiyatiniBul === 'function') fiy = +urunFiyatiniBul(u,bir) || 0;
+      }catch(e){}
+    }
+    if(!fiy){
+      if(String(bir).toLowerCase().includes('koli')) fiy = +u.fiyKoli || +u.fiy || 0;
+      else if(String(bir).toLowerCase().includes('kg')) fiy = +u.fiyKg || +u.fiy || 0;
+      else if(String(bir).toLowerCase().includes('adet')) fiy = +u.fiyAdet || +u.fiy || 0;
+      else fiy = +u.fiy || 0;
+    }
+
+    return {
+      ad: ad,
+      bir: bir,
+      mik: mik,
+      fiy: fiy,
+      noIskonto: !!(x.noIskonto || x.noisk || u.noIskonto || u.noisk)
+    };
+  }
+
+  const hamUrunler = Array.isArray(h.urunler) && h.urunler.length
+    ? h.urunler
+    : (Array.isArray(h.sepet) && h.sepet.length ? h.sepet : []);
+
+  const urunler = hamUrunler.map(normUrun);
+
   const isk = firma?.iskonto || '0';
-  const oz = h.urunler?.length ? sepetIskontoOzet(h.urunler, isk) : {araTop:+h.tutar, iskTutar:0, iskHaric:0, netTop:+h.tutar / (1 + (h.kdv||1)/100)};
-  const araTop = oz.araTop;
-  const iskTutar = oz.iskTutar;
-  const iskHaric = oz.iskHaric;
-  const netTop = oz.netTop;
-  const kdvTutar = netTop * (h.kdv||1) / 100;
-  const genelTop = +h.tutar;
-  
+  let oz;
+  if(urunler.length){
+    try{
+      oz = sepetIskontoOzet(urunler, isk);
+    }catch(e){
+      const ara = urunler.reduce((s,u)=>s+(+u.mik||1)*(+u.fiy||0),0);
+      oz = {araTop:ara, iskTutar:0, iskHaric:0, netTop:ara};
+    }
+  }else{
+    const k = (+h.kdv || 1) / 100;
+    const net = (+h.tutar || 0) / (1 + k);
+    oz = {araTop:net, iskTutar:0, iskHaric:0, netTop:net};
+  }
+
+  const araTop = +oz.araTop || 0;
+  const iskTutar = +oz.iskTutar || 0;
+  const iskHaric = +oz.iskHaric || 0;
+  const netTop = +oz.netTop || araTop;
+  const kdvOran = +h.kdv || 1;
+  const kdvTutar = urunler.length ? (netTop * kdvOran / 100) : ((+h.tutar || 0) - netTop);
+  const genelTop = +h.tutar || (netTop + kdvTutar);
+
   document.getElementById('fatura-icerik').innerHTML = faturaHTML({
     tip: h.tur === 'FATURA' ? 'FATURA' : 'İRSALİYE',
     no: h.belge || h.id,
     tarih: h.tarih,
     vade: h.vade,
-    odm: h.odm,
+    odm: h.odm || h.odeme || '',
     acik: h.acik,
     firma,
-    urunler: h.urunler || [],
+    urunler,
     araTop, iskTutar, isk, iskHaric, netTop,
-    kdvOran: h.kdv || 1,
-    kdvTutar, genelTop
+    kdvOran,
+    kdvTutar,
+    genelTop
   });
   openModal('fatura-modal');
 }
@@ -3511,7 +3565,10 @@ function siparisCariKaydet(){
     kdv:+val('s-kdv')||0,
     acik,
     odeme:'Nakit',
+    odm:'Nakit',
     durum:'ACIK',
+    dur:'ACIK',
+    urunler:JSON.parse(JSON.stringify(sepet)),
     sepet:JSON.parse(JSON.stringify(sepet))
   });
   dbSave();
@@ -7520,3 +7577,211 @@ body.ctp-view-mobile #ctp-view-toggle .m,body.ctp-view-web #ctp-view-toggle .w{b
 })();
 </script>
 <!-- CTP_MOBILE_FIX_2026_06_09_END -->
+
+
+<!-- CTP_WHATSAPP_MODAL_FIX_V3132_START -->
+<style id="ctp-whatsapp-modal-fix-v3132-css">
+  #fatura-modal .ctp-fatura-wa-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+  #fatura-modal .ctp-wa-musteri{background:#1d6f42;color:#fff;border-color:#1d6f42}
+  #fatura-modal .ctp-wa-depo{background:#155732;color:#fff;border-color:#155732}
+  #ctp-wa-siparis-btn-v3128,#ctp-wa-siparis-btn-v311{display:none!important}
+  @media(max-width:780px){
+    #fatura-modal .modal-head{display:block!important}
+    #fatura-modal .modal-title{display:block;margin-bottom:10px}
+    #fatura-modal .ctp-fatura-wa-actions{display:grid!important;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+    #fatura-modal .ctp-fatura-wa-actions .btn{width:100%;min-height:40px;justify-content:center;padding:8px 6px;font-size:11px}
+    #fatura-modal .ctp-fatura-wa-actions .btn:first-child,#fatura-modal .ctp-fatura-wa-actions .btn:last-child{grid-column:auto}
+  }
+</style>
+<script id="ctp-whatsapp-modal-fix-v3132-js">
+(function(){
+  'use strict';
+  var DEPOT_KEY='ctp_depo_whatsapp_no_v3132';
+  var lastFirma=null;
+  function $(id){return document.getElementById(id)}
+  function safe(v){return String(v==null?'':v).trim()}
+  function normalizePhone(raw){var p=safe(raw).replace(/[^0-9]/g,''); if(!p)return ''; if(p.indexOf('00')===0)p=p.slice(2); if(p.indexOf('0')===0)p='90'+p.slice(1); if(p.length===10)p='90'+p; return p}
+  function openWa(text,phone){var clean=normalizePhone(phone); var url=clean?('https://wa.me/'+clean+'?text='+encodeURIComponent(text)):('https://wa.me/?text='+encodeURIComponent(text)); window.open(url,'_blank')}
+  function copyText(text){try{navigator.clipboard&&navigator.clipboard.writeText(text)}catch(e){}}
+  function msg(t){alert(t)}
+  function modalText(){var el=$('fatura-icerik'); var t=el?(el.innerText||el.textContent||''):''; return safe(t).replace(/\n{3,}/g,'\n\n')}
+  function currentFirma(){
+    if(lastFirma) return lastFirma;
+    try{ if(typeof selSiparisF!=='undefined' && selSiparisF) return selSiparisF; }catch(e){}
+    try{ if(typeof selF!=='undefined' && selF) return selF; }catch(e){}
+    try{ if(typeof cSelF!=='undefined' && cSelF) return cSelF; }catch(e){}
+    return null;
+  }
+  function modalMessage(kind){
+    var f=currentFirma();
+    var body=modalText();
+    var head=(kind==='depo')?'Depo Sipariş Bilgisi':'Fatura / İrsaliye Bilgisi';
+    var lines=[head];
+    if(f&&f.ad) lines.push('Firma: '+safe(f.ad));
+    lines.push('');
+    lines.push(body||'Fatura/irsaliye önizleme metni oluşturulamadı.');
+    lines.push('');
+    lines.push('Cari Takip Pro');
+    return lines.join('\n');
+  }
+  function ensureHeaderButtons(){
+    var head=document.querySelector('#fatura-modal .modal-head');
+    if(!head || $('ctp-fatura-wa-musteri-btn')) return;
+    var oldBox=head.querySelector('div[style*="display:flex"]') || head.querySelector('div:last-child');
+    var box=document.createElement('div');
+    box.className='ctp-fatura-wa-actions';
+    box.innerHTML='<button class="btn btn-g btn-sm" onclick="faturaYazdir()"><i class="ti ti-printer"></i> Yazdır</button>'+
+      '<button id="ctp-fatura-wa-musteri-btn" class="btn btn-sm ctp-wa-musteri" type="button" onclick="ctpFaturaWhatsappMusteri()"><i class="ti ti-brand-whatsapp"></i> WhatsApp Müşteri</button>'+
+      '<button id="ctp-fatura-wa-depo-btn" class="btn btn-sm ctp-wa-depo" type="button" onclick="ctpFaturaWhatsappDepo()"><i class="ti ti-brand-whatsapp"></i> WhatsApp Depo</button>'+
+      '<button class="btn btn-sm" onclick="closeModal(\'fatura-modal\')"><i class="ti ti-x"></i></button>';
+    if(oldBox) oldBox.replaceWith(box); else head.appendChild(box);
+  }
+  function removePageDuplicateWa(){
+    var btns=document.querySelectorAll('#page-siparis button');
+    btns.forEach(function(b){ if((b.textContent||'').trim()==='WhatsApp Sipariş Gönder') b.style.display='none'; });
+  }
+  window.ctpFaturaWhatsappMusteri=function(){
+    try{
+      var f=currentFirma();
+      if(!f) return msg('Firma bulunamadı. Önce firma seçip faturayı/irsaliyeyi açın.');
+      if(!safe(f.tel)) return msg('Bu firmada telefon numarası yok. Firmalar ekranından telefon ekleyin.');
+      var text=modalMessage('musteri'); copyText(text); openWa(text,f.tel);
+    }catch(e){msg('WhatsApp müşteri gönderimi açılamadı: '+(e.message||e))}
+  };
+  window.ctpFaturaWhatsappDepo=function(){
+    try{
+      var no=safe(localStorage.getItem(DEPOT_KEY));
+      var yeni=prompt('Depo WhatsApp numarası', no || '');
+      if(yeni===null) return;
+      yeni=safe(yeni);
+      if(!yeni) return msg('Depo numarası boş olamaz.');
+      localStorage.setItem(DEPOT_KEY,yeni);
+      var text=modalMessage('depo'); copyText(text); openWa(text,yeni);
+    }catch(e){msg('WhatsApp depo gönderimi açılamadı: '+(e.message||e))}
+  };
+  function wrapPreviewFunctions(){
+    if(typeof window.faturaOnizle==='function' && !window.__ctpFaturaOnizleWaV3132){
+      var oldOnizle=window.faturaOnizle;
+      window.faturaOnizle=function(){
+        try{ lastFirma=(typeof selSiparisF!=='undefined'&&selSiparisF)?selSiparisF:((typeof selF!=='undefined')?selF:null); }catch(e){}
+        var r=oldOnizle.apply(this,arguments);
+        setTimeout(function(){ensureHeaderButtons();},30);
+        return r;
+      };
+      window.__ctpFaturaOnizleWaV3132=true;
+    }
+    if(typeof window.faturaGoster==='function' && !window.__ctpFaturaGosterWaV3132){
+      var oldGoster=window.faturaGoster;
+      window.faturaGoster=function(hid){
+        try{ var h=(window.DB&&DB.hareketler||[]).find(function(x){return String(x.id)===String(hid)}); lastFirma=h?(window.DB&&DB.firmalar||[]).find(function(f){return f.kod===h.fKod}):null; }catch(e){}
+        var r=oldGoster.apply(this,arguments);
+        setTimeout(function(){ensureHeaderButtons();},30);
+        return r;
+      };
+      window.__ctpFaturaGosterWaV3132=true;
+    }
+  }
+  function install(){ensureHeaderButtons();removePageDuplicateWa();wrapPreviewFunctions();}
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(install,300);setTimeout(install,1000);});
+  window.addEventListener('load',function(){setTimeout(install,500);setTimeout(removePageDuplicateWa,1600);});
+  setTimeout(install,1800); setInterval(removePageDuplicateWa,2500);
+})();
+</script>
+<!-- CTP_WHATSAPP_MODAL_FIX_V3132_END -->
+<!-- CTP_DEPO_WHATSAPP_AYAR_V3133_START -->
+<style id="ctp-depo-whatsapp-ayar-v3133-css">
+  #ctp-depo-ayar-card-v3133 .ctp-ayar-note{font-size:11px;color:#6b7280;line-height:1.45;margin-top:6px}
+  #ctp-depo-ayar-card-v3133 .ctp-ayar-ok{font-size:12px;font-weight:700;margin-top:8px;min-height:18px;color:#166534}
+  #ctp-depo-ayar-card-v3133 .ctp-ayar-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  @media(max-width:780px){#ctp-depo-ayar-card-v3133 .ctp-ayar-actions{display:grid;grid-template-columns:1fr}#ctp-depo-ayar-card-v3133 .ctp-ayar-actions .btn{width:100%}}
+</style>
+<script id="ctp-depo-whatsapp-ayar-v3133-js">
+(function(){
+  'use strict';
+  var DEPO_KEY='ctp_depo_whatsapp_no_v3132';
+  function $(id){return document.getElementById(id)}
+  function safe(v){return String(v==null?'':v).trim()}
+  function dbObj(){try{return DB}catch(e){return null}}
+  function ensureAyarlar(){var d=dbObj(); if(d && !d.ayarlar) d.ayarlar={}; return d?d.ayarlar:null}
+  function getDepoNo(){var ay=ensureAyarlar(); var n=safe(ay&&ay.depoWhatsappNo); if(!n)n=safe(localStorage.getItem(DEPO_KEY)); return n}
+  function setDepoNo(no){
+    no=safe(no);
+    var ay=ensureAyarlar();
+    if(ay) ay.depoWhatsappNo=no;
+    try{localStorage.setItem(DEPO_KEY,no)}catch(e){}
+    try{ if(typeof dbSave==='function') dbSave(); else if(typeof ctSaveLocal==='function') ctSaveLocal(); }catch(e){}
+    return no;
+  }
+  function normalizePhone(raw){var p=safe(raw).replace(/[^0-9]/g,''); if(!p)return ''; if(p.indexOf('00')===0)p=p.slice(2); if(p.indexOf('0')===0)p='90'+p.slice(1); if(p.length===10)p='90'+p; return p}
+  function openWa(text,phone){var clean=normalizePhone(phone); var url=clean?('https://wa.me/'+clean+'?text='+encodeURIComponent(text)):('https://wa.me/?text='+encodeURIComponent(text)); window.open(url,'_blank')}
+  function copyText(text){try{navigator.clipboard&&navigator.clipboard.writeText(text)}catch(e){}}
+  function modalText(){var el=$('fatura-icerik'); var t=el?(el.innerText||el.textContent||''):''; return safe(t).replace(/\n{3,}/g,'\n\n')}
+  function currentFirma(){
+    try{ if(typeof selSiparisF!=='undefined' && selSiparisF) return selSiparisF; }catch(e){}
+    try{ if(typeof selF!=='undefined' && selF) return selF; }catch(e){}
+    try{ if(typeof cSelF!=='undefined' && cSelF) return cSelF; }catch(e){}
+    return null;
+  }
+  function depoMesaj(){
+    var f=currentFirma();
+    var body=modalText();
+    var lines=['Depo Sipariş Bilgisi'];
+    if(f&&f.ad) lines.push('Firma: '+safe(f.ad));
+    lines.push('');
+    lines.push(body||'Fatura/irsaliye önizleme metni oluşturulamadı.');
+    lines.push('');
+    lines.push('Cari Takip Pro');
+    return lines.join('\n');
+  }
+  function injectAyarCard(){
+    var page=$('page-yedek'); if(!page || $('ctp-depo-ayar-card-v3133')) return;
+    var card=document.createElement('div');
+    card.className='card';
+    card.id='ctp-depo-ayar-card-v3133';
+    card.innerHTML='<div class="card-head"><div class="card-title" style="color:var(--g)"><i class="ti ti-settings"></i> Ayarlar</div></div>'+ 
+      '<div class="fg"><label>Depo WhatsApp Numarası</label><input id="ctp-depo-whatsapp-no" inputmode="tel" autocomplete="tel" placeholder="Örn: 0535 000 00 00"></div>'+ 
+      '<div class="ctp-ayar-actions"><button class="btn btn-g" type="button" onclick="ctpDepoWhatsappAyarKaydet()"><i class="ti ti-device-floppy"></i> Depo Numarasını Kaydet</button><button class="btn" type="button" onclick="ctpDepoWhatsappAyarDoldur()"><i class="ti ti-refresh"></i> Kayıtlı Numarayı Getir</button></div>'+ 
+      '<div class="ctp-ayar-note">Bu numara bir kere kaydedilir. Fatura / irsaliye önizlemedeki <strong>WhatsApp Depo</strong> butonu artık numara sormadan bu numaraya gönderir.</div>'+ 
+      '<div id="ctp-depo-ayar-msg" class="ctp-ayar-ok"></div>';
+    var firstCard=page.querySelector('.card');
+    if(firstCard) page.insertBefore(card, firstCard); else page.appendChild(card);
+    fillAyarInput();
+  }
+  function fillAyarInput(){var inp=$('ctp-depo-whatsapp-no'); if(inp) inp.value=getDepoNo();}
+  function setAyarMsg(txt,err){var m=$('ctp-depo-ayar-msg'); if(m){m.style.color=err?'#991b1b':'#166534'; m.textContent=txt||'';}}
+  window.ctpDepoWhatsappAyarDoldur=function(){fillAyarInput(); setAyarMsg('Kayıtlı numara getirildi.');};
+  window.ctpDepoWhatsappAyarKaydet=function(){
+    var inp=$('ctp-depo-whatsapp-no'); var no=safe(inp&&inp.value);
+    if(!no){setAyarMsg('Depo WhatsApp numarası boş olamaz.',true); return;}
+    setDepoNo(no); fillAyarInput(); setAyarMsg('Depo WhatsApp numarası kaydedildi.');
+  };
+  window.ctpFaturaWhatsappDepo=function(){
+    try{
+      var no=getDepoNo();
+      if(!no){
+        alert('Önce Excel & Yedek > Ayarlar kısmından Depo WhatsApp Numarası girin.');
+        try{ if(typeof goPage==='function') goPage('yedek',null); }catch(e){}
+        setTimeout(function(){injectAyarCard(); var inp=$('ctp-depo-whatsapp-no'); if(inp) inp.focus();},100);
+        return;
+      }
+      var text=depoMesaj(); copyText(text); openWa(text,no);
+    }catch(e){alert('WhatsApp depo gönderimi açılamadı: '+(e.message||e))}
+  };
+  function wrapCloudLoad(){
+    if(typeof window.bulutYukle==='function' && !window.__ctpDepoAyarBulutWrapV3133){
+      var old=window.bulutYukle;
+      window.bulutYukle=function(){
+        var r=old.apply(this,arguments);
+        try{Promise.resolve(r).then(function(){setTimeout(fillAyarInput,100);});}catch(e){setTimeout(fillAyarInput,300);}
+        return r;
+      };
+      window.__ctpDepoAyarBulutWrapV3133=true;
+    }
+  }
+  function install(){ensureAyarlar(); injectAyarCard(); fillAyarInput(); wrapCloudLoad();}
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(install,250);setTimeout(install,1000);});
+  window.addEventListener('load',function(){setTimeout(install,500);setTimeout(install,1500);});
+  setTimeout(install,1800);
+})();
+</script>
+<!-- CTP_DEPO_WHATSAPP_AYAR_V3133_END -->
