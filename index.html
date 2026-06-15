@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cari Takip Pro v3.1.33 Depo WhatsApp Ayar</title>
+<title>Cari Takip Pro v3.1.47 Iskonto Hesap Urun Fix</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -251,6 +251,19 @@ tr:hover td{background:#fafafa}
 #cloud-license-screen{position:fixed;inset:0;background:linear-gradient(135deg,#1a2744,#1d6f42);z-index:999999;display:none;align-items:center;justify-content:center;padding:16px}
 .cloud-license-box{background:#fff;width:430px;max-width:96vw;border-radius:18px;padding:24px;box-shadow:0 25px 80px rgba(0,0,0,.35)}
 .cloud-license-box h2{margin:0 0 6px;font-size:22px;color:#111827}.cloud-license-box p{font-size:12px;color:#6b7280;margin:0 0 14px;line-height:1.5}.cloud-license-box input{width:100%;margin-bottom:10px}.cloud-license-msg{font-size:12px;margin-top:10px;font-weight:700;min-height:18px}.cloud-ok{color:#166534}.cloud-err{color:#991b1b}.cloud-badge{position:fixed;right:10px;bottom:42px;z-index:900;background:#1d6f42;color:#fff;font-size:10px;font-weight:800;padding:4px 9px;border-radius:999px;opacity:.75}@media(max-width:780px){.cloud-badge{bottom:96px}}
+
+
+/* v3.1.46 İskonto Hesaplayıcı */
+.ih-result-main{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:14px;margin-bottom:12px}
+.ih-result-title{font-size:11px;font-weight:800;color:#166534;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.ih-result-price{font-size:26px;font-weight:900;color:#1d6f42;line-height:1.1}
+.ih-line{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid #f3f4f6;font-size:12px}
+.ih-line:last-child{border-bottom:0}
+.ih-line span:first-child{color:#6b7280}
+.ih-line strong{text-align:right}
+.ih-note{background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:12px;padding:9px 11px;font-size:12px;margin-top:10px}
+@media(max-width:780px){.ih-result-price{font-size:23px}.ih-line{font-size:13px}}
+
 </style>
 </head>
 <body>
@@ -293,6 +306,7 @@ tr:hover td{background:#fafafa}
     <div class="sb-nav">
       <div class="sb-label">Ana Ekran</div>
       <div class="sb-item active" onclick="goPage('dashboard',this)"><i class="ti ti-dashboard"></i> Dashboard</div>
+      <div class="sb-item" onclick="goPage('iskonto-hesap',this)"><i class="ti ti-calculator"></i> İskonto Hesaplayıcı</div>
       <div class="sb-label">Yönetim</div>
       <div class="sb-item" onclick="goPage('firmalar',this)"><i class="ti ti-building"></i> Firmalar</div>
       <div class="sb-item" onclick="goPage('urunler',this)"><i class="ti ti-package"></i> Ürün Kataloğu</div>
@@ -334,11 +348,79 @@ tr:hover td{background:#fafafa}
         <div class="card"><div class="card-head"><div class="card-title"><i class="ti ti-history"></i> Son Cari Hareketler</div></div><div class="tw"><table><thead><tr><th>Tarih</th><th>Firma</th><th>İşlem</th><th class="num">Tutar</th></tr></thead><tbody id="db-son"></tbody></table></div></div>
         <div class="card"><div class="card-head"><div class="card-title"><i class="ti ti-alert-triangle"></i> Kritik Stoklar</div></div><div class="tw"><table><thead><tr><th>Ürün</th><th class="num">Stok</th><th class="num">Min.</th></tr></thead><tbody id="db-stok"></tbody></table></div></div>
       </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title"><i class="ti ti-clock-exclamation"></i> Ödemesi Gelenler</div>
+          <span class="badge b-o" id="db-odeme-say">0 kayıt</span>
+        </div>
+        <div style="font-size:11px;color:#6b7280;margin:-6px 0 10px">Vadesi geçmiş, bugün gelen ve 7 gün içinde gelecek açık faturalar gösterilir.</div>
+        <div class="tw"><table><thead><tr><th>Firma</th><th>Belge</th><th>Vade</th><th>Kalan</th><th class="num">Tutar</th><th>Durum</th></tr></thead><tbody id="db-odeme"></tbody></table></div>
+      </div>
+    </div>
+
+
+    <div id="page-iskonto-hesap" class="page">
+      <div class="page-title">İskonto Hesaplayıcı</div>
+      <div id="ih-al"></div>
+      <div class="g2" style="align-items:start">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title"><i class="ti ti-calculator"></i> Ürün ve İskonto Bilgileri</div>
+          </div>
+          <div class="fg"><label>Ürün Seç</label><select id="ih-urun" onchange="ctpIHUrunSecildi()"></select></div>
+          <div id="ih-urun-bilgi" class="sc" style="display:block;background:#f9fafb;border-color:#e5e7eb;color:#374151">Ürün seçince fiyat bilgileri burada görünür.</div>
+          <div class="g2">
+            <div class="fg"><label>Birim</label><select id="ih-birim" onchange="ctpIHBirimDegisti()"></select></div>
+            <div class="fg"><label>Miktar</label><input id="ih-miktar" type="number" step="0.01" min="0" value="1" oninput="ctpIHHesapla()"></div>
+          </div>
+          <div class="g2">
+            <div class="fg"><label>Birim Liste Fiyatı</label><input id="ih-fiyat" type="number" step="0.01" min="0" placeholder="0.00" oninput="ctpIHHesapla()"></div>
+            <div class="fg"><label>Fiyat Tipi</label><select id="ih-fiyat-tipi" onchange="ctpIHHesapla()"><option value="haric" selected>KDV Hariç</option><option value="dahil">KDV Dahil</option></select></div>
+          </div>
+          <div class="g2">
+            <div class="fg"><label>İskonto Oranı</label>
+              <select id="ih-iskonto" onchange="ctpIHIskontoDegisti()">
+                <option value="0">Yok</option>
+                <option value="15">%15</option>
+                <option value="15+5">%15+5</option>
+                <option value="20+2">%20+2</option>
+                <option value="20+5">%20+5</option>
+                <option value="__MANUEL__">Manuel</option>
+              </select>
+            </div>
+            <div class="fg"><label>KDV Oranı</label><select id="ih-kdv" onchange="ctpIHHesapla()"><option value="0">%0</option><option value="1" selected>%1</option><option value="10">%10</option><option value="20">%20</option></select></div>
+          </div>
+          <div class="fg" id="ih-manuel-wrap" style="display:none"><label>Manuel İskonto Oranı</label><input id="ih-manuel" placeholder="Örn: 12 veya 15+5" oninput="ctpIHHesapla()"></div>
+          <div class="btn-row">
+            <button class="btn btn-g" onclick="ctpIHHesapla()"><i class="ti ti-calculator"></i> Hesapla</button>
+            <button class="btn" onclick="ctpIHTemizle()"><i class="ti ti-refresh"></i> Temizle</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title"><i class="ti ti-receipt-2"></i> Hesap Sonucu</div>
+            <button class="btn btn-sm" onclick="ctpIHKopyala()"><i class="ti ti-copy"></i> Kopyala</button>
+          </div>
+          <div id="ih-sonuc">
+            <div style="text-align:center;padding:24px;color:#9ca3af;font-size:12px">Ürün, iskonto ve KDV bilgilerini girince sonuç burada görünecek.</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div id="page-firmalar" class="page">
       <div class="page-title">Firmalar</div>
       <div id="fa"></div>
+      <div class="card" id="musteri-indir-card">
+        <div class="card-head">
+          <div class="card-title"><i class="ti ti-download"></i> Müşteri Bilgileri İndir</div>
+        </div>
+        <div class="btn-row" style="margin-top:0">
+          <button class="btn btn-g" onclick="musteriBilgileriIndirTum()"><i class="ti ti-file-spreadsheet"></i> Tüm Müşterileri İndir</button>
+          <button class="btn btn-b" onclick="musteriBilgileriIndirSecili()"><i class="ti ti-user-down"></i> Seçili Müşteriyi İndir</button>
+        </div>
+        <div style="font-size:11px;color:#6b7280;margin-top:8px">Tek tek indirmek için firma listesindeki <strong>İndir</strong> butonunu da kullanabilirsin.</div>
+      </div>
       <div class="g2" style="align-items:start">
         <div class="card">
           <div class="card-head">
@@ -348,28 +430,29 @@ tr:hover td{background:#fafafa}
           <input type="hidden" id="f-id">
           <div class="g2">
             <div class="fg"><label>Firma Kodu <span style="color:var(--g);font-weight:400">(otomatik)</span></label><input id="f-kod" readonly></div>
-            <div class="fg"><label>Firma Türü</label>
+            <div class="fg"><label>Firma Türü *</label>
               <select id="f-tur"><option>Şarküteri</option><option>Market</option><option>Zincir Market</option><option>Tedarikçi</option><option>Diğer</option></select>
             </div>
           </div>
           <div class="fg"><label>Firma Adı *</label><input id="f-ad" placeholder="Firma adı..."></div>
           <div class="g2">
-            <div class="fg"><label>Şehir</label><select id="f-sehir" onchange="ilceListesiDoldur()"></select></div>
-            <div class="fg"><label>İlçe</label><select id="f-ilce"></select></div>
+            <div class="fg"><label>Şehir *</label><select id="f-sehir" onchange="ilceListesiDoldur()"></select></div>
+            <div class="fg"><label>İlçe *</label><select id="f-ilce"></select></div>
           </div>
           <div class="g2">
-            <div class="fg"><label>Vergi No</label><input id="f-vno"></div>
-            <div class="fg"><label>Yetkili Kişi</label><input id="f-yetkili"></div>
+            <div class="fg"><label>Vergi No *</label><input id="f-vno"></div>
+            <div class="fg"><label>Vergi Dairesi *</label><input id="f-vergiDairesi" placeholder="Örn: MİLAS VERGİ DAİRESİ"></div>
           </div>
           <div class="g2">
-            <div class="fg"><label>Telefon</label><input id="f-tel"></div>
-            <div class="fg"><label>E-posta</label><input id="f-mail"></div>
+            <div class="fg"><label>Yetkili Kişi *</label><input id="f-yetkili"></div>
+            <div class="fg"><label>Telefon *</label><input id="f-tel"></div>
           </div>
-          <div class="fg"><label>Adres</label><textarea id="f-adres" rows="2"></textarea></div>
-          <div class="fg"><label>Teslimat / Sevkiyat Adresi</label><textarea id="f-teslimat" rows="2" placeholder="Farklı teslimat adresi varsa yazın"></textarea></div>
+          <div class="fg"><label>E-posta *</label><input id="f-mail"></div>
+          <div class="fg"><label>Adres *</label><textarea id="f-adres" rows="2"></textarea></div>
+          <div class="fg"><label>Teslimat / Sevkiyat Adresi *</label><textarea id="f-teslimat" rows="2" placeholder="Farklı teslimat adresi varsa yazın"></textarea></div>
           <div class="g2">
             <div class="fg"><label>Vade (gün)</label><input id="f-vade" type="number" value="30"></div>
-            <div class="fg"><label>Kredi Limiti (₺)</label><input id="f-limit" type="number"></div><div class="fg"><label>İskonto Grubu</label><select id="f-iskonto"><option value="0">Yok</option><option value="15">%15</option><option value="15+5">%15+5</option><option value="20+2">%20+2</option><option value="20+5">%20+5</option></select></div>
+            <div class="fg"><label>Kredi Limiti (₺)</label><input id="f-limit" type="number"></div><div class="fg"><label>İskonto Grubu *</label><select id="f-iskonto"><option value="0">Yok</option><option value="15">%15</option><option value="15+5">%15+5</option><option value="20+2">%20+2</option><option value="20+5">%20+5</option></select></div>
           </div>
           <div class="fg"><label>Not</label><input id="f-not"></div>
           <div class="btn-row">
@@ -1037,6 +1120,7 @@ tr:hover td{background:#fafafa}
 
 <div id="mobile-nav">
   <button class="active" onclick="goPageMobile('dashboard',this)"><i class="ti ti-dashboard"></i>Ana</button>
+  <button onclick="goPageMobile('iskonto-hesap',this)"><i class="ti ti-calculator"></i>Hesap</button>
   <button onclick="goPageMobile('firmalar',this)"><i class="ti ti-building"></i>Firma</button>
   <button onclick="goPageMobile('siparis',this)"><i class="ti ti-shopping-cart"></i>Sipariş</button>
   <button onclick="goPageMobile('hareket',this)"><i class="ti ti-cash"></i>Ödeme</button>
@@ -2683,6 +2767,21 @@ function renderDashboard(){
   if(document.getElementById('db-son'))document.getElementById('db-son').innerHTML=son.map(h=>`<tr><td>${d2s(h.tarih)}</td><td>${h.fAd||'-'}</td><td>${h.tur}</td><td class="num">${tl(h.tutar)}</td></tr>`).join('')||'<tr><td colspan="4" style="text-align:center;padding:20px;color:#9ca3af">Hareket yok</td></tr>';
   const ks=DB.urunler.filter(u=>(+u.minStok||0)>0&&(+u.stok||0)<=(+u.minStok||0)).slice(0,10);
   if(document.getElementById('db-stok'))document.getElementById('db-stok').innerHTML=ks.map(u=>`<tr><td>${u.ad}</td><td class="num">${(+u.stok||0).toFixed(2)}</td><td class="num">${(+u.minStok||0).toFixed(2)}</td></tr>`).join('')||'<tr><td colspan="3" style="text-align:center;padding:20px;color:#9ca3af">Kritik stok yok</td></tr>';
+  const bas=today(), bit=addD(bas,7);
+  const odemesiGelen=(DB.hareketler||[]).filter(h=>h.tur==='FATURA'&&h.vade&&String(h.dur||h.durum||'ACIK')!=='KAPALI'&&h.vade<=bit).sort((a,b)=>String(a.vade||'').localeCompare(String(b.vade||'')));
+  const odemeBody=document.getElementById('db-odeme');
+  const odemeSay=document.getElementById('db-odeme-say');
+  if(odemeSay)odemeSay.textContent=odemesiGelen.length+' kayıt';
+  if(odemeBody){
+    odemeBody.innerHTML=odemesiGelen.slice(0,12).map(h=>{const g=daysDiff(h.vade);return `<tr>
+      <td><strong>${h.fAd||'-'}</strong><br><span style="font-size:10px;color:#9ca3af">${h.fKod||''}</span></td>
+      <td style="font-size:11px">${h.belge||'-'}</td>
+      <td>${d2s(h.vade)}</td>
+      <td>${kbadge(g)}</td>
+      <td class="num borc">${tl(h.tutar)}</td>
+      <td>${bdur(h.dur||h.durum||'ACIK')}</td>
+    </tr>`;}).join('')||'<tr><td colspan="6" style="text-align:center;padding:20px;color:#9ca3af">Yaklaşan ödeme yok</td></tr>';
+  }
 }
 function goPageMobile(id,el){goPage(id,null);document.querySelectorAll('#mobile-nav button').forEach(b=>b.classList.remove('active'));if(el)el.classList.add('active');}
 const _oldGoPage=goPage;goPage=function(id,el){_oldGoPage(id,el);if(id==='dashboard')renderDashboard();if(id==='stok')renderStok();};
@@ -4775,6 +4874,7 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(jsonYedekKartlariniD
 /* ==== v3.0.24 Sheets Lisanslı KULLANICI SAYFA GÖRME YETKİLERİ ==== */
 const PAGE_LIST_V252 = [
   ['dashboard','Dashboard'],
+  ['iskonto-hesap','İskonto Hesaplayıcı'],
   ['firmalar','Firmalar'],
   ['urunler','Ürün Kataloğu'],
   ['stok','Stok Takip'],
@@ -4791,8 +4891,8 @@ const PAGE_LIST_V252 = [
 
 const ROLE_PAGE_PRESETS_V252 = {
   admin: PAGE_LIST_V252.map(x=>x[0]),
-  personel: ['dashboard','firmalar','urunler','stok','kategoriler','hareket','siparis','cari','odeme','kasa','mizan'],
-  viewer: ['dashboard','firmalar','urunler','stok','cari','odeme','kasa','mizan']
+  personel: ['dashboard','iskonto-hesap','firmalar','urunler','stok','kategoriler','hareket','siparis','cari','odeme','kasa','mizan'],
+  viewer: ['dashboard','iskonto-hesap','firmalar','urunler','stok','cari','odeme','kasa','mizan']
 };
 
 function sayfaYetkiVarsayilan(roleName){
@@ -6118,6 +6218,71 @@ body.ctp-view-mobile #ctp-view-toggle .m,body.ctp-view-web #ctp-view-toggle .w{b
 })();
 </script>
 <!-- CTP_WA_IADE_V3128_END -->
+
+
+<!-- CTP_FIRMA_VERGI_DAIRESI_MUSTERI_INDIR_V3143_START -->
+<style id="ctp-firma-vd-musteri-indir-v3143-css">
+  #musteri-indir-card .btn-row{display:flex;gap:8px;flex-wrap:wrap}
+  .ctp-required-missing{border-color:#d63b3b!important;background:#fff7f7!important;box-shadow:0 0 0 3px rgba(214,59,59,.08)!important}
+  @media(max-width:780px){#musteri-indir-card .btn-row{display:grid!important;grid-template-columns:1fr!important}#musteri-indir-card .btn{width:100%}}
+</style>
+<script id="ctp-firma-vd-musteri-indir-v3143-js">
+(function(){
+  'use strict';
+  function el(id){return document.getElementById(id)}
+  function v(id){var x=el(id); return x?String(x.value||'').trim():''}
+  function normStr(s){return String(s||'').replace(/\s+/g,' ').trim()}
+  function todayFile(){try{return new Date().toLocaleDateString('tr-TR').replace(/\./g,'-')}catch(e){return new Date().toISOString().slice(0,10)}}
+  function alertBox(msg,type){ if(typeof window.showA==='function') window.showA('fa',msg,type||'e'); else alert(msg); }
+  window.ctpEnsureFirmaVergiDairesiUI = function(){
+    try{
+      if(!el('f-vergiDairesi')){
+        var vno=el('f-vno'); var fg=vno && vno.closest ? vno.closest('.fg') : null;
+        if(fg){ var wrap=document.createElement('div'); wrap.className='fg'; wrap.innerHTML='<label>Vergi Dairesi *</label><input id="f-vergiDairesi" placeholder="Örn: MİLAS VERGİ DAİRESİ">'; if(fg.parentNode) fg.parentNode.insertBefore(wrap, fg.nextSibling); }
+      }
+      var labels={'f-tur':'Firma Türü *','f-sehir':'Şehir *','f-ilce':'İlçe *','f-vno':'Vergi No *','f-vergiDairesi':'Vergi Dairesi *','f-yetkili':'Yetkili Kişi *','f-tel':'Telefon *','f-mail':'E-posta *','f-adres':'Adres *','f-teslimat':'Teslimat / Sevkiyat Adresi *','f-iskonto':'İskonto Grubu *'};
+      Object.keys(labels).forEach(function(id){var x=el(id); var lab=x&&x.closest&&x.closest('.fg')?x.closest('.fg').querySelector('label'):null; if(lab) lab.textContent=labels[id];});
+    }catch(e){console.warn('Firma VD UI hazırlanamadı',e)}
+  };
+  function normalizeFirmalar(){ try{ if(!window.DB || !Array.isArray(DB.firmalar)) return; DB.firmalar.forEach(function(f){ if(!f) return; var vd=f.vergiDairesi || f.vd || f.vergiDaire || f.vergi_dairesi || ''; f.vergiDairesi=vd; f.vd=vd; f.vergiDaire=vd; if(f.teslimatAdres===undefined) f.teslimatAdres=f.teslimat || f.sevkiyatAdres || ''; if(f.sehir===undefined) f.sehir=f.il || f.city || ''; if(f.ilce===undefined) f.ilce=f.district || ''; }); }catch(e){} }
+  function validateFirmaRequired(){
+    ctpEnsureFirmaVergiDairesiUI();
+    var required=[['f-tur','Firma Türü'],['f-ad','Firma Adı'],['f-sehir','Şehir'],['f-ilce','İlçe'],['f-vno','Vergi No'],['f-vergiDairesi','Vergi Dairesi'],['f-yetkili','Yetkili Kişi'],['f-tel','Telefon'],['f-mail','E-posta'],['f-adres','Adres'],['f-teslimat','Teslimat / Sevkiyat Adresi'],['f-iskonto','İskonto Grubu']];
+    var missing=[]; required.forEach(function(r){ var x=el(r[0]); if(!x) return; x.classList.remove('ctp-required-missing'); if(!normStr(x.value)){missing.push(r); x.classList.add('ctp-required-missing');} });
+    if(missing.length){ alertBox('Zorunlu alanlar eksik: '+missing.map(function(x){return x[1]}).join(', '),'e'); var first=el(missing[0][0]); if(first&&first.focus) first.focus(); return false; }
+    return true;
+  }
+  function nextFirmaId(){ try{DB.nextFId=Number(DB.nextFId)||1; var max=0; (DB.firmalar||[]).forEach(function(f){max=Math.max(max,Number(f.id)||0)}); if(DB.nextFId<=max) DB.nextFId=max+1; return DB.nextFId++;}catch(e){return Date.now()} }
+  function getFirmaObjBase(){ var teslimat=v('f-teslimat'), sehir=v('f-sehir'), ilce=v('f-ilce'), vd=v('f-vergiDairesi'); return {kod:v('f-kod') || (typeof window.autoFKod==='function'?autoFKod():('F'+Date.now())), ad:v('f-ad'), tur:v('f-tur'), sehir:sehir, il:sehir, ilce:ilce, district:ilce, vno:v('f-vno'), vergiDairesi:vd, vd:vd, vergiDaire:vd, yetkili:v('f-yetkili'), tel:v('f-tel'), mail:v('f-mail'), adres:v('f-adres'), teslimatAdres:teslimat, teslimat:teslimat, sevkiyatAdres:teslimat, vade:v('f-vade'), limit:v('f-limit'), iskonto:v('f-iskonto'), not:v('f-not')}; }
+  window.firmaKaydet = function(){
+    try{ if(typeof window.canWrite==='function' && !canWrite()) return (typeof window.permissionError==='function'?permissionError('Kayıt ekleme/değiştirme yetkiniz yok.'):alert('Yetkiniz yok.')); }catch(e){}
+    normalizeFirmalar(); if(!validateFirmaRequired()) return;
+    var editId=v('f-id'), obj=getFirmaObjBase();
+    if(editId){ var idx=(DB.firmalar||[]).findIndex(function(f){return String(f.id)===String(editId)}); if(idx>=0){ DB.firmalar[idx]=Object.assign({}, DB.firmalar[idx], obj); alertBox('Firma güncellendi.','s'); } else { obj.id=nextFirmaId(); DB.firmalar.push(obj); alertBox('Firma eklendi.','s'); } }
+    else { obj.id=nextFirmaId(); DB.firmalar.push(obj); alertBox('Firma eklendi.','s'); }
+    try{ if(typeof window.dbSave==='function') dbSave(); else if(typeof window.ctSaveLocal==='function') ctSaveLocal(); }catch(e){}
+    try{ if(typeof window.firmaTemizle==='function') firmaTemizle(); }catch(e){}
+    try{ ['renderF','renderHF','renderSF','renderCF','renderDashboard','yedekBilgi'].forEach(function(fn){ if(typeof window[fn]==='function') window[fn]();}); }catch(e){}
+  };
+  var oldFirmaDuz = window.firmaDuz;
+  window.firmaDuz = function(id){ normalizeFirmalar(); if(typeof oldFirmaDuz==='function') oldFirmaDuz(id); try{ var f=(DB.firmalar||[]).find(function(x){return String(x.id)===String(id)}); if(!f) return; ctpEnsureFirmaVergiDairesiUI(); var vd=el('f-vergiDairesi'); if(vd) vd.value=f.vergiDairesi || f.vd || f.vergiDaire || ''; var tes=el('f-teslimat'); if(tes) tes.value=f.teslimatAdres || f.teslimat || f.sevkiyatAdres || ''; }catch(e){} };
+  var oldFirmaTemizle = window.firmaTemizle;
+  window.firmaTemizle = function(){ if(typeof oldFirmaTemizle==='function') oldFirmaTemizle(); ctpEnsureFirmaVergiDairesiUI(); var vd=el('f-vergiDairesi'); if(vd) vd.value=''; ['f-tur','f-ad','f-sehir','f-ilce','f-vno','f-vergiDairesi','f-yetkili','f-tel','f-mail','f-adres','f-teslimat','f-iskonto'].forEach(function(id){var x=el(id); if(x) x.classList.remove('ctp-required-missing');}); };
+  var oldRenderF = window.renderF;
+  window.renderF = function(){ normalizeFirmalar(); if(typeof oldRenderF==='function') oldRenderF(); try{ var rows=document.querySelectorAll('#f-tb tr'); rows.forEach(function(row){ var kod=(row.children&&row.children[0]?row.children[0].textContent:'').trim(); var f=(DB.firmalar||[]).find(function(x){return String(x.kod)===String(kod)}); if(!f || !row.children || !row.children.length) return; var action=row.children[row.children.length-1]; if(action && !action.querySelector('.ctp-musteri-tek-indir')){ var btn=document.createElement('button'); btn.className='btn btn-sm ctp-musteri-tek-indir'; btn.style.marginLeft='4px'; btn.type='button'; btn.setAttribute('onclick','musteriBilgileriIndirTek(\''+String(f.id).replace(/'/g,'\\\'')+'\')'); btn.innerHTML='<i class="ti ti-download"></i> İndir'; action.appendChild(btn); } }); }catch(e){} };
+  function firmaRows(list){ return (list||[]).map(function(f){ var vd=f.vergiDairesi || f.vd || f.vergiDaire || ''; return {'Firma Kodu':f.kod||'', 'Firma Adı':f.ad||'', 'Firma Türü':f.tur||'', 'Şehir':f.sehir||f.il||'', 'İlçe':f.ilce||f.district||'', 'Vergi No / TCKN':f.vno||f.vergiNo||'', 'Vergi Dairesi':vd, 'Yetkili Kişi':f.yetkili||'', 'Telefon':f.tel||'', 'E-posta':f.mail||f.email||'', 'Adres':f.adres||'', 'Teslimat / Sevkiyat Adresi':f.teslimatAdres||f.teslimat||f.sevkiyatAdres||'', 'Vade Gün':f.vade||'', 'Kredi Limiti':f.limit||'', 'İskonto Grubu':f.iskonto||'', 'Not':f.not||'', 'Bakiye':(typeof window.fbak==='function'?fbak(f.kod):'')}; }); }
+  function makeWbAndDownload(list,name){ if(!list || !list.length){alert('İndirilecek müşteri bulunamadı.'); return;} if(!window.XLSX){alert('Excel kütüphanesi yüklenemedi. İnternet bağlantısını kontrol et.'); return;} var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(firmaRows(list)),'Musteriler'); if(typeof window.xlsxIndir==='function') xlsxIndir(wb,name); else XLSX.writeFile(wb,name); }
+  window.fSheet = function(){ if(!window.XLSX) return null; return XLSX.utils.json_to_sheet(firmaRows((DB&&DB.firmalar)||[])); };
+  window.musteriBilgileriIndirTum = function(){ normalizeFirmalar(); makeWbAndDownload((DB&&DB.firmalar)||[],'Musteriler_Tum_'+todayFile()+'.xlsx'); };
+  window.musteriBilgileriIndirTek = function(id){ normalizeFirmalar(); var f=(DB.firmalar||[]).find(function(x){return String(x.id)===String(id)}); if(!f){alert('Müşteri bulunamadı.'); return;} makeWbAndDownload([f],'Musteri_'+String(f.kod||f.ad||'Tek').replace(/[^A-Za-z0-9_ğüşöçıİĞÜŞÖÇ-]+/g,'_')+'_'+todayFile()+'.xlsx'); };
+  window.musteriBilgileriIndirSecili = function(){ normalizeFirmalar(); var id=v('f-id'), f=null; if(id) f=(DB.firmalar||[]).find(function(x){return String(x.id)===String(id)}); if(!f){ var kod=v('f-kod'), ad=v('f-ad'); f=(DB.firmalar||[]).find(function(x){return (kod&&x.kod===kod) || (ad&&x.ad===ad)}); } if(!f){alert('Önce listeden bir firma düzenle/seç, sonra Seçili Müşteriyi İndir butonuna bas.'); return;} makeWbAndDownload([f],'Musteri_'+String(f.kod||f.ad||'Secili').replace(/[^A-Za-z0-9_ğüşöçıİĞÜŞÖÇ-]+/g,'_')+'_'+todayFile()+'.xlsx'); };
+  var oldExcelExport=window.excelExport;
+  window.excelExport=function(tip){ if(tip==='firmalar'){ return window.musteriBilgileriIndirTum(); } if(tip==='tumVeriler' && window.XLSX){ try{ var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, window.fSheet(), 'Firmalar'); if(typeof window.hSheet==='function') XLSX.utils.book_append_sheet(wb,hSheet(),'Hareketler'); if(typeof window.uSheet==='function') XLSX.utils.book_append_sheet(wb,uSheet(),'Urunler'); return (typeof window.xlsxIndir==='function'?xlsxIndir(wb,'CariTakip_'+todayFile()+'.xlsx'):XLSX.writeFile(wb,'CariTakip_'+todayFile()+'.xlsx')); }catch(e){console.warn(e)} } if(typeof oldExcelExport==='function') return oldExcelExport.apply(this,arguments); };
+  function boot(){ normalizeFirmalar(); ctpEnsureFirmaVergiDairesiUI(); try{ if(typeof window.renderF==='function') renderF(); }catch(e){} }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else setTimeout(boot,0);
+})();
+</script>
+<!-- CTP_FIRMA_VERGI_DAIRESI_MUSTERI_INDIR_V3143_END -->
 
 </body>
 </html>
@@ -7801,3 +7966,639 @@ body.ctp-view-mobile #ctp-view-toggle .m,body.ctp-view-web #ctp-view-toggle .w{b
 })();
 </script>
 <!-- CTP_DEPO_WHATSAPP_AYAR_V3133_END -->
+<!-- CTP_FATURA_IRSALIYE_PDF_SABLON_V3142_START -->
+<style id="ctp-fatura-irsaliye-pdf-sablon-v3142-css">
+  #fatura-modal .modal{width:930px!important;max-width:98vw!important}
+  #fatura-icerik{background:#fff}
+  @media(max-width:780px){#fatura-modal .modal{width:100%!important;max-width:100%!important}.ctp-inv-a4{transform-origin:top left}}
+</style>
+<script id="ctp-fatura-irsaliye-pdf-sablon-v3142-js">
+(function(){
+  'use strict';
+  var TATSAN_LOGO_DATA = 'data:image/png;base64,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';
+  function safe(v){ return String(v == null ? '' : v).trim(); }
+  function esc(v){
+    return safe(v).replace(/[&<>"']/g,function(m){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+    });
+  }
+  function g(name){
+    try{ return eval(name); }catch(e){ return undefined; }
+  }
+  function db(){ return g('DB') || window.DB || {firmalar:[],hareketler:[],urunler:[]}; }
+  function sepetArr(){ var s=g('sepet'); return Array.isArray(s)?s:[]; }
+  function trDate(v){
+    v=safe(v);
+    if(!v) return '';
+    if(typeof window.d2s==='function'){ try{return window.d2s(v)}catch(e){} }
+    var p=v.split('-');
+    if(p.length===3) return p[2]+'.'+p[1]+'.'+p[0];
+    return v;
+  }
+  function todayStr(){
+    if(typeof window.today==='function'){ try{return window.today()}catch(e){} }
+    return new Date().toISOString().slice(0,10);
+  }
+  function timeStr(){
+    var d=new Date();
+    return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0');
+  }
+  function money(n){
+    n=Number(n)||0;
+    return n.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' TL';
+  }
+  function qty(n){
+    n=Number(n)||0;
+    return n.toLocaleString('tr-TR',{maximumFractionDigits:3});
+  }
+  function getVal(id){ var el=document.getElementById(id); return el?safe(el.value):''; }
+  function getFirma(){
+    var f=g('selSiparisF'); if(f) return f;
+    f=g('selF'); if(f) return f;
+    f=g('cSelF'); if(f) return f;
+    var d=db();
+    var s=sepetArr();
+    if(s[0] && s[0].fKod && d.firmalar){
+      f=d.firmalar.find(function(x){return String(x.kod)===String(s[0].fKod)}); if(f) return f;
+    }
+    return null;
+  }
+  function firmAddress(f){
+    if(!f) return '';
+    var lines=[];
+    if(safe(f.adres)) lines.push(safe(f.adres));
+    var loc=[safe(f.ilce), safe(f.sehir)].filter(Boolean).join(' / ');
+    if(loc && lines.join(' ').indexOf(loc)<0) lines.push(loc);
+    return lines.join('\n');
+  }
+  function deliveryAddress(f){
+    if(!f) return '';
+    return safe(f.teslimatAdres || f.teslimat || f.teslimat_adresi || f.sevkiyatAdres || f.sevkiyat || '') || firmAddress(f);
+  }
+  function customerNameLines(f){
+    if(!f) return '-';
+    var out=[];
+    if(safe(f.ad)) out.push(safe(f.ad).toUpperCase());
+    if(safe(f.yetkili)) out.push(safe(f.yetkili).toUpperCase());
+    return out.join('\n') || '-';
+  }
+  function findProduct(x){
+    try{
+      var d=db();
+      if(!d || !Array.isArray(d.urunler)) return {};
+      return d.urunler.find(function(u){
+        return String(u.id)===String(x.uid||x.id||x.uId||'') || safe(u.ad)===safe(x.ad||x.urun||x.name);
+      }) || {};
+    }catch(e){return {};}
+  }
+  function rowQty(x){
+    if(typeof window.sepetSatirMiktar==='function'){ try{return Number(window.sepetSatirMiktar(x))||0}catch(e){} }
+    return Number(x.miktar!=null?x.miktar:(x.mik!=null?x.mik:(x.qty!=null?x.qty:(x.adet!=null?x.adet:1))))||1;
+  }
+  function rowPrice(x,u){
+    if(typeof window.sepetSatirFiyat==='function'){ try{var fp=Number(window.sepetSatirFiyat(x)); if(fp) return fp;}catch(e){} }
+    var bir=safe(x.bir||x.birim||u.bir||'');
+    var p=Number(x.fiyat!=null?x.fiyat:(x.fiy!=null?x.fiy:0))||0;
+    if(p) return p;
+    if(bir.toLowerCase().indexOf('koli')>-1) return Number(u.fiyKoli||u.koliFiyat||u.fiy||0)||0;
+    if(bir.toLowerCase().indexOf('kg')>-1) return Number(u.fiyKg||u.kgFiyat||u.fiy||0)||0;
+    if(bir.toLowerCase().indexOf('adet')>-1) return Number(u.fiyAdet||u.adetFiyat||u.fiy||0)||0;
+    return Number(u.fiy||0)||0;
+  }
+  function iskStr(f, fallback){ return safe(f && (f.iskonto || f.isk || f.iskontoGrubu)) || safe(fallback) || '0'; }
+  function iskFactor(s){
+    s=safe(s);
+    if(!s || s==='0' || s.toLowerCase()==='yok') return 0;
+    var parts=s.split('+').map(function(p){return Number(String(p).replace('%','').replace(',','.'))||0;}).filter(function(n){return n>0;});
+    if(!parts.length) return 0;
+    var remain=1; parts.forEach(function(p){remain*=Math.max(0,1-p/100);});
+    return 1-remain;
+  }
+  function lineCell(s){ return esc(s).replace(/\n/g,'<br>'); }
+  function makeRows(items,firma,kdvOran){
+    var factor=iskFactor(iskStr(firma));
+    var totals={gross:0,disc:0,kdv:0,net:0,grand:0};
+    var rows=(items||[]).map(function(x,i){
+      var u=findProduct(x);
+      var name=safe(x.ad||x.urun||x.name||u.ad||'Ürün');
+      var code=safe(x.bkod||x.kod||x.code||u.bkod||u.kod||u.code||String(i+1).padStart(3,'0'));
+      var bir=safe(x.bir||x.birim||u.bir||'Adet');
+      var miktar=rowQty(x);
+      var fiyat=rowPrice(x,u);
+      var gross=miktar*fiyat;
+      var noDisc=!!(x.noIskonto||x.noisk||u.noIskonto||u.noisk);
+      var disc=noDisc?0:gross*factor;
+      var net=gross-disc;
+      var kdv=net*(Number(kdvOran)||0)/100;
+      totals.gross+=gross; totals.disc+=disc; totals.net+=net; totals.kdv+=kdv; totals.grand+=net+kdv;
+      var iskLabel=(disc>0?('%'+iskStr(firma)):'');
+      return '<tr>'+ 
+        '<td class="c">'+(i+1)+'</td>'+ 
+        '<td class="c">'+esc(code)+'</td>'+ 
+        '<td>'+esc(name)+'</td>'+ 
+        '<td class="r">'+qty(miktar)+' '+esc(bir)+'</td>'+ 
+        '<td class="r">'+money(fiyat)+'</td>'+ 
+        '<td class="r">'+esc(iskLabel)+'</td>'+ 
+        '<td class="r">'+money(disc)+'</td>'+ 
+        '<td class="r">%'+(Number(kdvOran)||0).toLocaleString('tr-TR')+'</td>'+ 
+        '<td class="r">'+money(kdv)+'</td>'+ 
+        '<td class="r"><strong>'+money(net)+'</strong></td>'+  
+      '</tr>';
+    }).join('');
+    if(!rows) rows='<tr><td colspan="10" class="c empty">Ürün / hizmet satırı yok</td></tr>';
+    return {html:rows,totals:totals};
+  }
+  function sellerBlock(){
+    return '<div class="box seller">'+
+      '<strong>TATSAN HELVA SANAYİ TİCARET LİMİTED ŞİRKETİ</strong><br>'+ 
+      'ORGANİZE SAN.BÖL. KIZILCIKDERE KÖYÜ NO:5 CADDE NO:11<br>'+ 
+      '39100 KIRKLARELİ / KIRKLARELİ<br>'+ 
+      '<div class="kv"><b>Tel</b><span>:</span><em>2882634444</em></div>'+ 
+      '<div class="kv"><b>Faks</b><span>:</span><em>2882634440</em></div>'+ 
+      '<div class="kv"><b>Web Sitesi</b><span>:</span><em>www.tatsanhelva.com</em></div>'+ 
+      '<div class="kv"><b>E-Posta</b><span>:</span><em>muhasebe@tatsanhelva.com</em></div>'+ 
+      '<div class="kv"><b>Vergi Dairesi</b><span>:</span><em>KIRKLARELİ VERGİ DAİRESİ</em></div>'+ 
+      '<div class="kv"><b>VKN</b><span>:</span><em>8310046736</em></div>'+ 
+      '<div class="kv"><b>Mersis No</b><span>:</span><em>0831004673600001</em></div>'+ 
+      '<div class="kv"><b>Ticaret Sicil No</b><span>:</span><em>1879</em></div>'+ 
+      '</div>';
+  }
+  function singleManualRow(kdvOran){
+    var tut=Number(getVal('h-tutar')||getVal('s-genel')||0)||0;
+    if(!tut) return [];
+    var tur=getVal('h-tur');
+    var fiyat=tur==='FATURA' ? tut : (tut/(1+(Number(kdvOran)||0)/100));
+    return [{ad:getVal('h-acik')||getVal('s-acik')||'Cari Hareket', bir:'Adet', miktar:1, fiyat:fiyat}];
+  }
+  function invoiceHtml(d){
+    d=d||{};
+    var f=d.firma || {};
+    var kdvOran=Number(d.kdvOran)||0;
+    var built=makeRows(d.urunler||[],f,kdvOran);
+    var totals=built.totals;
+    if(!totals.gross && Number(d.genelTop||d.tutar||0)){
+      totals.grand=Number(d.genelTop||d.tutar||0)||0;
+      totals.net=totals.grand/(1+(kdvOran/100));
+      totals.kdv=totals.grand-totals.net;
+      totals.gross=totals.net;
+    }
+    var vkn=safe(f.vno||f.vergiNo||f.tckn||f.tc||'');
+    var vergiDairesi=safe(f.vergiDairesi||f.vd||f.vergiDaire||'');
+    var mail=safe(f.mail||f.email||'');
+    var duzen=timeStr();
+    var faturaTarihi=trDate(d.tarih||todayStr())+' '+duzen;
+    var acik=safe(d.acik||'');
+    var yazi='Yalnız '+money(totals.grand)+' .';
+    return `
+<style>
+.ctp-inv-a4{width:210mm;min-height:297mm;margin:0 auto;background:#fff;color:#222;font-family:Arial,Helvetica,sans-serif;font-size:8.4px;line-height:1.24;padding:15mm 13mm 9mm;box-sizing:border-box;position:relative}
+.ctp-inv-top{display:grid;grid-template-columns:92mm 1fr;column-gap:16mm;align-items:start;min-height:78mm}
+.ctp-inv-left{display:flex;flex-direction:column;gap:1.8mm}
+.box{border:1px solid #8ca0b1;border-radius:4px;padding:2.5mm;background:#fff}
+.seller strong,.customer .sayin{font-weight:700}
+.kv,.doc-row{display:grid;grid-template-columns:28mm 3mm 1fr;gap:1mm;align-items:start;margin-top:1.1mm}
+.kv b,.doc-row b{font-weight:700}
+.kv em,.doc-row em{font-style:normal}
+.customer .cust-main{white-space:pre-line;margin:1mm 0 1.8mm}
+.customer .addr{white-space:pre-line;margin-bottom:1.6mm}
+.ctp-inv-right{display:flex;flex-direction:column;align-items:center;gap:7mm;padding-top:2mm}
+.logo{width:64mm;max-height:22mm;object-fit:contain}
+.docbox{width:75mm;border:1px solid #8ca0b1;border-radius:4px;overflow:hidden;align-self:flex-end}
+.docbox-title{background:#2e5d7c;color:#fff;font-weight:700;padding:2.2mm 3mm}
+.docbox-body{padding:3mm}
+.doc-row{grid-template-columns:31mm 3mm 1fr;margin-top:1.3mm}
+.inv-table{width:100%;border-collapse:collapse;margin-top:8mm;font-size:8px}
+.inv-table th{background:#2e5d7c;color:#fff;border:1px solid #8ca0b1;padding:2mm 1.2mm;text-align:center;font-weight:700;line-height:1.15}
+.inv-table td{border:1px solid #9aa7b0;padding:1.8mm 1.2mm;vertical-align:top}
+.inv-table .c{text-align:center}.inv-table .r{text-align:right;white-space:nowrap}.empty{color:#777;padding:8mm!important}
+.totals{width:92mm;margin:7mm 0 0 auto;border:1px solid #e5e7eb;border-radius:2px;padding:3mm 5mm;font-size:8.4px}
+.tot-row{display:grid;grid-template-columns:1fr 4mm 30mm;gap:2mm;margin:1.5mm 0}.tot-row span:last-child{text-align:right}
+.notes{position:absolute;left:13mm;right:13mm;bottom:18mm;min-height:43mm;border:1px solid #8ca0b1;border-radius:4px;padding:16mm 11mm 6mm;font-size:8.5px}
+.footer-note{position:absolute;bottom:7mm;left:0;right:0;text-align:center;font-size:8px;color:#333}
+.muted{color:#333}
+@media print{body{margin:0}.ctp-inv-a4{margin:0;box-shadow:none}}
+</style>
+<div class="ctp-inv-a4">
+  <div class="ctp-inv-top">
+    <div class="ctp-inv-left">
+      ${sellerBlock()}
+      <div class="box customer">
+        <div class="sayin">SAYIN</div>
+        <div class="cust-main">${lineCell(customerNameLines(f))}</div>
+        <div class="addr">${lineCell(firmAddress(f))}</div>
+        <div class="kv"><b>E-Posta</b><span>:</span><em>${esc(mail)}</em></div>
+        <div class="kv"><b>Vergi Dairesi</b><span>:</span><em>${esc(vergiDairesi)}</em></div>
+        <div class="kv"><b>TCKN / VKN</b><span>:</span><em>${esc(vkn)}</em></div>
+        <div class="kv"><b>Teslimat Adresi</b><span>:</span><em>${lineCell(deliveryAddress(f))}</em></div>
+      </div>
+    </div>
+    <div class="ctp-inv-right">
+      <img class="logo" src="${TATSAN_LOGO_DATA}" alt="Tatsan Helva">
+      <div class="docbox">
+        <div class="docbox-title">e-Fatura</div>
+        <div class="docbox-body">
+          <div class="doc-row"><b>Özelleştirme No</b><span>:</span><em>TR1.2</em></div>
+          <div class="doc-row"><b>Senaryo</b><span>:</span><em>TICARIFATURA</em></div>
+          <div class="doc-row"><b>Fatura Tipi</b><span>:</span><em>${esc(d.tip || 'SATIS')}</em></div>
+          <div class="doc-row"><b>Fatura No</b><span>:</span><em>${esc(d.no)}</em></div>
+          <div class="doc-row"><b>Fatura Tarihi</b><span>:</span><em>${esc(faturaTarihi)}</em></div>
+          <div class="doc-row"><b>Düzenlenme Zamanı</b><span>:</span><em>${esc(duzen)}</em></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <table class="inv-table">
+    <thead><tr><th>Sıra<br>No</th><th>Malzeme /<br>Hizmet Kodu</th><th>Malzeme / Hizmet<br>Açıklaması</th><th>Miktar</th><th>Birim Fiyat</th><th>İskonto<br>Oranı</th><th>İskonto<br>Tutarı</th><th>KDV Oranı</th><th>KDV<br>Tutarı</th><th>Malzeme /<br>Hizmet Tutarı</th></tr></thead>
+    <tbody>${built.html}</tbody>
+  </table>
+  <div class="totals">
+    <div class="tot-row"><b>Mal / Hizmet Toplam Tutarı</b><span>:</span><span>${money(totals.gross)}</span></div>
+    <div class="tot-row"><b>Toplam İskonto</b><span>:</span><span>${money(totals.disc)}</span></div>
+    <div class="tot-row"><b>Hesaplanan KDV(%${kdvOran})</b><span>:</span><span>${money(totals.kdv)}</span></div>
+    <div class="tot-row"><b>Vergiler Dahil Toplam Tutar</b><span>:</span><span>${money(totals.grand)}</span></div>
+    <div class="tot-row"><b>Ödenecek Tutar</b><span>:</span><span>${money(totals.grand)}</span></div>
+  </div>
+  <div class="notes">
+    <b>Genel Açıklamalar</b><br>
+    <span class="muted"># ${esc(yazi)} #</span><br><br>
+    ${acik?('<span>'+esc(acik)+'</span><br><br>'):''}
+    <b>GARANTİ BANKASI IBAN :</b> TR11 0006 2000 6320 0006 2999 38
+  </div>
+  <div class="footer-note">İrsaliye yerine geçer.</div>
+</div>`;
+  }
+  function buildPreviewItems(kdvOran){
+    var items=sepetArr().slice();
+    if(items.length) return items;
+    return singleManualRow(kdvOran);
+  }
+  window.ctpFaturaIrsaliyePdfHtmlV3142=invoiceHtml;
+  window.ctpFaturaIrsaliyePdfHtmlV3141=invoiceHtml;
+  window.ctpFaturaIrsaliyePdfHtmlV3140=invoiceHtml;
+  window.faturaHTML=function(d){
+    d=d||{};
+    return invoiceHtml({
+      tip:d.tip || 'SATIS', no:d.no || d.belge || ('FTR-'+todayStr().replace(/-/g,'')), tarih:d.tarih || todayStr(),
+      firma:d.firma || getFirma(), urunler:d.urunler || [], kdvOran:d.kdvOran || 0, acik:d.acik || '', genelTop:d.genelTop || d.tutar || 0
+    });
+  };
+  window.faturaOnizle=function(){
+    var firma=getFirma();
+    var tur=getVal('h-tur') || 'FATURA';
+    if(!firma && tur!=='KASA_GIRIS' && tur!=='KASA_CIKIS'){ alert('Lütfen önce firma seçin!'); return; }
+    var tarih=getVal('h-tarih') || getVal('s-tarih') || todayStr();
+    var belge=getVal('h-belge') || getVal('s-belge') || ('TA1'+todayStr().replace(/-/g,'')+String(Date.now()).slice(-5));
+    var kdvOran=Number(getVal('h-kdv') || getVal('s-kdv') || 1)||0;
+    var tip=(tur==='IADE')?'IADE':'SATIS';
+    var acik=getVal('h-acik') || getVal('s-acik') || '';
+    var items=buildPreviewItems(kdvOran);
+    if(!items.length){ alert('Fatura / irsaliye önizleme için önce ürün ekle veya tutar gir.'); return; }
+    var cont=document.getElementById('fatura-icerik');
+    if(cont) cont.innerHTML=invoiceHtml({tip:tip,no:belge,tarih:tarih,firma:firma,urunler:items,kdvOran:kdvOran,acik:acik});
+    if(typeof window.openModal==='function') window.openModal('fatura-modal'); else {var m=document.getElementById('fatura-modal'); if(m)m.classList.add('open');}
+  };
+  window.faturaGoster=function(hid){
+    var d=db();
+    var h=null,f=null,items=[];
+    try{ h=(d.hareketler||[]).find(function(x){return String(x.id)===String(hid)}); }catch(e){}
+    if(!h) return;
+    try{ f=(d.firmalar||[]).find(function(x){return String(x.kod)===String(h.fKod)}) || null; }catch(e){}
+    if(Array.isArray(h.urunler) && h.urunler.length) items=h.urunler;
+    else if(Array.isArray(h.sepet) && h.sepet.length) items=h.sepet;
+    else items=[{ad:h.acik||h.tur||'Cari Hareket',bir:'Adet',miktar:1,fiyat:(Number(h.tutar)||0)/(1+((Number(h.kdv)||0)/100))}];
+    var cont=document.getElementById('fatura-icerik');
+    if(cont) cont.innerHTML=invoiceHtml({tip:h.tur==='IADE'?'IADE':'SATIS',no:h.belge||h.id,tarih:h.tarih||todayStr(),firma:f,urunler:items,kdvOran:Number(h.kdv)||0,acik:h.acik||'',genelTop:Number(h.tutar)||0});
+    if(typeof window.openModal==='function') window.openModal('fatura-modal'); else {var m=document.getElementById('fatura-modal'); if(m)m.classList.add('open');}
+  };
+  window.faturaYazdir=function(){
+    var icerik=(document.getElementById('fatura-icerik')||{}).innerHTML||'';
+    var win=window.open('','_blank','width=900,height=1100');
+    if(!win){alert('Yazdırma penceresi açılamadı. Tarayıcı popup iznini kontrol et.');return;}
+    win.document.open();
+    win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Fatura / İrsaliye</title></head><body>'+icerik+'<script>setTimeout(function(){window.print();window.close();},500);<\/script></body></html>');
+    win.document.close();
+  };
+})();
+</script>
+<!-- CTP_FATURA_IRSALIYE_PDF_SABLON_V3142_END -->
+
+<!-- CTP_MANUEL_ISKONTO_V3145_START -->
+<style id="ctp-manuel-iskonto-v3145-css">
+  .ctp-manuel-iskonto-box{display:none;margin-top:8px;background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:10px}
+  .ctp-manuel-iskonto-box.show{display:block}
+  .ctp-manuel-iskonto-help{font-size:11px;color:#92400e;margin-top:5px;line-height:1.35}
+</style>
+<script id="ctp-manuel-iskonto-v3145-js">
+(function(){
+  'use strict';
+  var PRESETS={'0':1,'15':1,'15+5':1,'20+2':1,'20+5':1};
+  function el(id){return document.getElementById(id)}
+  function val(id){var x=el(id); return x?String(x.value||'').trim():''}
+  function isManualValue(v){v=String(v||'').trim(); return !!v && !PRESETS[v] && v!=='__MANUEL__'}
+  function normalizeManualDiscount(raw){
+    var s=String(raw||'').trim().replace(/%/g,'').replace(/,/g,'.').replace(/\s+/g,'');
+    s=s.replace(/[^0-9.+]/g,'');
+    s=s.replace(/\+{2,}/g,'+').replace(/^\+|\+$/g,'');
+    if(!s) return '';
+    var parts=s.split('+').filter(Boolean);
+    if(!parts.length) return '';
+    for(var i=0;i<parts.length;i++){
+      if(!/^\d+(\.\d+)?$/.test(parts[i])) return '';
+      var n=parseFloat(parts[i]);
+      if(!isFinite(n) || n<0 || n>=100) return '';
+      parts[i]=String(n).replace(/\.0$/,'');
+    }
+    return parts.join('+');
+  }
+  function ensureManualOption(select,value){
+    if(!select) return;
+    if(!select.querySelector('option[value="__MANUEL__"]')){
+      var opt=document.createElement('option'); opt.value='__MANUEL__'; opt.textContent='Manuel İskonto'; select.appendChild(opt);
+    }
+    if(value && !select.querySelector('option[value="'+String(value).replace(/"/g,'&quot;')+'"]')){
+      var cur=document.createElement('option'); cur.value=value; cur.textContent='Manuel %'+value; cur.setAttribute('data-ctp-manual-current','1'); select.appendChild(cur);
+    }
+  }
+  function ensureUI(){
+    var select=el('f-iskonto'); if(!select) return;
+    ensureManualOption(select);
+    if(!el('f-iskonto-manuel-wrap')){
+      var wrap=document.createElement('div');
+      wrap.className='ctp-manuel-iskonto-box';
+      wrap.id='f-iskonto-manuel-wrap';
+      wrap.innerHTML='<label>Manuel İskonto Oranı</label><input id="f-iskonto-manuel" inputmode="decimal" placeholder="Örn: 12 veya 15+3"><div class="ctp-manuel-iskonto-help">Tek oran için 12 yaz. Kademeli iskonto için 15+5 yaz. Sipariş ve faturada otomatik uygulanır.</div>';
+      var fg=select.closest?select.closest('.fg'):null;
+      if(fg && fg.parentNode) fg.parentNode.insertBefore(wrap, fg.nextSibling);
+      var inp=el('f-iskonto-manuel');
+      if(inp){ inp.addEventListener('input',function(){ this.value=this.value.replace(/,/g,'.').replace(/[^0-9.+]/g,''); }); }
+    }
+    if(!select.getAttribute('data-ctp-manual-bound')){
+      select.setAttribute('data-ctp-manual-bound','1');
+      select.addEventListener('change',syncFromSelect);
+    }
+    syncFromSelect();
+  }
+  function syncFromSelect(){
+    var select=el('f-iskonto'), wrap=el('f-iskonto-manuel-wrap'), inp=el('f-iskonto-manuel');
+    if(!select || !wrap || !inp) return;
+    var v=String(select.value||'').trim();
+    if(v==='__MANUEL__'){
+      wrap.classList.add('show');
+      if(!inp.value && select.getAttribute('data-ctp-last-manual')) inp.value=select.getAttribute('data-ctp-last-manual');
+    }else if(isManualValue(v)){
+      inp.value=v;
+      select.setAttribute('data-ctp-last-manual',v);
+      select.value='__MANUEL__';
+      wrap.classList.add('show');
+    }else{
+      wrap.classList.remove('show');
+    }
+  }
+  function setFirmaManualUI(f){
+    ensureUI();
+    var select=el('f-iskonto'), inp=el('f-iskonto-manuel'), wrap=el('f-iskonto-manuel-wrap');
+    if(!select) return;
+    var isk=String((f&&f.iskonto)||'0').trim();
+    if(isManualValue(isk)){
+      ensureManualOption(select,isk);
+      select.value='__MANUEL__';
+      if(inp) inp.value=isk;
+      if(wrap) wrap.classList.add('show');
+    }else{
+      select.value=isk||'0';
+      if(inp) inp.value='';
+      if(wrap) wrap.classList.remove('show');
+    }
+  }
+  function prepareManualForSave(){
+    ensureUI();
+    var select=el('f-iskonto'), inp=el('f-iskonto-manuel');
+    if(!select) return true;
+    if(String(select.value||'')==='__MANUEL__'){
+      var norm=normalizeManualDiscount(inp?inp.value:'');
+      if(!norm){
+        if(typeof window.showA==='function') window.showA('fa','Manuel iskonto oranını doğru yaz. Örnek: 12 veya 15+5','e'); else alert('Manuel iskonto oranını doğru yaz. Örnek: 12 veya 15+5');
+        if(inp&&inp.focus) inp.focus();
+        return false;
+      }
+      select.setAttribute('data-ctp-last-manual',norm);
+      var olds=select.querySelectorAll('option[data-ctp-manual-current="1"]');
+      olds.forEach ? olds.forEach(function(o){o.remove();}) : Array.prototype.forEach.call(olds,function(o){o.remove();});
+      var opt=document.createElement('option'); opt.value=norm; opt.textContent='Manuel %'+norm; opt.setAttribute('data-ctp-manual-current','1'); select.appendChild(opt);
+      select.value=norm;
+      if(inp) inp.value=norm;
+    }
+    return true;
+  }
+  var oldFirmaKaydet=window.firmaKaydet;
+  window.firmaKaydet=function(){
+    if(!prepareManualForSave()) return;
+    var res;
+    if(typeof oldFirmaKaydet==='function') res=oldFirmaKaydet.apply(this,arguments);
+    setTimeout(function(){ ensureUI(); },0);
+    return res;
+  };
+  var oldFirmaDuz=window.firmaDuz;
+  window.firmaDuz=function(id){
+    var res;
+    if(typeof oldFirmaDuz==='function') res=oldFirmaDuz.apply(this,arguments);
+    try{ var f=(window.DB&&Array.isArray(DB.firmalar))?DB.firmalar.find(function(x){return String(x.id)===String(id)}):null; setTimeout(function(){ setFirmaManualUI(f); },0); }catch(e){}
+    return res;
+  };
+  var oldFirmaTemizle=window.firmaTemizle;
+  window.firmaTemizle=function(){
+    var res;
+    if(typeof oldFirmaTemizle==='function') res=oldFirmaTemizle.apply(this,arguments);
+    setTimeout(function(){ setFirmaManualUI({iskonto:'0'}); },0);
+    return res;
+  };
+  var oldCtpEnsureFirmaVergiDairesiUI=window.ctpEnsureFirmaVergiDairesiUI;
+  window.ctpEnsureFirmaVergiDairesiUI=function(){
+    if(typeof oldCtpEnsureFirmaVergiDairesiUI==='function') oldCtpEnsureFirmaVergiDairesiUI.apply(this,arguments);
+    ensureUI();
+  };
+  function boot(){ ensureUI(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else setTimeout(boot,0);
+  window.addEventListener('load',function(){setTimeout(boot,300);setTimeout(boot,1200);});
+})();
+
+
+try{ if(typeof DB!=='undefined' && !window.DB){ window.DB=DB; } }catch(e){}
+/* ==== v3.1.46 İSKONTO HESAPLAYICI ==== */
+(function(){
+  var PAGE_ID='iskonto-hesap';
+  function $ih(id){return document.getElementById(id);}
+  function num(v){return +(String(v||'').replace(',','.'))||0;}
+  function money(n){try{return typeof tl==='function'?tl(n):new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY',maximumFractionDigits:2}).format(+n||0);}catch(e){return '₺'+((+n||0).toFixed(2));}}
+  function escTxt(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function normalizeDisc(s){
+    s=String(s||'').trim().replace(/%/g,'').replace(/,/g,'.').replace(/\s+/g,'');
+    if(!s || s==='0') return '0';
+    var parts=s.split('+').filter(Boolean);
+    if(!parts.length) return '0';
+    for(var i=0;i<parts.length;i++){var n=+parts[i]; if(!isFinite(n)||n<0||n>=100) return ''; parts[i]=String(n).replace(/\.0$/,'');}
+    return parts.join('+');
+  }
+  function discNet(tutar, oran){
+    oran=normalizeDisc(oran);
+    if(!oran || oran==='0') return +tutar||0;
+    if(typeof window.iskontoUygula==='function') return window.iskontoUygula(+tutar||0, oran);
+    var sonuc=+tutar||0;
+    oran.split('+').forEach(function(p){sonuc=sonuc*(1-(+p/100));});
+    return sonuc;
+  }
+  function getUrun(){
+    var id=$ih('ih-urun')?$ih('ih-urun').value:'';
+    return ((typeof DB!=='undefined')&&Array.isArray(DB.urunler))?DB.urunler.find(function(u){return String(u.id)===String(id);}):null;
+  }
+  function fiyatSecenekleri(u){
+    if(!u) return [];
+    var arr=[];
+    if(+u.fiyAdet) arr.push({bir:'Adet', fiyat:+u.fiyAdet, etiket:'Adet'});
+    if(+u.fiyKg) arr.push({bir:'Kg', fiyat:+u.fiyKg, etiket:'Kg'});
+    if(+u.fiyKoli) arr.push({bir:'Koli', fiyat:+u.fiyKoli, etiket:'Koli'});
+    if(!arr.length && +u.fiy) arr.push({bir:u.bir||'Adet', fiyat:+u.fiy, etiket:u.bir||'Fiyat'});
+    return arr;
+  }
+  function secilenIskonto(){
+    var s=$ih('ih-iskonto');
+    var v=s?s.value:'0';
+    if(v==='__MANUEL__') v=$ih('ih-manuel')?$ih('ih-manuel').value:'';
+    return normalizeDisc(v);
+  }
+  window.ctpIHRender=function(){
+    var sel=$ih('ih-urun'); if(!sel) return;
+    var cur=sel.value;
+    var list=((typeof DB!=='undefined')&&Array.isArray(DB.urunler))?DB.urunler.slice().sort(function(a,b){return String(a.ad||'').localeCompare(String(b.ad||''),'tr');}):[];
+    sel.innerHTML='<option value="">Ürün seç...</option>'+list.map(function(u){return '<option value="'+escTxt(u.id)+'">'+escTxt(u.ad||'-')+'</option>';}).join('');
+    if(cur && list.some(function(u){return String(u.id)===String(cur);})){sel.value=cur;}
+    window.ctpIHUrunSecildi(false);
+  };
+  window.ctpIHUrunSecildi=function(reset){
+    var u=getUrun();
+    var b=$ih('ih-birim'), f=$ih('ih-fiyat'), k=$ih('ih-kdv'), info=$ih('ih-urun-bilgi');
+    if(!b) return;
+    if(!u){
+      b.innerHTML='<option value="">Önce ürün seç</option>'; if(f)f.value=''; if(info)info.innerHTML='Ürün seçince fiyat bilgileri burada görünür.'; window.ctpIHHesapla(); return;
+    }
+    var opts=fiyatSecenekleri(u);
+    b.innerHTML=opts.map(function(o){return '<option value="'+escTxt(o.bir)+'" data-fiyat="'+o.fiyat+'">'+escTxt(o.etiket)+' - '+money(o.fiyat)+'</option>';}).join('') || '<option value="">Fiyat yok</option>';
+    if(reset!==false && opts.length){b.value=opts[0].bir;}
+    if(f && opts.length) f.value=opts[0].fiyat;
+    if(k && (u.kdv!==undefined && u.kdv!==null && u.kdv!=='')) k.value=String(+u.kdv||0);
+    if(info){
+      var fiyatMetni=opts.map(function(o){return escTxt(o.etiket)+': <strong>'+money(o.fiyat)+'</strong>';}).join(' &nbsp; ');
+      info.innerHTML='<strong>'+escTxt(u.ad||'-')+'</strong><br><span style="font-size:11px;color:#6b7280">'+(fiyatMetni||'Fiyat bilgisi yok')+' · Varsayılan KDV: %'+escTxt(u.kdv||0)+'</span>'+(u.iskontoHaric||u.noIskonto?'<div class="ih-note">Bu ürün katalogda firma iskontosu hariç işaretli. Hesaplayıcıda yine de manuel iskonto deneyebilirsin.</div>':'');
+    }
+    window.ctpIHHesapla();
+  };
+  window.ctpIHBirimDegisti=function(){
+    var b=$ih('ih-birim'), f=$ih('ih-fiyat');
+    if(b&&f){var opt=b.options[b.selectedIndex]; if(opt&&opt.getAttribute('data-fiyat')) f.value=opt.getAttribute('data-fiyat');}
+    window.ctpIHHesapla();
+  };
+  window.ctpIHIskontoDegisti=function(){
+    var wrap=$ih('ih-manuel-wrap');
+    var s=$ih('ih-iskonto');
+    if(wrap) wrap.style.display=(s&&s.value==='__MANUEL__')?'block':'none';
+    window.ctpIHHesapla();
+  };
+  window.ctpIHHesapla=function(){
+    var sonuc=$ih('ih-sonuc'); if(!sonuc) return;
+    var u=getUrun();
+    var fiyat=num($ih('ih-fiyat')&&$ih('ih-fiyat').value);
+    var miktar=num($ih('ih-miktar')&&$ih('ih-miktar').value)||1;
+    var kdv=num($ih('ih-kdv')&&$ih('ih-kdv').value);
+    var fiyatTipi=($ih('ih-fiyat-tipi')&&$ih('ih-fiyat-tipi').value)||'haric';
+    var isk=secilenIskonto();
+    if(!u && !fiyat){sonuc.innerHTML='<div style="text-align:center;padding:24px;color:#9ca3af;font-size:12px">Ürün, iskonto ve KDV bilgilerini girince sonuç burada görünecek.</div>';return;}
+    if(!isk && ($ih('ih-iskonto')&&$ih('ih-iskonto').value==='__MANUEL__')){sonuc.innerHTML='<div class="al al-e">Manuel iskonto oranını doğru yaz. Örnek: 12 veya 15+5</div>';return;}
+    var birim=($ih('ih-birim')&&$ih('ih-birim').value)||'';
+    var listeBirim=fiyat;
+    var indirimliBirim=discNet(listeBirim,isk);
+    var iskBirim=listeBirim-indirimliBirim;
+    var oran=kdv/100;
+    var birimHaric,birimDahil,kdvBirim;
+    if(fiyatTipi==='dahil'){
+      birimDahil=indirimliBirim;
+      birimHaric=oran?birimDahil/(1+oran):birimDahil;
+      kdvBirim=birimDahil-birimHaric;
+    }else{
+      birimHaric=indirimliBirim;
+      kdvBirim=birimHaric*oran;
+      birimDahil=birimHaric+kdvBirim;
+    }
+    var toplamHaric=birimHaric*miktar;
+    var toplamKdv=kdvBirim*miktar;
+    var toplamDahil=birimDahil*miktar;
+    var listeToplam=listeBirim*miktar;
+    var iskToplam=iskBirim*miktar;
+    var oranTxt=(isk&&isk!=='0')?('%'+isk):'Yok';
+    sonuc.innerHTML='<div class="ih-result-main"><div class="ih-result-title">Müşteriye söylenecek net fiyat</div><div class="ih-result-price">'+money(birimDahil)+'</div><div style="font-size:12px;color:#166534;margin-top:4px">1 '+escTxt(birim||'birim')+' KDV dahil iskontolu fiyat</div></div>'+
+      '<div class="ih-line"><span>Ürün</span><strong>'+escTxt(u?u.ad:'Manuel fiyat')+'</strong></div>'+
+      '<div class="ih-line"><span>Liste birim fiyatı</span><strong>'+money(listeBirim)+' '+(fiyatTipi==='dahil'?'KDV dahil':'KDV hariç')+'</strong></div>'+
+      '<div class="ih-line"><span>İskonto</span><strong>'+escTxt(oranTxt)+' / -'+money(iskBirim)+' birim</strong></div>'+
+      '<div class="ih-line"><span>İskontolu birim KDV hariç</span><strong>'+money(birimHaric)+'</strong></div>'+
+      '<div class="ih-line"><span>KDV birim (%'+escTxt(kdv)+')</span><strong>'+money(kdvBirim)+'</strong></div>'+
+      '<div class="ih-line"><span>İskontolu birim KDV dahil</span><strong style="color:var(--g)">'+money(birimDahil)+'</strong></div>'+
+      '<hr class="divider">'+
+      '<div class="ih-line"><span>Miktar</span><strong>'+miktar+' '+escTxt(birim)+'</strong></div>'+
+      '<div class="ih-line"><span>Liste toplam</span><strong>'+money(listeToplam)+'</strong></div>'+
+      '<div class="ih-line"><span>Toplam iskonto</span><strong>-'+money(iskToplam)+'</strong></div>'+
+      '<div class="ih-line"><span>Toplam KDV hariç</span><strong>'+money(toplamHaric)+'</strong></div>'+
+      '<div class="ih-line"><span>Toplam KDV</span><strong>'+money(toplamKdv)+'</strong></div>'+
+      '<div class="ih-line"><span>Toplam KDV dahil</span><strong style="font-size:16px;color:var(--g)">'+money(toplamDahil)+'</strong></div>'+
+      '<div class="ih-note" id="ih-kopya-metin">Müşteriye: '+escTxt(u?u.ad:'Ürün')+' '+miktar+' '+escTxt(birim)+' için iskontolu KDV dahil toplam '+money(toplamDahil)+'. Birim fiyat '+money(birimDahil)+'.</div>';
+  };
+  window.ctpIHTemizle=function(){
+    if($ih('ih-urun'))$ih('ih-urun').value='';
+    if($ih('ih-miktar'))$ih('ih-miktar').value='1';
+    if($ih('ih-fiyat'))$ih('ih-fiyat').value='';
+    if($ih('ih-fiyat-tipi'))$ih('ih-fiyat-tipi').value='haric';
+    if($ih('ih-iskonto'))$ih('ih-iskonto').value='0';
+    if($ih('ih-manuel'))$ih('ih-manuel').value='';
+    window.ctpIHIskontoDegisti();
+    window.ctpIHRender();
+  };
+  window.ctpIHKopyala=function(){
+    var txtEl=$ih('ih-kopya-metin');
+    var txt=txtEl?txtEl.textContent.trim():'';
+    if(!txt) return alert('Kopyalanacak sonuç yok.');
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){alert('Hesap sonucu kopyalandı.');}).catch(function(){alert(txt);});}
+    else alert(txt);
+  };
+  var oldGo=window.goPage;
+  window.goPage=function(id,el){
+    var r=oldGo?oldGo.apply(this,arguments):undefined;
+    if(id===PAGE_ID) setTimeout(window.ctpIHRender,50);
+    return r;
+  };
+  var oldInit=window.initApp;
+  window.initApp=function(){
+    var r=oldInit?oldInit.apply(this,arguments):undefined;
+    setTimeout(window.ctpIHRender,200);
+    return r;
+  };
+  var oldRenderU=window.renderU;
+  if(typeof oldRenderU==='function'){
+    window.renderU=function(){var r=oldRenderU.apply(this,arguments); setTimeout(window.ctpIHRender,50); return r;};
+  }
+  /* Eski kullanıcı yetki listelerinde yeni sayfa otomatik görünsün */
+  var oldNormalize=window.normalizeUserPages;
+  if(typeof oldNormalize==='function'){
+    window.normalizeUserPages=function(u){
+      var pages=oldNormalize.apply(this,arguments)||[];
+      if(!pages.includes(PAGE_ID)){
+        var i=pages.indexOf('dashboard');
+        if(i>=0) pages.splice(i+1,0,PAGE_ID); else pages.unshift(PAGE_ID);
+      }
+      return Array.from(new Set(pages));
+    };
+  }
+  function boot(){setTimeout(window.ctpIHRender,250);}
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+  window.addEventListener('load',function(){setTimeout(window.ctpIHRender,800);});
+})();
+
+</script>
+<!-- CTP_MANUEL_ISKONTO_V3145_END -->
