@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cari Takip Pro v3.1.47 Iskonto Hesap Urun Fix</title>
+<title>Cari Takip Pro v3.1.50 Login Korumalı Tamir</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -2317,376 +2317,11 @@ function faturaHTML(d) {
 }
 
 function faturaYazdir() {
-  const icerik = document.getElementById('fatura-icerik').innerHTML;
-  const win = window.open('','_blank','width=750,height=900');
-  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Fatura</title>
-  <style>body{font-family:Arial,sans-serif;padding:20px;background:#fff}@media print{body{padding:0}}
-/* MOBIL İYİLEŞTİRME */
-@media(max-width:780px){.sidebar{display:none}.main{margin-left:0;padding:12px 12px 76px}.g2,.g3,.stats{grid-template-columns:1fr!important}.card{padding:13px;border-radius:14px}.page-title{font-size:20px}.tw{overflow-x:auto}table{min-width:620px}.login-box{width:92vw}.unsaved{left:12px;right:12px;bottom:80px}.stat-v{font-size:20px}}
-#mobile-nav{display:none}
-@media(max-width:780px){#mobile-nav{display:flex;position:fixed;left:8px;right:8px;bottom:8px;z-index:800;background:#fff;border:1px solid #e5e7eb;border-radius:20px;box-shadow:0 8px 25px rgba(0,0,0,.16);padding:6px;justify-content:space-around}#mobile-nav button{border:0;background:transparent;color:#64736b;font-size:10px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 5px;border-radius:14px;min-width:48px}#mobile-nav button i{font-size:19px}#mobile-nav button.active{background:#e8f7ed;color:#1d6f42}}
-</style>
-  </head><body>${icerik}<script>setTimeout(()=>{window.print();window.close();},400);<\/script>
-<style id="ctp-v316-safe-mobile-order-css">
-/* v3.1.16 Güvenli Mobil Sipariş Düzeltmesi
-   Not: Sipariş/sepete ekleme JS motoruna dokunmaz. Sadece ürün modalını ve giriş ekranını düzeltir. */
-@media (max-width:780px){
-  body:has(#urun-modal.open) #mobile-nav{display:none!important}
-  #urun-modal.modal-overlay.open{
-    z-index:20000!important;
-    align-items:flex-end!important;
-    padding:0!important;
-  }
-  #urun-modal .modal{
-    width:100vw!important;
-    max-width:100vw!important;
-    height:92dvh!important;
-    max-height:92dvh!important;
-    border-radius:24px 24px 0 0!important;
-    padding:14px!important;
-    overflow:hidden!important;
-    display:flex!important;
-    flex-direction:column!important;
-  }
-  #urun-modal .modal-head{
-    flex:0 0 auto!important;
-    margin-bottom:10px!important;
-    padding-bottom:10px!important;
-    border-bottom:1px solid #eef0f3!important;
-  }
-  #urun-modal .modal-title{
-    font-size:20px!important;
-    font-weight:900!important;
-    color:#111827!important;
-  }
-  #urun-modal .modal-head .btn{
-    width:48px!important;
-    height:48px!important;
-    min-height:48px!important;
-    border-radius:18px!important;
-    justify-content:center!important;
-  }
-  #urun-modal .sb-inp{
-    flex:1!important;
-  }
-  #urun-modal #um-ara{
-    min-height:48px!important;
-    font-size:16px!important;
-    border-radius:16px!important;
-  }
-  #urun-modal #um-kat-bar{
-    flex:0 0 auto!important;
-    overflow-x:auto!important;
-    flex-wrap:nowrap!important;
-    padding-bottom:8px!important;
-    margin-bottom:8px!important;
-    -webkit-overflow-scrolling:touch!important;
-  }
-  #urun-modal #um-kat-bar .btn{
-    flex:0 0 auto!important;
-    min-height:40px!important;
-    border-radius:999px!important;
-    padding:8px 14px!important;
-    font-size:13px!important;
-    white-space:nowrap!important;
-  }
-  #urun-modal .tw{
-    flex:1 1 auto!important;
-    max-height:none!important;
-    min-height:0!important;
-    overflow:auto!important;
-    -webkit-overflow-scrolling:touch!important;
-    border:0!important;
-    box-shadow:none!important;
-    background:#fff!important;
-  }
-  #urun-modal table{
-    min-width:0!important;
-    width:100%!important;
-    border:0!important;
-    border-radius:0!important;
-    table-layout:fixed!important;
-  }
-  #urun-modal thead{
-    position:sticky!important;
-    top:0!important;
-    z-index:2!important;
-    background:#fff!important;
-  }
-  #urun-modal th,
-  #urun-modal td{
-    white-space:normal!important;
-    padding:10px 6px!important;
-    font-size:13px!important;
-  }
-  #urun-modal th:nth-child(1), #urun-modal td:nth-child(1){width:38px!important}
-  #urun-modal th:nth-child(2), #urun-modal td:nth-child(2){width:auto!important}
-  #urun-modal th:nth-child(3), #urun-modal td:nth-child(3){display:none!important}
-  #urun-modal th:nth-child(4), #urun-modal td:nth-child(4){width:78px!important;text-align:right!important}
-  #urun-modal th:nth-child(5), #urun-modal td:nth-child(5){width:76px!important}
-  #urun-modal .um-chk,
-  #urun-modal #um-hep{
-    width:24px!important;
-    height:24px!important;
-    min-height:24px!important;
-  }
-  #urun-modal input[type="number"]{
-    width:68px!important;
-    min-height:40px!important;
-    font-size:16px!important;
-    border-radius:12px!important;
-    text-align:center!important;
-  }
-  #urun-modal .modal > div:last-child{
-    flex:0 0 auto!important;
-    position:sticky!important;
-    bottom:0!important;
-    z-index:3!important;
-    background:#fff!important;
-    padding:10px 0 max(10px, env(safe-area-inset-bottom))!important;
-    margin-top:8px!important;
-    border-top:1px solid #eef0f3!important;
-  }
-  #urun-modal .modal > div:last-child > div{
-    display:grid!important;
-    grid-template-columns:1fr 1fr!important;
-    gap:8px!important;
-  }
-  #urun-modal .modal > div:last-child .btn{
-    width:100%!important;
-    min-height:48px!important;
-    border-radius:16px!important;
-    justify-content:center!important;
-    font-size:14px!important;
-  }
-  #urun-modal .modal > div:last-child .btn-g{
-    font-size:15px!important;
-    font-weight:900!important;
-  }
-  .cloud-badge,.app-version-fixed{
-    display:none!important;
-  }
-  #login-screen .login-box input#l-user,
-  #login-screen .login-box input#l-pass{
-    font-size:16px!important;
-    min-height:46px!important;
-  }
-}
-</style>
-
-
-
-<!-- CTP MOBIL FIRMALAR BOYUT FIX - ödeme/yedek fix korunarak -->
-<style id="ctp-mobile-firmalar-boyut-fix-css">
-@media(max-width:780px){
-  #page-firmalar{width:100%!important;max-width:100vw!important;overflow-x:hidden!important;}
-  #page-firmalar .g2{display:grid!important;grid-template-columns:1fr!important;width:100%!important;max-width:100%!important;gap:10px!important;}
-  #page-firmalar .card{width:100%!important;max-width:100%!important;overflow:hidden!important;}
-  #page-firmalar input,#page-firmalar select,#page-firmalar textarea{width:100%!important;max-width:100%!important;}
-  #page-firmalar .tw{width:100%!important;overflow:visible!important;border:0!important;box-shadow:none!important;background:transparent!important;}
-  #page-firmalar table{width:100%!important;min-width:0!important;border:0!important;background:transparent!important;}
-  #page-firmalar thead{display:none!important;}
-  #page-firmalar tbody,#page-firmalar tr,#page-firmalar td{display:block!important;width:100%!important;max-width:100%!important;}
-  #page-firmalar #f-tb tr{background:#fff!important;border:1px solid #e5e7eb!important;border-radius:16px!important;margin-bottom:10px!important;padding:10px!important;box-shadow:0 4px 14px rgba(0,0,0,.05)!important;}
-  #page-firmalar #f-tb td{border:0!important;padding:5px 4px!important;white-space:normal!important;word-break:break-word!important;}
-  #page-firmalar #f-tb td:nth-child(1)::before{content:'Kod: ';font-weight:800;color:#6b7280;}
-  #page-firmalar #f-tb td:nth-child(2){font-size:15px!important;font-weight:800!important;color:#111827!important;}
-  #page-firmalar #f-tb td:nth-child(3)::before{content:'Tür: ';font-weight:800;color:#6b7280;}
-  #page-firmalar #f-tb td:nth-child(4)::before{content:'Bakiye: ';font-weight:800;color:#6b7280;}
-  #page-firmalar #f-tb td:last-child{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin-top:8px!important;}
-  #page-firmalar #f-tb td:last-child .btn{width:100%!important;min-height:38px!important;padding:8px!important;justify-content:center!important;}
-  #mobile-nav button[onclick*="yedek"]{display:none!important;}
-}
-</style>
-
-
-
-<!-- CTP_MOBILE_V3148_START: Mobil görünüm toparlama + yeni sekmelerin telefonda çalışması -->
-<style id="ctp-mobile-v3148-css">
-@media(max-width:780px){
-  html,body{max-width:100%!important;overflow-x:hidden!important;background:#f3f4f6!important;}
-  body.ctp-view-mobile .sidebar,
-  body.ctp-view-web.ctp-force-mobile .sidebar{display:none!important;}
-  body.ctp-view-mobile .main,
-  body.ctp-view-web.ctp-force-mobile .main{
-    margin-left:0!important;
-    padding:10px 10px 104px!important;
-    max-width:100vw!important;
-    min-width:0!important;
-    overflow-x:hidden!important;
-  }
-  body.ctp-view-mobile #mobile-nav,
-  body.ctp-view-web.ctp-force-mobile #mobile-nav{
-    display:flex!important;
-    position:fixed!important;
-    left:7px!important;
-    right:7px!important;
-    bottom:7px!important;
-    z-index:99999!important;
-    background:#fff!important;
-    border:1px solid #e5e7eb!important;
-    border-radius:22px!important;
-    box-shadow:0 10px 30px rgba(0,0,0,.20)!important;
-    padding:6px!important;
-    gap:4px!important;
-    justify-content:flex-start!important;
-    overflow-x:auto!important;
-    -webkit-overflow-scrolling:touch!important;
-  }
-  body.ctp-view-mobile #mobile-nav::-webkit-scrollbar,
-  body.ctp-view-web.ctp-force-mobile #mobile-nav::-webkit-scrollbar{display:none!important;}
-  body.ctp-view-mobile #mobile-nav button,
-  body.ctp-view-web.ctp-force-mobile #mobile-nav button{
-    flex:0 0 auto!important;
-    min-width:54px!important;
-    border:0!important;
-    background:transparent!important;
-    color:#64736b!important;
-    font-size:9.5px!important;
-    font-weight:800!important;
-    display:flex!important;
-    flex-direction:column!important;
-    align-items:center!important;
-    justify-content:center!important;
-    gap:2px!important;
-    padding:7px 5px!important;
-    border-radius:16px!important;
-    white-space:nowrap!important;
-  }
-  body.ctp-view-mobile #mobile-nav button i,
-  body.ctp-view-web.ctp-force-mobile #mobile-nav button i{font-size:20px!important;}
-  body.ctp-view-mobile #mobile-nav button.active,
-  body.ctp-view-web.ctp-force-mobile #mobile-nav button.active{background:#e8f7ed!important;color:#1d6f42!important;}
-
-  body.ctp-view-mobile .page-title,
-  body.ctp-view-web.ctp-force-mobile .page-title{font-size:20px!important;font-weight:900!important;margin:6px 2px 12px!important;}
-  body.ctp-view-mobile .card,
-  body.ctp-view-web.ctp-force-mobile .card{width:100%!important;max-width:100%!important;overflow:hidden!important;border-radius:18px!important;padding:13px!important;margin-bottom:12px!important;}
-  body.ctp-view-mobile .g2,
-  body.ctp-view-mobile .g3,
-  body.ctp-view-mobile .stats,
-  body.ctp-view-web.ctp-force-mobile .g2,
-  body.ctp-view-web.ctp-force-mobile .g3,
-  body.ctp-view-web.ctp-force-mobile .stats{display:grid!important;grid-template-columns:1fr!important;gap:10px!important;}
-  body.ctp-view-mobile .btn-row,
-  body.ctp-view-web.ctp-force-mobile .btn-row{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;width:100%!important;}
-  body.ctp-view-mobile .btn-row .btn,
-  body.ctp-view-web.ctp-force-mobile .btn-row .btn{width:100%!important;justify-content:center!important;}
-  body.ctp-view-mobile input,
-  body.ctp-view-mobile select,
-  body.ctp-view-mobile textarea,
-  body.ctp-view-web.ctp-force-mobile input,
-  body.ctp-view-web.ctp-force-mobile select,
-  body.ctp-view-web.ctp-force-mobile textarea{font-size:16px!important;min-height:44px!important;border-radius:12px!important;}
-  body.ctp-view-mobile .tw,
-  body.ctp-view-web.ctp-force-mobile .tw{max-width:100%!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;}
-  body.ctp-view-mobile table,
-  body.ctp-view-web.ctp-force-mobile table{min-width:620px!important;}
-
-  body.ctp-view-mobile #page-iskonto-hesap .card,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .card{overflow:visible!important;}
-  body.ctp-view-mobile #page-iskonto-hesap #ih-sonuc,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap #ih-sonuc{font-size:13px!important;}
-  body.ctp-view-mobile #page-iskonto-hesap .ih-result-main,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-result-main{padding:14px!important;border-radius:16px!important;text-align:center!important;}
-  body.ctp-view-mobile #page-iskonto-hesap .ih-result-price,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-result-price{font-size:24px!important;line-height:1.2!important;word-break:break-word!important;}
-  body.ctp-view-mobile #page-iskonto-hesap .ih-line,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-line{display:flex!important;gap:8px!important;justify-content:space-between!important;align-items:flex-start!important;padding:8px 0!important;border-bottom:1px solid #f3f4f6!important;}
-  body.ctp-view-mobile #page-iskonto-hesap .ih-line span,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-line span{color:#6b7280!important;}
-  body.ctp-view-mobile #page-iskonto-hesap .ih-line strong,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-line strong{text-align:right!important;max-width:58%!important;word-break:break-word!important;}
-  body.ctp-view-mobile #musteri-indir-card .btn-row,
-  body.ctp-view-web.ctp-force-mobile #musteri-indir-card .btn-row{grid-template-columns:1fr!important;}
-  body.ctp-view-mobile #page-firmalar .card-head,
-  body.ctp-view-web.ctp-force-mobile #page-firmalar .card-head{gap:8px!important;align-items:center!important;}
-}
-</style>
-<script id="ctp-mobile-v3148-js">
-(function(){
-  var mobilePages=[
-    ['dashboard','ti-dashboard','Ana'],
-    ['iskonto-hesap','ti-calculator','Hesap'],
-    ['firmalar','ti-building','Firma'],
-    ['siparis','ti-shopping-cart','Sipariş'],
-    ['hareket','ti-cash','Ödeme'],
-    ['cari','ti-list-details','Cari'],
-    ['stok','ti-box-seam','Stok']
-  ];
-  function isPhone(){return window.matchMedia&&window.matchMedia('(max-width: 780px)').matches;}
-  function forceMobileMode(){
-    if(!isPhone()) return;
-    try{localStorage.setItem('ctp_view_mode_v4','mobile');}catch(e){}
-    document.body.classList.remove('ctp-view-web');
-    document.body.classList.add('ctp-view-mobile','ctp-force-mobile');
-  }
-  function allowed(id){
-    try{ if(typeof currentAllowedPages==='function') return currentAllowedPages().indexOf(id)>=0; }catch(e){}
-    return true;
-  }
-  function navHtml(p,active){
-    return '<button '+(active?'class="active" ':'')+'data-page="'+p[0]+'" onclick="goPageMobile(\''+p[0]+'\',this)"><i class="ti '+p[1]+'"></i>'+p[2]+'</button>';
-  }
-  function ensureMobileNav(activeId){
-    var nav=document.getElementById('mobile-nav');
-    if(!nav) return;
-    var current=activeId || (document.querySelector('.page.active')||{}).id || 'page-dashboard';
-    current=String(current).replace(/^page-/,'');
-    var html=mobilePages.filter(function(p){return allowed(p[0]);}).map(function(p){return navHtml(p,p[0]===current);}).join('');
-    if(nav.getAttribute('data-v3148')!=='1' || nav.getAttribute('data-active')!==current || nav.innerHTML.indexOf('data-page="iskonto-hesap"')<0){
-      nav.innerHTML=html;
-      nav.setAttribute('data-v3148','1');
-      nav.setAttribute('data-active',current);
-    }else{
-      Array.prototype.forEach.call(nav.querySelectorAll('button'),function(b){b.classList.toggle('active',b.getAttribute('data-page')===current);});
-    }
-  }
-  function afterPage(id){
-    try{ if(id==='iskonto-hesap' && typeof window.ctpIHRender==='function') setTimeout(window.ctpIHRender,60); }catch(e){}
-    try{ if(id==='dashboard' && typeof renderDashboard==='function') setTimeout(renderDashboard,60); }catch(e){}
-    try{ if(id==='firmalar' && typeof renderF==='function') setTimeout(renderF,60); }catch(e){}
-    try{ if(id==='siparis' && typeof renderSepet==='function') setTimeout(renderSepet,60); }catch(e){}
-    try{ if(id==='cari' && typeof renderCF==='function') setTimeout(renderCF,60); }catch(e){}
-    try{ if(id==='stok' && typeof renderStok==='function') setTimeout(renderStok,60); }catch(e){}
-  }
-  var oldMobile=window.goPageMobile;
-  window.goPageMobile=function(id,el){
-    forceMobileMode();
-    if(typeof window.goPage==='function') window.goPage(id,null);
-    else if(oldMobile) oldMobile(id,el);
-    ensureMobileNav(id);
-    afterPage(id);
-    try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){window.scrollTo(0,0);}
-  };
-  var oldGo=window.goPage;
-  if(typeof oldGo==='function'){
-    window.goPage=function(id,el){
-      forceMobileMode();
-      var r=oldGo.apply(this,arguments);
-      ensureMobileNav(id);
-      afterPage(id);
-      return r;
-    };
-  }
-  var oldInit=window.initApp;
-  if(typeof oldInit==='function'){
-    window.initApp=function(){
-      forceMobileMode();
-      var r=oldInit.apply(this,arguments);
-      setTimeout(function(){forceMobileMode();ensureMobileNav();afterPage((document.querySelector('.page.active')||{}).id||'dashboard');},120);
-      return r;
-    };
-  }
-  function boot(){forceMobileMode();ensureMobileNav();afterPage((document.querySelector('.page.active')||{}).id||'dashboard');}
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){setTimeout(boot,80);}); else setTimeout(boot,80);
-  window.addEventListener('load',function(){setTimeout(boot,250);setTimeout(boot,900);});
-  window.addEventListener('resize',function(){setTimeout(boot,120);});
-})();
-</script>
-<!-- CTP_MOBILE_V3148_END -->
-
-</body></html>`);
+  const icerik = (document.getElementById('fatura-icerik') || {}).innerHTML || '';
+  const win = window.open('', '_blank', 'width=750,height=900');
+  if(!win){ alert('Yazdırma penceresi açılamadı. Tarayıcı popup iznini kontrol et.'); return; }
+  win.document.open();
+  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Fatura</title><style>body{font-family:Arial,sans-serif;padding:20px;background:#fff}@media print{body{padding:0}}</style></head><body>'+icerik+'<script>setTimeout(function(){window.print();window.close();},400);<\/script></body></html>');
   win.document.close();
 }
 
@@ -6651,6 +6286,81 @@ body.ctp-view-mobile #ctp-view-toggle .m,body.ctp-view-web #ctp-view-toggle .w{b
 </script>
 <!-- CTP_MOBILE_V3148_END -->
 
+
+<!-- CTP_LOGIN_KORUMA_V3150_START -->
+<style id="ctp-login-koruma-v3150-css">
+/* Login ekranı ayrı korunur: mobil menü/görünüm butonu girişte görünmez. */
+body:not(.ctp-app-open) #mobile-nav,
+body:not(.ctp-app-open) #ctp-view-toggle{display:none!important;}
+#login-screen{z-index:999999!important;}
+#login-screen .login-box,#login-screen input,#login-screen button{pointer-events:auto!important;opacity:1!important;}
+#login-screen input#l-user,#login-screen input#l-pass{display:block!important;visibility:visible!important;}
+</style>
+<script id="ctp-login-koruma-v3150-js">
+(function(){
+  'use strict';
+  function $(id){return document.getElementById(id)}
+  function appIsOpen(){var a=$('app'); return !!(a && a.style.display==='block')}
+  function setAppFlag(){try{ if(appIsOpen()) document.body.classList.add('ctp-app-open'); else document.body.classList.remove('ctp-app-open'); }catch(e){}}
+  function showLogin(){
+    var l=$('login-screen'), a=$('app'), e=$('l-err');
+    if(a)a.style.display='none';
+    if(l)l.style.display='flex';
+    if(e)e.style.display='none';
+    document.body.classList.remove('ctp-app-open');
+  }
+  function openApp(user){
+    currentUser=user;
+    try{ user.lastLogin=new Date().toLocaleString('tr-TR'); }catch(e){}
+    try{ if(typeof ctSaveLocal==='function')ctSaveLocal(); }catch(e){}
+    var l=$('login-screen'), a=$('app');
+    if(l)l.style.display='none';
+    if(a)a.style.display='block';
+    document.body.classList.add('ctp-app-open');
+    try{ if($('sb-av')) $('sb-av').textContent=String(user.username||'A')[0].toUpperCase(); }catch(e){}
+    try{ if($('sb-name')) $('sb-name').textContent=String(user.username||'')+' — '+(typeof roleLabel==='function'?roleLabel(user.role):user.role||''); }catch(e){}
+    try{ if(typeof initApp==='function') initApp(); }catch(e){console.error('initApp hata',e)}
+    try{ if(typeof applyRoleUI==='function') applyRoleUI(); }catch(e){}
+    try{ if(typeof ctpOturumKaydet==='function') ctpOturumKaydet(user.username); }catch(e){}
+    var err=$('l-err'); if(err)err.style.display='none';
+    setTimeout(setAppFlag,50);
+  }
+  window.login=function(){
+    try{
+      if(typeof ensureUsers==='function') ensureUsers();
+      var u=(($('l-user')||{}).value||'').trim();
+      var p=(($('l-pass')||{}).value||'');
+      var users=(typeof DB!=='undefined' && DB.users) ? DB.users : [];
+      var user=(users||[]).find(function(x){return String(x&&x.username||'').toLowerCase()===u.toLowerCase() && x.active!==false;});
+      if(user && typeof passHash==='function' && user.pass===passHash(p)){ openApp(user); return true; }
+      var err=$('l-err'); if(err)err.style.display='flex';
+      return false;
+    }catch(e){
+      console.error('Login koruma hatası',e);
+      alert('Giriş ekranı hatası: '+(e.message||e));
+      return false;
+    }
+  };
+  window.logout=function(){
+    if(!confirm('Çıkış yapmak istiyor musunuz?')) return;
+    try{ if(typeof ctpOturumSil==='function') ctpOturumSil(); }catch(e){}
+    try{ currentUser=null; }catch(e){}
+    showLogin();
+  };
+  function bindLogin(){
+    var u=$('l-user'), p=$('l-pass'), btn=document.querySelector('#login-screen button[onclick*="login"]');
+    if(u)u.onkeydown=function(ev){if(ev.key==='Enter')window.login()};
+    if(p)p.onkeydown=function(ev){if(ev.key==='Enter')window.login()};
+    if(btn)btn.onclick=window.login;
+    setAppFlag();
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bindLogin); else bindLogin();
+  window.addEventListener('load',function(){bindLogin();setTimeout(setAppFlag,300);});
+  setInterval(setAppFlag,1000);
+})();
+</script>
+<!-- CTP_LOGIN_KORUMA_V3150_END -->
+
 </body>
 </html>
 
@@ -8642,194 +8352,7 @@ body.ctp-view-mobile #ctp-view-toggle .m,body.ctp-view-web #ctp-view-toggle .w{b
     var win=window.open('','_blank','width=900,height=1100');
     if(!win){alert('Yazdırma penceresi açılamadı. Tarayıcı popup iznini kontrol et.');return;}
     win.document.open();
-    win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Fatura / İrsaliye</title></head><body>'+icerik+'<script>setTimeout(function(){window.print();window.close();},500);<\/script>
-
-<!-- CTP_MOBILE_V3148_START: Mobil görünüm toparlama + yeni sekmelerin telefonda çalışması -->
-<style id="ctp-mobile-v3148-css">
-@media(max-width:780px){
-  html,body{max-width:100%!important;overflow-x:hidden!important;background:#f3f4f6!important;}
-  body.ctp-view-mobile .sidebar,
-  body.ctp-view-web.ctp-force-mobile .sidebar{display:none!important;}
-  body.ctp-view-mobile .main,
-  body.ctp-view-web.ctp-force-mobile .main{
-    margin-left:0!important;
-    padding:10px 10px 104px!important;
-    max-width:100vw!important;
-    min-width:0!important;
-    overflow-x:hidden!important;
-  }
-  body.ctp-view-mobile #mobile-nav,
-  body.ctp-view-web.ctp-force-mobile #mobile-nav{
-    display:flex!important;
-    position:fixed!important;
-    left:7px!important;
-    right:7px!important;
-    bottom:7px!important;
-    z-index:99999!important;
-    background:#fff!important;
-    border:1px solid #e5e7eb!important;
-    border-radius:22px!important;
-    box-shadow:0 10px 30px rgba(0,0,0,.20)!important;
-    padding:6px!important;
-    gap:4px!important;
-    justify-content:flex-start!important;
-    overflow-x:auto!important;
-    -webkit-overflow-scrolling:touch!important;
-  }
-  body.ctp-view-mobile #mobile-nav::-webkit-scrollbar,
-  body.ctp-view-web.ctp-force-mobile #mobile-nav::-webkit-scrollbar{display:none!important;}
-  body.ctp-view-mobile #mobile-nav button,
-  body.ctp-view-web.ctp-force-mobile #mobile-nav button{
-    flex:0 0 auto!important;
-    min-width:54px!important;
-    border:0!important;
-    background:transparent!important;
-    color:#64736b!important;
-    font-size:9.5px!important;
-    font-weight:800!important;
-    display:flex!important;
-    flex-direction:column!important;
-    align-items:center!important;
-    justify-content:center!important;
-    gap:2px!important;
-    padding:7px 5px!important;
-    border-radius:16px!important;
-    white-space:nowrap!important;
-  }
-  body.ctp-view-mobile #mobile-nav button i,
-  body.ctp-view-web.ctp-force-mobile #mobile-nav button i{font-size:20px!important;}
-  body.ctp-view-mobile #mobile-nav button.active,
-  body.ctp-view-web.ctp-force-mobile #mobile-nav button.active{background:#e8f7ed!important;color:#1d6f42!important;}
-
-  body.ctp-view-mobile .page-title,
-  body.ctp-view-web.ctp-force-mobile .page-title{font-size:20px!important;font-weight:900!important;margin:6px 2px 12px!important;}
-  body.ctp-view-mobile .card,
-  body.ctp-view-web.ctp-force-mobile .card{width:100%!important;max-width:100%!important;overflow:hidden!important;border-radius:18px!important;padding:13px!important;margin-bottom:12px!important;}
-  body.ctp-view-mobile .g2,
-  body.ctp-view-mobile .g3,
-  body.ctp-view-mobile .stats,
-  body.ctp-view-web.ctp-force-mobile .g2,
-  body.ctp-view-web.ctp-force-mobile .g3,
-  body.ctp-view-web.ctp-force-mobile .stats{display:grid!important;grid-template-columns:1fr!important;gap:10px!important;}
-  body.ctp-view-mobile .btn-row,
-  body.ctp-view-web.ctp-force-mobile .btn-row{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;width:100%!important;}
-  body.ctp-view-mobile .btn-row .btn,
-  body.ctp-view-web.ctp-force-mobile .btn-row .btn{width:100%!important;justify-content:center!important;}
-  body.ctp-view-mobile input,
-  body.ctp-view-mobile select,
-  body.ctp-view-mobile textarea,
-  body.ctp-view-web.ctp-force-mobile input,
-  body.ctp-view-web.ctp-force-mobile select,
-  body.ctp-view-web.ctp-force-mobile textarea{font-size:16px!important;min-height:44px!important;border-radius:12px!important;}
-  body.ctp-view-mobile .tw,
-  body.ctp-view-web.ctp-force-mobile .tw{max-width:100%!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;}
-  body.ctp-view-mobile table,
-  body.ctp-view-web.ctp-force-mobile table{min-width:620px!important;}
-
-  body.ctp-view-mobile #page-iskonto-hesap .card,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .card{overflow:visible!important;}
-  body.ctp-view-mobile #page-iskonto-hesap #ih-sonuc,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap #ih-sonuc{font-size:13px!important;}
-  body.ctp-view-mobile #page-iskonto-hesap .ih-result-main,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-result-main{padding:14px!important;border-radius:16px!important;text-align:center!important;}
-  body.ctp-view-mobile #page-iskonto-hesap .ih-result-price,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-result-price{font-size:24px!important;line-height:1.2!important;word-break:break-word!important;}
-  body.ctp-view-mobile #page-iskonto-hesap .ih-line,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-line{display:flex!important;gap:8px!important;justify-content:space-between!important;align-items:flex-start!important;padding:8px 0!important;border-bottom:1px solid #f3f4f6!important;}
-  body.ctp-view-mobile #page-iskonto-hesap .ih-line span,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-line span{color:#6b7280!important;}
-  body.ctp-view-mobile #page-iskonto-hesap .ih-line strong,
-  body.ctp-view-web.ctp-force-mobile #page-iskonto-hesap .ih-line strong{text-align:right!important;max-width:58%!important;word-break:break-word!important;}
-  body.ctp-view-mobile #musteri-indir-card .btn-row,
-  body.ctp-view-web.ctp-force-mobile #musteri-indir-card .btn-row{grid-template-columns:1fr!important;}
-  body.ctp-view-mobile #page-firmalar .card-head,
-  body.ctp-view-web.ctp-force-mobile #page-firmalar .card-head{gap:8px!important;align-items:center!important;}
-}
-</style>
-<script id="ctp-mobile-v3148-js">
-(function(){
-  var mobilePages=[
-    ['dashboard','ti-dashboard','Ana'],
-    ['iskonto-hesap','ti-calculator','Hesap'],
-    ['firmalar','ti-building','Firma'],
-    ['siparis','ti-shopping-cart','Sipariş'],
-    ['hareket','ti-cash','Ödeme'],
-    ['cari','ti-list-details','Cari'],
-    ['stok','ti-box-seam','Stok']
-  ];
-  function isPhone(){return window.matchMedia&&window.matchMedia('(max-width: 780px)').matches;}
-  function forceMobileMode(){
-    if(!isPhone()) return;
-    try{localStorage.setItem('ctp_view_mode_v4','mobile');}catch(e){}
-    document.body.classList.remove('ctp-view-web');
-    document.body.classList.add('ctp-view-mobile','ctp-force-mobile');
-  }
-  function allowed(id){
-    try{ if(typeof currentAllowedPages==='function') return currentAllowedPages().indexOf(id)>=0; }catch(e){}
-    return true;
-  }
-  function navHtml(p,active){
-    return '<button '+(active?'class="active" ':'')+'data-page="'+p[0]+'" onclick="goPageMobile(\''+p[0]+'\',this)"><i class="ti '+p[1]+'"></i>'+p[2]+'</button>';
-  }
-  function ensureMobileNav(activeId){
-    var nav=document.getElementById('mobile-nav');
-    if(!nav) return;
-    var current=activeId || (document.querySelector('.page.active')||{}).id || 'page-dashboard';
-    current=String(current).replace(/^page-/,'');
-    var html=mobilePages.filter(function(p){return allowed(p[0]);}).map(function(p){return navHtml(p,p[0]===current);}).join('');
-    if(nav.getAttribute('data-v3148')!=='1' || nav.getAttribute('data-active')!==current || nav.innerHTML.indexOf('data-page="iskonto-hesap"')<0){
-      nav.innerHTML=html;
-      nav.setAttribute('data-v3148','1');
-      nav.setAttribute('data-active',current);
-    }else{
-      Array.prototype.forEach.call(nav.querySelectorAll('button'),function(b){b.classList.toggle('active',b.getAttribute('data-page')===current);});
-    }
-  }
-  function afterPage(id){
-    try{ if(id==='iskonto-hesap' && typeof window.ctpIHRender==='function') setTimeout(window.ctpIHRender,60); }catch(e){}
-    try{ if(id==='dashboard' && typeof renderDashboard==='function') setTimeout(renderDashboard,60); }catch(e){}
-    try{ if(id==='firmalar' && typeof renderF==='function') setTimeout(renderF,60); }catch(e){}
-    try{ if(id==='siparis' && typeof renderSepet==='function') setTimeout(renderSepet,60); }catch(e){}
-    try{ if(id==='cari' && typeof renderCF==='function') setTimeout(renderCF,60); }catch(e){}
-    try{ if(id==='stok' && typeof renderStok==='function') setTimeout(renderStok,60); }catch(e){}
-  }
-  var oldMobile=window.goPageMobile;
-  window.goPageMobile=function(id,el){
-    forceMobileMode();
-    if(typeof window.goPage==='function') window.goPage(id,null);
-    else if(oldMobile) oldMobile(id,el);
-    ensureMobileNav(id);
-    afterPage(id);
-    try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){window.scrollTo(0,0);}
-  };
-  var oldGo=window.goPage;
-  if(typeof oldGo==='function'){
-    window.goPage=function(id,el){
-      forceMobileMode();
-      var r=oldGo.apply(this,arguments);
-      ensureMobileNav(id);
-      afterPage(id);
-      return r;
-    };
-  }
-  var oldInit=window.initApp;
-  if(typeof oldInit==='function'){
-    window.initApp=function(){
-      forceMobileMode();
-      var r=oldInit.apply(this,arguments);
-      setTimeout(function(){forceMobileMode();ensureMobileNav();afterPage((document.querySelector('.page.active')||{}).id||'dashboard');},120);
-      return r;
-    };
-  }
-  function boot(){forceMobileMode();ensureMobileNav();afterPage((document.querySelector('.page.active')||{}).id||'dashboard');}
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){setTimeout(boot,80);}); else setTimeout(boot,80);
-  window.addEventListener('load',function(){setTimeout(boot,250);setTimeout(boot,900);});
-  window.addEventListener('resize',function(){setTimeout(boot,120);});
-})();
-</script>
-<!-- CTP_MOBILE_V3148_END -->
-
-</body></html>');
+    win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Fatura / İrsaliye</title></head><body>'+icerik+'<script>setTimeout(function(){window.print();window.close();},500);<\/script></body></html>');
     win.document.close();
   };
 })();
