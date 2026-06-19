@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cari Takip Pro v3.1.50 Login Korumalı Tamir</title>
+<title>Cari Takip Pro v3.1.54 Numune Menü Sabit</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -315,6 +315,7 @@ tr:hover td{background:#fafafa}
       <div class="sb-label">İşlemler</div>
       <div class="sb-item" onclick="goPage('hareket',this)"><i class="ti ti-plus"></i> Hareket Gir</div>
       <div class="sb-item" onclick="goPage('siparis',this)"><i class="ti ti-shopping-cart"></i> Sipariş Ekle</div>
+      <div class="sb-item" data-ctp-page="numune" onclick="goPage('numune',this)"><i class="ti ti-gift"></i> Numune Girişi</div>
       <div class="sb-item" onclick="goPage('cari',this)"><i class="ti ti-list-details"></i> Cari Hesap</div>
       <div class="sb-item" onclick="goPage('odeme',this)"><i class="ti ti-clock"></i> Ödeme Takip</div>
       <div class="sb-label">Raporlar</div>
@@ -1116,6 +1117,7 @@ tr:hover td{background:#fafafa}
   <button onclick="goPageMobile('iskonto-hesap',this)"><i class="ti ti-calculator"></i>Hesap</button>
   <button onclick="goPageMobile('firmalar',this)"><i class="ti ti-building"></i>Firma</button>
   <button onclick="goPageMobile('siparis',this)"><i class="ti ti-shopping-cart"></i>Sipariş</button>
+  <button data-ctp-page="numune" onclick="goPageMobile('numune',this)"><i class="ti ti-gift"></i>Numune</button>
   <button onclick="goPageMobile('hareket',this)"><i class="ti ti-cash"></i>Ödeme</button>
   <button onclick="goPageMobile('cari',this)"><i class="ti ti-list-details"></i>Cari</button>
   <button onclick="goPageMobile('stok',this)"><i class="ti ti-box-seam"></i>Stok</button>
@@ -8679,3 +8681,894 @@ try{ if(typeof DB!=='undefined' && !window.DB){ window.DB=DB; } }catch(e){}
 
 </script>
 <!-- CTP_MANUEL_ISKONTO_V3145_END -->
+
+<!-- CTP_NUMUNE_GIRISI_V3152_START -->
+<style>
+/* v3.1.52 Numune Girişi - toplu seçim ve ürün sıralama */
+.numune-info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;border-radius:12px;padding:10px 12px;font-size:12px;margin-bottom:12px}
+.numune-cart{border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;background:#fff;margin-top:8px}
+.numune-cart-row{display:grid;grid-template-columns:42px 1fr 112px 98px 104px;gap:8px;align-items:center;padding:8px 10px;border-top:1px solid #f3f4f6;font-size:12px}
+.numune-cart-row.dragging{opacity:.55;background:#f0fdf4}
+.numune-order-btns{display:flex;flex-direction:column;gap:3px}
+.numune-order-btns .btn{padding:3px 5px;min-height:24px}
+.numune-qty-input{min-height:34px!important;padding:5px 8px!important;text-align:right!important;font-size:12px!important}
+.numune-row-actions{display:flex;gap:4px;justify-content:flex-end;align-items:center}
+.numune-bulk-box{border:1px solid #e5e7eb;background:#f9fafb;border-radius:12px;padding:10px;margin-top:10px}
+.numune-bulk-box select[multiple]{min-height:160px;padding:7px}
+.numune-bulk-help{font-size:11px;color:#6b7280;line-height:1.35;margin-top:6px}
+.numune-sort-note{font-size:11px;color:#6b7280;margin-top:7px}
+.numune-cart-row:first-child{border-top:0}
+.numune-product-chip{display:inline-flex;align-items:center;gap:5px;background:#f3f4f6;border-radius:999px;padding:4px 8px;margin:2px;font-size:11px;font-weight:700;color:#374151}
+.numune-empty{text-align:center;padding:18px;color:#9ca3af;font-size:12px}
+.numune-toolbar{display:flex;gap:8px;align-items:end;flex-wrap:wrap}
+.numune-toolbar .fg{margin-bottom:0;min-width:150px}
+@media(max-width:780px){
+  .numune-cart-row{grid-template-columns:1fr;gap:7px}
+  .numune-order-btns{flex-direction:row}
+  .numune-row-actions{justify-content:flex-start}
+  .numune-toolbar{display:grid;grid-template-columns:1fr!important}
+}
+</style>
+<script>
+(function(){
+  'use strict';
+  var PAGE_ID='numune';
+  var PAGE_LABEL='Numune Girişi';
+  var numuneSepet=[];
+
+  function E(id){return document.getElementById(id);}
+  function V(id){var e=E(id); return e ? String(e.value||'') : '';}
+  function S(id,v){var e=E(id); if(e) e.value=v;}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function trToday(){ if(typeof today==='function') return today(); return new Date().toISOString().slice(0,10); }
+  function trDate(d){ if(typeof d2s==='function') return d2s(d); return d||''; }
+  function fmtQty(n){ n=+(n||0); return Number.isInteger(n)?String(n):n.toLocaleString('tr-TR',{maximumFractionDigits:2}); }
+  function nowIso(){ return new Date().toISOString(); }
+  function canWriteNumune(){ return typeof canWrite==='function' ? canWrite() : true; }
+  function showNumune(msg,type){ if(typeof showA==='function') showA('numune-al',msg,type||'s'); else alert(msg); }
+
+  function numuneEnsureDb(){
+    if(typeof DB==='undefined' || !DB) return;
+    if(!Array.isArray(DB.numuneler)) DB.numuneler=[];
+    if(!Array.isArray(DB.numuneUrunler)) DB.numuneUrunler=[];
+    if(!DB.nextNumuneId) DB.nextNumuneId=1;
+    if(!DB.nextNumuneUrunId) DB.nextNumuneUrunId=1;
+
+    // Eski biçimde numune.urunler varsa ayrı numuneUrunler tablosuna güvenli taşı.
+    DB.numuneler.forEach(function(n){
+      if(!n || !Array.isArray(n.urunler) || n._ayriUrunAktarildi) return;
+      n.urunler.forEach(function(u){
+        var exists=DB.numuneUrunler.some(function(x){return String(x.numuneId)===String(n.id) && String(x.urunId)===String(u.urunId||u.id) && String(x.birim||'')===String(u.birim||'');});
+        if(!exists){
+          DB.numuneUrunler.push({
+            id:DB.nextNumuneUrunId++,
+            numuneId:n.id,
+            tarih:n.tarih || '',
+            firmaAd:n.firmaAd || '',
+            urunId:u.urunId || u.id || '',
+            urunAd:u.urunAd || u.ad || '',
+            kategori:u.kategori || u.kat || '',
+            birim:u.birim || 'Adet',
+            miktar:+(u.miktar||0),
+            acik:n.acik || ''
+          });
+        }
+      });
+      n._ayriUrunAktarildi=true;
+    });
+  }
+
+  function numuneUrunleri(numuneId){
+    numuneEnsureDb();
+    return (DB.numuneUrunler||[]).filter(function(x){return String(x.numuneId)===String(numuneId);}).sort(function(a,b){
+      var sa=(+a.sira||999999), sb=(+b.sira||999999);
+      return sa-sb || (+a.id||0)-(+b.id||0);
+    });
+  }
+
+  function productById(id){
+    return (DB.urunler||[]).find(function(u){return String(u.id)===String(id);});
+  }
+
+  function productUnitOptions(u){
+    var opts=[];
+    try{
+      if(typeof urunBirimSecenekleri==='function') opts=urunBirimSecenekleri(u)||[];
+    }catch(e){}
+    if(!opts.length){
+      if(u && +u.fiyKoli) opts.push({bir:'Koli',fiyat:+u.fiyKoli});
+      if(u && +u.fiyAdet) opts.push({bir:'Adet',fiyat:+u.fiyAdet});
+      if(u && +u.fiyKg) opts.push({bir:'Kg',fiyat:+u.fiyKg});
+      if(!opts.length) opts.push({bir:(u&&u.bir)||'Adet',fiyat:+((u&&u.fiy)||0)});
+    }
+    var seen={};
+    return opts.filter(function(o){
+      var b=o && o.bir ? String(o.bir) : 'Adet';
+      if(seen[b]) return false; seen[b]=true; o.bir=b; return true;
+    });
+  }
+
+  function addNumuneNav(){
+    var nav=document.querySelector('.sb-nav');
+    if(nav && !document.querySelector('[data-ctp-page="numune"]')){
+      var item=document.createElement('div');
+      item.className='sb-item';
+      item.setAttribute('data-ctp-page','numune');
+      item.setAttribute('onclick',"goPage('numune',this)");
+      item.innerHTML='<i class="ti ti-gift"></i> Numune Girişi';
+      var siparis=[].slice.call(nav.querySelectorAll('.sb-item')).find(function(x){return (x.getAttribute('onclick')||'').indexOf("goPage('siparis'")>=0;});
+      if(siparis && siparis.nextSibling) nav.insertBefore(item,siparis.nextSibling); else nav.appendChild(item);
+    }
+
+    var mob=document.getElementById('mobile-nav');
+    if(mob && !mob.querySelector('[data-ctp-page="numune"]')){
+      var btn=document.createElement('button');
+      btn.setAttribute('data-ctp-page','numune');
+      btn.setAttribute('onclick',"goPageMobile('numune',this)");
+      btn.innerHTML='<i class="ti ti-gift"></i>Numune';
+      var mb=[].slice.call(mob.querySelectorAll('button')).find(function(x){return (x.getAttribute('onclick')||'').indexOf("goPageMobile('siparis'")>=0;});
+      if(mb && mb.nextSibling) mob.insertBefore(btn,mb.nextSibling); else mob.appendChild(btn);
+    }
+  }
+
+  function addNumunePage(){
+    var main=document.querySelector('.main');
+    if(!main || E('page-numune')) return;
+    main.insertAdjacentHTML('beforeend', `
+      <div id="page-numune" class="page">
+        <div class="page-title">Numune Girişi</div>
+        <div id="numune-al"></div>
+        <div class="numune-info">
+          <strong>Not:</strong> Numune kayıtları cari hareketlere, kasa/ödeme takibine ve firma bakiyesine işlenmez. Firma kartı seçilmez; firma adı elle yazılır. Numune ürünleri ayrı tabloda tutulur.
+        </div>
+        <div class="g2" style="align-items:start">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title"><i class="ti ti-gift"></i> Numune Bilgileri</div>
+              <button class="btn btn-sm" onclick="ctpNumuneTemizle()"><i class="ti ti-plus"></i> Yeni</button>
+            </div>
+            <div class="fg"><label>Firma / Müşteri Adı *</label><input id="n-firma" placeholder="Firma ismini buraya yaz"></div>
+            <div class="g2">
+              <div class="fg"><label>Tarih *</label><input id="n-tarih" type="date"></div>
+              <div class="fg"><label>Numune No</label><input id="n-no" readonly></div>
+            </div>
+            <hr class="divider">
+            <div class="card-title" style="margin-bottom:10px"><i class="ti ti-package"></i> Numune Ürün Seçimi</div>
+            <div class="fg"><label>Tek Ürün Seç</label><select id="n-urun" onchange="ctpNumuneUrunDegisti()"></select></div>
+            <div class="g2">
+              <div class="fg"><label>Birim</label><select id="n-birim"></select></div>
+              <div class="fg"><label>Miktar</label><input id="n-miktar" type="number" step="0.01" min="0" value="1"></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-b" onclick="ctpNumuneSepeteEkle()"><i class="ti ti-plus"></i> Tek Ürünü Ekle</button>
+            </div>
+            <div class="numune-bulk-box">
+              <div class="card-title" style="margin-bottom:8px"><i class="ti ti-list-check"></i> Toplu Ürün Seç</div>
+              <div class="fg"><label>Ürün Ara</label><input id="n-urun-toplu-ara" placeholder="Toplu ürün listesinde ara..." oninput="ctpNumuneTopluUrunListesiDoldur()"></div>
+              <div class="fg"><label>Birden Fazla Ürün Seç</label><select id="n-urun-toplu" multiple size="8"></select></div>
+              <div class="g2">
+                <div class="fg"><label>Toplu Miktar</label><input id="n-toplu-miktar" type="number" step="0.01" min="0" value="1"></div>
+                <div class="fg"><label>Ekleme Şekli</label><input value="Her ürüne kendi varsayılan birimi" readonly></div>
+              </div>
+              <button class="btn btn-g" onclick="ctpNumuneTopluEkle()" style="width:100%;justify-content:center"><i class="ti ti-package-import"></i> Seçili Ürünleri Toplu Ekle</button>
+              <div class="numune-bulk-help">Listeden Ctrl ile tek tek, Shift ile aralık seçebilirsin. Eklenen ürünlerin miktarını ve sırasını aşağıdaki numune listesinde düzenleyebilirsin.</div>
+            </div>
+            <div id="numune-sepet" class="numune-cart"><div class="numune-empty">Henüz numune ürünü eklenmedi</div></div>
+            <div class="numune-sort-note"><i class="ti ti-arrows-sort"></i> Ürün sırasını ok tuşlarıyla veya satırı sürükleyerek değiştirebilirsin.</div>
+            <div class="fg" style="margin-top:12px"><label>Açıklama / Not</label><input id="n-acik" placeholder="Numune açıklaması"></div>
+            <div class="btn-row">
+              <button class="btn btn-g" onclick="ctpNumuneKaydet()" style="flex:1;justify-content:center"><i class="ti ti-device-floppy"></i> Numuneyi Kaydet</button>
+              <button class="btn" onclick="ctpNumuneTemizle()"><i class="ti ti-x"></i> Temizle</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title"><i class="ti ti-list"></i> Numune Kayıtları (<span id="numune-cnt">0</span>)</div>
+              <button class="btn btn-sm" onclick="excelExport('numuneler')"><i class="ti ti-file-spreadsheet"></i> Excel</button>
+            </div>
+            <div class="numune-toolbar" style="margin-bottom:10px">
+              <div class="fg"><label>Başlangıç</label><input id="n-bas" type="date" oninput="ctpRenderNumune()"></div>
+              <div class="fg"><label>Bitiş</label><input id="n-bit" type="date" oninput="ctpRenderNumune()"></div>
+              <div class="fg" style="flex:1;min-width:220px"><label>Arama</label><input id="n-ara" placeholder="Firma / ürün ara..." oninput="ctpRenderNumune()"></div>
+            </div>
+            <div class="tw"><table>
+              <thead><tr><th>Tarih</th><th>No</th><th>Firma</th><th>Ürünler</th><th class="num">Toplam</th><th>Not</th><th></th></tr></thead>
+              <tbody id="numune-tb"></tbody>
+            </table></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title"><i class="ti ti-package-export"></i> Numune Ürünleri Ayrı Liste</div>
+            <span class="badge b-blue" id="numune-urun-cnt">0 ürün</span>
+          </div>
+          <div class="tw"><table>
+            <thead><tr><th>Tarih</th><th>Firma</th><th>Ürün</th><th>Kategori</th><th>Birim</th><th class="num">Miktar</th><th>Numune No</th></tr></thead>
+            <tbody id="numune-urun-tb"></tbody>
+          </table></div>
+        </div>
+      </div>
+    `);
+  }
+
+  function numuneNoOlustur(){
+    numuneEnsureDb();
+    return 'NUM-' + String(DB.nextNumuneId||1).padStart(5,'0');
+  }
+
+  function numuneInitForm(){
+    if(E('n-tarih') && !V('n-tarih')) S('n-tarih', trToday());
+    if(E('n-no')) S('n-no', numuneNoOlustur());
+    ctpNumuneUrunListesiDoldur();
+    ctpNumuneSepetRender();
+  }
+
+  window.ctpNumuneUrunListesiDoldur=function(){
+    numuneEnsureDb();
+    var sel=E('n-urun'); if(!sel) return;
+    var old=sel.value;
+    var arr=(DB.urunler||[]).slice().sort(function(a,b){return String(a.ad||'').localeCompare(String(b.ad||''),'tr');});
+    sel.innerHTML='<option value="">Ürün seç...</option>' + arr.map(function(u){
+      return '<option value="'+esc(u.id)+'">'+esc(u.ad||'Ürün')+(u.kat?' — '+esc(u.kat):'')+'</option>';
+    }).join('');
+    if(old && arr.some(function(u){return String(u.id)===String(old);})) sel.value=old;
+    ctpNumuneUrunDegisti();
+    ctpNumuneTopluUrunListesiDoldur();
+  };
+
+  window.ctpNumuneTopluUrunListesiDoldur=function(){
+    var sel=E('n-urun-toplu'); if(!sel) return;
+    var old=[].slice.call(sel.selectedOptions||[]).map(function(o){return String(o.value);});
+    var q=(V('n-urun-toplu-ara')||'').toLowerCase().trim();
+    var arr=(DB.urunler||[]).slice().sort(function(a,b){return String(a.ad||'').localeCompare(String(b.ad||''),'tr');});
+    if(q){
+      arr=arr.filter(function(u){return String((u.ad||'')+' '+(u.kat||'')+' '+(u.bkod||'')).toLowerCase().indexOf(q)>=0;});
+    }
+    sel.innerHTML=arr.map(function(u){
+      var v=String(u.id);
+      return '<option value="'+esc(u.id)+'" '+(old.indexOf(v)>=0?'selected':'')+'>'+esc(u.ad||'Ürün')+(u.kat?' — '+esc(u.kat):'')+'</option>';
+    }).join('');
+  };
+
+  window.ctpNumuneUrunDegisti=function(){
+    var u=productById(V('n-urun'));
+    var bir=E('n-birim'); if(!bir) return;
+    if(!u){ bir.innerHTML='<option value="Adet">Adet</option>'; return; }
+    bir.innerHTML=productUnitOptions(u).map(function(o){
+      return '<option value="'+esc(o.bir)+'">'+esc(o.bir)+'</option>';
+    }).join('');
+  };
+
+  function numuneDefaultBirim(u){
+    var opts=productUnitOptions(u)||[];
+    return (opts[0]&&opts[0].bir) || u.bir || 'Adet';
+  }
+
+  function numuneSepetEkleUrun(u,birim,miktar){
+    if(!u) return false;
+    birim=birim || numuneDefaultBirim(u);
+    miktar=+miktar||1;
+    var ex=numuneSepet.find(function(x){return String(x.urunId)===String(u.id) && String(x.birim)===String(birim);});
+    if(ex) ex.miktar=(+ex.miktar||0)+miktar;
+    else numuneSepet.push({urunId:u.id, urunAd:u.ad||'', kategori:u.kat||'', birim:birim, miktar:miktar, sira:numuneSepet.length+1});
+    numuneSepet.forEach(function(x,i){x.sira=i+1;});
+    return true;
+  }
+
+  window.ctpNumuneSepeteEkle=function(){
+    if(!canWriteNumune()) return permissionError ? permissionError() : false;
+    var u=productById(V('n-urun'));
+    if(!u) return showNumune('Numune için ürün seçmelisin.','e');
+    var miktar=+(V('n-miktar')||0);
+    if(!(miktar>0)) return showNumune('Miktar 0’dan büyük olmalı.','e');
+    var birim=V('n-birim') || numuneDefaultBirim(u);
+    numuneSepetEkleUrun(u,birim,miktar);
+    S('n-miktar','1');
+    ctpNumuneSepetRender();
+  };
+
+  window.ctpNumuneTopluEkle=function(){
+    if(!canWriteNumune()) return permissionError ? permissionError() : false;
+    var sel=E('n-urun-toplu');
+    if(!sel) return;
+    var ids=[].slice.call(sel.selectedOptions||[]).map(function(o){return o.value;});
+    if(!ids.length) return showNumune('Toplu eklemek için en az 1 ürün seçmelisin.','e');
+    var miktar=+(V('n-toplu-miktar')||0);
+    if(!(miktar>0)) return showNumune('Toplu miktar 0’dan büyük olmalı.','e');
+    var eklenen=0;
+    ids.forEach(function(id){
+      var u=productById(id);
+      if(u && numuneSepetEkleUrun(u,numuneDefaultBirim(u),miktar)) eklenen++;
+    });
+    [].slice.call(sel.options||[]).forEach(function(o){o.selected=false;});
+    S('n-toplu-miktar','1');
+    ctpNumuneSepetRender();
+    showNumune(eklenen+' ürün numuneye eklendi. Sırasını ve miktarını aşağıdan düzenleyebilirsin.');
+  };
+
+  window.ctpNumuneSepetRender=function(){
+    var box=E('numune-sepet'); if(!box) return;
+    numuneSepet.forEach(function(x,i){x.sira=i+1;});
+    if(!numuneSepet.length){ box.innerHTML='<div class="numune-empty">Henüz numune ürünü eklenmedi</div>'; return; }
+    box.innerHTML=numuneSepet.map(function(x,i){
+      var u=productById(x.urunId);
+      var opts=productUnitOptions(u||{})||[];
+      if(!opts.some(function(o){return String(o.bir)===String(x.birim);})){opts.unshift({bir:x.birim||'Adet'});}
+      var birimHtml='<select class="unit-select" onchange="ctpNumuneSepetBirimGuncelle('+i+',this.value)">'+opts.map(function(o){return '<option value="'+esc(o.bir)+'" '+(String(o.bir)===String(x.birim)?'selected':'')+'>'+esc(o.bir)+'</option>';}).join('')+'</select>';
+      return '<div class="numune-cart-row" draggable="true" ondragstart="ctpNumuneDragStart(event,'+i+')" ondragover="ctpNumuneDragOver(event)" ondrop="ctpNumuneDrop(event,'+i+')" ondragend="ctpNumuneDragEnd(event)">'+
+        '<div class="numune-order-btns"><button class="btn btn-sm" onclick="ctpNumuneSepetSira('+i+',-1)" title="Yukarı"><i class="ti ti-chevron-up"></i></button><button class="btn btn-sm" onclick="ctpNumuneSepetSira('+i+',1)" title="Aşağı"><i class="ti ti-chevron-down"></i></button></div>'+
+        '<div><strong>'+(i+1)+'. '+esc(x.urunAd)+'</strong><br><span style="font-size:10px;color:#9ca3af">'+esc(x.kategori||'-')+'</span></div>'+
+        '<div>'+birimHtml+'</div>'+
+        '<div><input class="numune-qty-input" type="number" step="0.01" min="0" value="'+esc(x.miktar)+'" oninput="ctpNumuneSepetMiktarGuncelle('+i+',this.value,false)" onchange="ctpNumuneSepetMiktarGuncelle('+i+',this.value,true)"></div>'+
+        '<div class="numune-row-actions"><button class="btn btn-sm btn-r" onclick="ctpNumuneSepettenSil('+i+')" title="Sil"><i class="ti ti-trash"></i></button></div>'+
+      '</div>';
+    }).join('');
+  };
+
+  window.ctpNumuneSepetSira=function(i,yon){
+    var j=i+yon;
+    if(j<0 || j>=numuneSepet.length) return;
+    var tmp=numuneSepet[i]; numuneSepet[i]=numuneSepet[j]; numuneSepet[j]=tmp;
+    numuneSepet.forEach(function(x,k){x.sira=k+1;});
+    ctpNumuneSepetRender();
+  };
+
+  window.ctpNumuneSepetMiktarGuncelle=function(i,val,render){
+    if(!numuneSepet[i]) return;
+    var n=+(String(val||'').replace(',','.'))||0;
+    if(n<0) n=0;
+    numuneSepet[i].miktar=n;
+    if(render && n<=0){
+      numuneSepet.splice(i,1);
+      ctpNumuneSepetRender();
+    }
+  };
+
+  window.ctpNumuneSepetBirimGuncelle=function(i,val){
+    if(!numuneSepet[i]) return;
+    numuneSepet[i].birim=val||numuneSepet[i].birim||'Adet';
+  };
+
+  window.ctpNumuneDragStart=function(ev,i){
+    window._ctpNumuneDragIndex=i;
+    try{ev.dataTransfer.setData('text/plain',String(i)); ev.currentTarget.classList.add('dragging');}catch(e){}
+  };
+  window.ctpNumuneDragOver=function(ev){ if(ev&&ev.preventDefault) ev.preventDefault(); };
+  window.ctpNumuneDrop=function(ev,i){
+    if(ev&&ev.preventDefault) ev.preventDefault();
+    var from=typeof window._ctpNumuneDragIndex==='number'?window._ctpNumuneDragIndex:+((ev.dataTransfer&&ev.dataTransfer.getData('text/plain'))||-1);
+    if(from<0 || from===i || !numuneSepet[from]) return;
+    var item=numuneSepet.splice(from,1)[0];
+    numuneSepet.splice(i,0,item);
+    numuneSepet.forEach(function(x,k){x.sira=k+1;});
+    ctpNumuneSepetRender();
+  };
+  window.ctpNumuneDragEnd=function(ev){try{ev.currentTarget.classList.remove('dragging');}catch(e){} window._ctpNumuneDragIndex=null;};
+
+  window.ctpNumuneSepettenSil=function(i){
+    numuneSepet.splice(i,1);
+    numuneSepet.forEach(function(x,k){x.sira=k+1;});
+    ctpNumuneSepetRender();
+  };
+
+  window.ctpNumuneTemizle=function(){
+    numuneSepet=[];
+    S('n-firma',''); S('n-acik',''); S('n-miktar','1'); S('n-toplu-miktar','1'); S('n-urun-toplu-ara',''); S('n-tarih',trToday());
+    if(E('n-no')) S('n-no',numuneNoOlustur());
+    if(E('n-urun')) E('n-urun').value='';
+    ctpNumuneUrunDegisti();
+    ctpNumuneTopluUrunListesiDoldur();
+    ctpNumuneSepetRender();
+  };
+
+  window.ctpNumuneKaydet=function(){
+    if(!canWriteNumune()) return permissionError ? permissionError() : false;
+    numuneEnsureDb();
+    var firma=V('n-firma').trim();
+    if(!firma) return showNumune('Firma / müşteri adını yazmalısın.','e');
+    if(!numuneSepet.length) return showNumune('En az 1 numune ürünü eklemelisin.','e');
+    var id=DB.nextNumuneId++;
+    var tarih=V('n-tarih') || trToday();
+    var acik=V('n-acik').trim();
+    DB.numuneler.push({
+      id:id,
+      no:'NUM-'+String(id).padStart(5,'0'),
+      tarih:tarih,
+      firmaAd:firma,
+      acik:acik,
+      createdAt:nowIso(),
+      kullanici:(typeof currentUser!=='undefined' && currentUser && currentUser.username) ? currentUser.username : ''
+    });
+    numuneSepet.forEach(function(x,i){
+      DB.numuneUrunler.push({
+        id:DB.nextNumuneUrunId++,
+        numuneId:id,
+        tarih:tarih,
+        firmaAd:firma,
+        urunId:x.urunId,
+        urunAd:x.urunAd,
+        kategori:x.kategori||'',
+        birim:x.birim,
+        miktar:+x.miktar||0,
+        sira:i+1,
+        acik:acik
+      });
+    });
+    if(typeof logAction==='function') logAction('Numune girişi', firma + ' - ' + numuneSepet.length + ' ürün');
+    if(typeof dbSave==='function') dbSave();
+    showNumune('Numune kaydedildi. Cari harekete işlenmedi.');
+    ctpNumuneTemizle();
+    ctpRenderNumune();
+  };
+
+  window.ctpNumuneSil=function(id){
+    if(!canDelete || !canDelete()) return permissionError ? permissionError('Numune silme yetkisi sadece adminde.') : false;
+    if(!confirm('Bu numune kaydı ve bağlı numune ürünleri silinecek. Emin misiniz?')) return;
+    numuneEnsureDb();
+    DB.numuneler=DB.numuneler.filter(function(n){return String(n.id)!==String(id);});
+    DB.numuneUrunler=DB.numuneUrunler.filter(function(u){return String(u.numuneId)!==String(id);});
+    if(typeof dbSave==='function') dbSave();
+    ctpRenderNumune();
+  };
+
+  function filteredNumuneler(){
+    numuneEnsureDb();
+    var bas=V('n-bas'), bit=V('n-bit'), q=V('n-ara').trim().toLowerCase();
+    return (DB.numuneler||[]).filter(function(n){
+      if(bas && String(n.tarih||'')<bas) return false;
+      if(bit && String(n.tarih||'')>bit) return false;
+      if(q){
+        var urunText=numuneUrunleri(n.id).map(function(x){return x.urunAd;}).join(' ').toLowerCase();
+        var s=(String(n.firmaAd||'')+' '+String(n.no||'')+' '+String(n.acik||'')+' '+urunText).toLowerCase();
+        if(s.indexOf(q)<0) return false;
+      }
+      return true;
+    }).sort(function(a,b){return String(b.tarih||'').localeCompare(String(a.tarih||'')) || (+b.id||0)-(+a.id||0);});
+  }
+
+  window.ctpRenderNumune=function(){
+    numuneEnsureDb();
+    addNumuneNav();
+    addNumunePage();
+    var tb=E('numune-tb'); if(!tb) return;
+    var list=filteredNumuneler();
+    var cnt=E('numune-cnt'); if(cnt) cnt.textContent=list.length;
+    tb.innerHTML=list.length ? list.map(function(n){
+      var items=numuneUrunleri(n.id);
+      var chips=items.map(function(x){return '<span class="numune-product-chip">'+esc(x.urunAd)+' • '+fmtQty(x.miktar)+' '+esc(x.birim)+'</span>';}).join('');
+      var toplam=items.reduce(function(s,x){return s+(+x.miktar||0);},0);
+      return '<tr>'+
+        '<td>'+trDate(n.tarih)+'</td>'+
+        '<td><span class="badge b-gray">'+esc(n.no || ('NUM-'+String(n.id).padStart(5,'0')))+'</span></td>'+
+        '<td><strong>'+esc(n.firmaAd||'-')+'</strong></td>'+
+        '<td>'+(chips || '-')+'</td>'+
+        '<td class="num">'+fmtQty(toplam)+'</td>'+
+        '<td>'+esc(n.acik||'')+'</td>'+
+        '<td style="white-space:nowrap"><button class="btn btn-sm btn-r only-admin" onclick="ctpNumuneSil('+Number(n.id)+')"><i class="ti ti-trash"></i></button></td>'+
+      '</tr>';
+    }).join('') : '<tr><td colspan="7" class="numune-empty">Numune kaydı yok</td></tr>';
+
+    var flat=(DB.numuneUrunler||[]).slice().sort(function(a,b){return String(b.tarih||'').localeCompare(String(a.tarih||'')) || (+b.id||0)-(+a.id||0);});
+    var utb=E('numune-urun-tb');
+    var ucnt=E('numune-urun-cnt');
+    if(ucnt) ucnt.textContent=flat.length+' ürün';
+    if(utb){
+      utb.innerHTML=flat.length ? flat.map(function(x){
+        var n=(DB.numuneler||[]).find(function(k){return String(k.id)===String(x.numuneId);});
+        return '<tr>'+
+          '<td>'+trDate(x.tarih)+'</td>'+
+          '<td>'+esc(x.firmaAd||'-')+'</td>'+
+          '<td><strong>'+esc(x.urunAd||'-')+'</strong></td>'+
+          '<td>'+esc(x.kategori||'-')+'</td>'+
+          '<td>'+esc(x.birim||'')+'</td>'+
+          '<td class="num">'+fmtQty(x.miktar)+'</td>'+
+          '<td>'+(n ? esc(n.no || ('NUM-'+String(n.id).padStart(5,'0'))) : '-')+'</td>'+
+        '</tr>';
+      }).join('') : '<tr><td colspan="7" class="numune-empty">Numune ürünü yok</td></tr>';
+    }
+    if(typeof applyRoleUI==='function') applyRoleUI();
+  };
+
+  function numuneKayitSheet(){
+    numuneEnsureDb();
+    var rows=[['Numune No','Tarih','Firma / Müşteri','Açıklama','Kullanıcı','Oluşturma Tarihi','Ürün Sayısı','Toplam Miktar']];
+    (DB.numuneler||[]).forEach(function(n){
+      var items=numuneUrunleri(n.id);
+      rows.push([n.no||('NUM-'+String(n.id).padStart(5,'0')), n.tarih||'', n.firmaAd||'', n.acik||'', n.kullanici||'', n.createdAt||'', items.length, items.reduce(function(s,x){return s+(+x.miktar||0);},0)]);
+    });
+    return XLSX.utils.aoa_to_sheet(rows);
+  }
+
+  function numuneUrunSheet(){
+    numuneEnsureDb();
+    var rows=[['Numune No','Tarih','Firma / Müşteri','Sıra','Ürün','Kategori','Birim','Miktar','Açıklama']];
+    (DB.numuneUrunler||[]).forEach(function(x){
+      var n=(DB.numuneler||[]).find(function(k){return String(k.id)===String(x.numuneId);});
+      rows.push([(n&&n.no)||('NUM-'+String(x.numuneId).padStart(5,'0')), x.tarih||'', x.firmaAd||'', +x.sira||'', x.urunAd||'', x.kategori||'', x.birim||'', +x.miktar||0, x.acik||'']);
+    });
+    return XLSX.utils.aoa_to_sheet(rows);
+  }
+
+  window.ctpNumuneExcelIndir=function(){
+    numuneEnsureDb();
+    if(typeof XLSX==='undefined') return alert('Excel kütüphanesi yüklenemedi.');
+    var wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,numuneKayitSheet(),'NumuneKayitlari');
+    XLSX.utils.book_append_sheet(wb,numuneUrunSheet(),'NumuneUrunleri');
+    var t=new Date().toLocaleDateString('tr-TR').replace(/\./g,'-');
+    if(typeof xlsxIndir==='function') xlsxIndir(wb,'Numuneler_'+t+'.xlsx');
+    else XLSX.writeFile(wb,'Numuneler_'+t+'.xlsx');
+    if(typeof markSaved==='function') markSaved();
+  };
+
+  function patchExcel(){
+    if(window._ctpNumuneExcelPatched) return;
+    window._ctpNumuneExcelPatched=true;
+    var old=window.excelExport;
+    window.excelExport=function(tip){
+      if(tip==='numuneler') return window.ctpNumuneExcelIndir();
+      if(tip==='tumVeriler' && typeof XLSX!=='undefined'){
+        numuneEnsureDb();
+        var wb=XLSX.utils.book_new();
+        try{ if(typeof fSheet==='function') XLSX.utils.book_append_sheet(wb,fSheet(),'Firmalar'); }catch(e){}
+        try{ if(typeof hSheet==='function') XLSX.utils.book_append_sheet(wb,hSheet(),'Hareketler'); }catch(e){}
+        try{ if(typeof uSheet==='function') XLSX.utils.book_append_sheet(wb,uSheet(),'Urunler'); }catch(e){}
+        XLSX.utils.book_append_sheet(wb,numuneKayitSheet(),'NumuneKayitlari');
+        XLSX.utils.book_append_sheet(wb,numuneUrunSheet(),'NumuneUrunleri');
+        var t=new Date().toLocaleDateString('tr-TR').replace(/\./g,'-');
+        if(typeof xlsxIndir==='function') xlsxIndir(wb,'CariTakip_'+t+'.xlsx');
+        else XLSX.writeFile(wb,'CariTakip_'+t+'.xlsx');
+        if(typeof markSaved==='function') markSaved();
+        return;
+      }
+      return old ? old.apply(this,arguments) : undefined;
+    };
+  }
+
+  function patchPermissions(){
+    try{
+      if(typeof PAGE_LIST_V252!=='undefined' && Array.isArray(PAGE_LIST_V252) && !PAGE_LIST_V252.some(function(x){return x[0]===PAGE_ID;})){
+        var idx=PAGE_LIST_V252.findIndex(function(x){return x[0]==='siparis';});
+        PAGE_LIST_V252.splice(idx>=0?idx+1:PAGE_LIST_V252.length,0,[PAGE_ID,PAGE_LABEL]);
+      }
+      if(typeof ROLE_PAGE_PRESETS_V252!=='undefined'){
+        ['admin','personel','viewer'].forEach(function(r){
+          if(Array.isArray(ROLE_PAGE_PRESETS_V252[r]) && ROLE_PAGE_PRESETS_V252[r].indexOf(PAGE_ID)<0){
+            var i=ROLE_PAGE_PRESETS_V252[r].indexOf('siparis');
+            ROLE_PAGE_PRESETS_V252[r].splice(i>=0?i+1:ROLE_PAGE_PRESETS_V252[r].length,0,PAGE_ID);
+          }
+        });
+      }
+      if(Array.isArray(DB && DB.users)){
+        DB.users.forEach(function(u){
+          if(!u) return;
+          if(!Array.isArray(u.pages)) return;
+          if(u.pages.indexOf(PAGE_ID)<0){
+            var i=u.pages.indexOf('siparis');
+            u.pages.splice(i>=0?i+1:u.pages.length,0,PAGE_ID);
+          }
+        });
+      }
+    }catch(e){}
+  }
+
+  function patchCore(){
+    if(window._ctpNumuneCorePatched) return;
+    window._ctpNumuneCorePatched=true;
+
+    var oldBlank=window.ctBlankDB;
+    if(typeof oldBlank==='function'){
+      window.ctBlankDB=function(){
+        var d=oldBlank.apply(this,arguments);
+        if(!Array.isArray(d.numuneler)) d.numuneler=[];
+        if(!Array.isArray(d.numuneUrunler)) d.numuneUrunler=[];
+        if(!d.nextNumuneId) d.nextNumuneId=1;
+        if(!d.nextNumuneUrunId) d.nextNumuneUrunId=1;
+        return d;
+      };
+    }
+
+    var oldVeri=window.veriSayisi;
+    if(typeof oldVeri==='function'){
+      window.veriSayisi=function(d){
+        return oldVeri.apply(this,arguments) + ((d&&d.numuneler&&d.numuneler.length)||0) + ((d&&d.numuneUrunler&&d.numuneUrunler.length)||0);
+      };
+    }
+
+    var oldRenderU=window.renderU;
+    if(typeof oldRenderU==='function'){
+      window.renderU=function(){
+        var r=oldRenderU.apply(this,arguments);
+        setTimeout(function(){try{window.ctpNumuneUrunListesiDoldur();}catch(e){}},80);
+        return r;
+      };
+    }
+
+    var oldRenderAll=window.ctRenderAll;
+    if(typeof oldRenderAll==='function'){
+      window.ctRenderAll=function(){
+        var r=oldRenderAll.apply(this,arguments);
+        setTimeout(function(){try{window.ctpRenderNumune();}catch(e){}},100);
+        return r;
+      };
+    }
+
+    var oldGoPage=window.goPage;
+    if(typeof oldGoPage==='function'){
+      window.goPage=function(id,el){
+        var r=oldGoPage.apply(this,arguments);
+        if(id===PAGE_ID){ numuneInitForm(); setTimeout(window.ctpRenderNumune,60); }
+        return r;
+      };
+    }
+
+    var oldInit=window.initApp;
+    if(typeof oldInit==='function'){
+      window.initApp=function(){
+        numuneEnsureDb();
+        patchPermissions();
+        var r=oldInit.apply(this,arguments);
+        addNumuneNav(); addNumunePage(); patchExcel(); numuneInitForm(); window.ctpRenderNumune();
+        return r;
+      };
+    }
+
+    var oldYedek=window.yedekBilgi;
+    if(typeof oldYedek==='function'){
+      window.yedekBilgi=function(){
+        var r=oldYedek.apply(this,arguments);
+        numuneYedekButonEkle();
+        return r;
+      };
+    }
+  }
+
+  function numuneYedekButonEkle(){
+    var page=E('page-yedek'); if(!page || E('btn-numune-excel-yedek')) return;
+    var cards=[].slice.call(page.querySelectorAll('.card'));
+    var card=cards.find(function(c){return (c.textContent||'').indexOf('Tüm Verileri İndir')>=0 || (c.textContent||'').indexOf('Sadece Hareketler')>=0;});
+    if(!card) return;
+    var row=card.querySelector('.btn-row') || card;
+    row.insertAdjacentHTML('beforeend','<button id="btn-numune-excel-yedek" class="btn" onclick="excelExport(&quot;numuneler&quot;)" style="justify-content:center"><i class="ti ti-gift"></i> Sadece Numuneler</button>');
+  }
+
+  function boot(){
+    try{
+      numuneEnsureDb();
+      patchPermissions();
+      addNumuneNav();
+      addNumunePage();
+      patchExcel();
+      patchCore();
+      numuneInitForm();
+      window.ctpRenderNumune();
+      if(typeof applyRoleUI==='function') applyRoleUI();
+    }catch(e){ console.warn('Numune girişi yüklenemedi:', e); }
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){setTimeout(boot,120);});
+  else setTimeout(boot,120);
+  window.addEventListener('load',function(){setTimeout(boot,500);});
+})();
+</script>
+<!-- CTP_NUMUNE_GIRISI_V3152_END -->
+<!-- CTP_NUMUNE_FAVORI_SIRALAMA_V3153_START -->
+<style>
+/* v3.1.53 Numune ürün seçimi - sık kullanılan ilk 5 ürün */
+.numune-fav-panel{border:1px solid #fde68a;background:#fffbeb;border-radius:12px;padding:10px;margin:8px 0 12px}
+.numune-fav-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.numune-fav-list{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.numune-fav-row{display:grid;grid-template-columns:34px 1fr auto;gap:8px;align-items:center;background:#fff;border:1px solid #fde68a;border-radius:10px;padding:7px 8px;font-size:12px}
+.numune-fav-no{width:26px;height:26px;border-radius:999px;background:#fef3c7;color:#92400e;display:flex;align-items:center;justify-content:center;font-weight:900}
+.numune-fav-actions{display:flex;gap:4px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.numune-fav-help{font-size:11px;color:#92400e;line-height:1.35;margin-top:7px}
+.numune-fav-empty{font-size:12px;color:#92400e;background:#fff7ed;border:1px dashed #fcd34d;border-radius:10px;padding:9px;text-align:center}
+.numune-fav-star{color:#e08c00;font-weight:900;margin-right:4px}
+@media(max-width:780px){.numune-fav-row{grid-template-columns:1fr}.numune-fav-no{width:auto}.numune-fav-actions{justify-content:flex-start}.numune-fav-head{display:grid;grid-template-columns:1fr}}
+</style>
+<script>
+(function(){
+  'use strict';
+  var MAX_FAV=5;
+  function E(id){return document.getElementById(id);}
+  function V(id){var e=E(id); return e?String(e.value||''):'';}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function hasDb(){return typeof window.DB!=='undefined' && window.DB;}
+  function ensureFavDb(){
+    if(!hasDb()) return [];
+    if(!Array.isArray(DB.numuneFavoriUrunler)) DB.numuneFavoriUrunler=[];
+    var valid={};
+    (DB.urunler||[]).forEach(function(u){valid[String(u.id)]=1;});
+    DB.numuneFavoriUrunler=DB.numuneFavoriUrunler.map(function(x){return String(x);}).filter(function(id,i,a){return valid[id] && a.indexOf(id)===i;}).slice(0,MAX_FAV);
+    return DB.numuneFavoriUrunler;
+  }
+  function saveDb(){ try{ if(typeof window.dbSave==='function') window.dbSave(); }catch(e){} }
+  function show(msg,type){ try{ if(typeof window.showA==='function') return window.showA('numune-al',msg,type||'s'); }catch(e){} alert(msg); }
+  function favIds(){return ensureFavDb().slice();}
+  function favRank(id){var a=favIds(); var i=a.indexOf(String(id)); return i<0?9999:i;}
+  function isFav(id){return favRank(id)<9999;}
+  function prodName(u){return String((u&&u.ad)||'Ürün');}
+  function sortProducts(arr){
+    var fav=favIds();
+    return (arr||[]).slice().sort(function(a,b){
+      var ra=fav.indexOf(String(a.id)), rb=fav.indexOf(String(b.id));
+      if(ra>=0 || rb>=0){
+        if(ra<0) ra=9999;
+        if(rb<0) rb=9999;
+        if(ra!==rb) return ra-rb;
+      }
+      return prodName(a).localeCompare(prodName(b),'tr');
+    });
+  }
+  function productById(id){return (DB.urunler||[]).find(function(u){return String(u.id)===String(id);});}
+
+  window.ctpNumuneFavPanelEkle=function(){
+    var page=E('page-numune');
+    if(!page || E('numune-fav-panel')) return;
+    var title=[].slice.call(page.querySelectorAll('.card-title')).find(function(x){return (x.textContent||'').indexOf('Numune Ürün Seçimi')>=0;});
+    if(!title) return;
+    title.insertAdjacentHTML('afterend',
+      '<div id="numune-fav-panel" class="numune-fav-panel">'+
+        '<div class="numune-fav-head">'+
+          '<div class="card-title" style="margin:0"><i class="ti ti-star"></i> Sık Kullanılan Numune Ürünleri</div>'+
+          '<span class="badge b-o">İlk 5 ürün üstte</span>'+
+        '</div>'+
+        '<div class="g2">'+
+          '<div class="fg" style="margin-bottom:0"><label>Ürünü öne al</label><select id="n-fav-sec"></select></div>'+
+          '<div class="fg" style="margin-bottom:0"><label>&nbsp;</label><button class="btn btn-y" onclick="ctpNumuneFavEkle()" style="width:100%;justify-content:center"><i class="ti ti-star-plus"></i> Favorilere Ekle</button></div>'+
+        '</div>'+
+        '<div id="numune-fav-list" class="numune-fav-list"></div>'+
+        '<div class="numune-fav-help">Buraya en çok kullandığın en fazla 5 ürünü ekle. Sırasını yukarı/aşağı değiştir; tek ürün seçimi ve toplu ürün listesinde bu ürünler her zaman en üstte görünür.</div>'+
+      '</div>'
+    );
+  };
+
+  window.ctpNumuneFavRender=function(){
+    if(!hasDb()) return;
+    ensureFavDb();
+    window.ctpNumuneFavPanelEkle();
+    var sec=E('n-fav-sec');
+    if(sec){
+      var selected=sec.value;
+      var ids=favIds();
+      var arr=sortProducts(DB.urunler||[]).filter(function(u){return ids.indexOf(String(u.id))<0;});
+      sec.innerHTML='<option value="">Ürün seç...</option>'+arr.map(function(u){return '<option value="'+esc(u.id)+'">'+esc(u.ad||'Ürün')+(u.kat?' — '+esc(u.kat):'')+'</option>';}).join('');
+      if(selected && arr.some(function(u){return String(u.id)===String(selected);})) sec.value=selected;
+    }
+    var box=E('numune-fav-list');
+    if(box){
+      var ids2=favIds();
+      if(!ids2.length){box.innerHTML='<div class="numune-fav-empty">Henüz sık kullanılan numune ürünü seçilmedi.</div>';}
+      else{
+        box.innerHTML=ids2.map(function(id,i){
+          var u=productById(id)||{ad:'Silinmiş ürün',kat:''};
+          return '<div class="numune-fav-row">'+
+            '<div class="numune-fav-no">'+(i+1)+'</div>'+
+            '<div><strong><span class="numune-fav-star">★</span>'+esc(u.ad||'Ürün')+'</strong><br><span style="font-size:10px;color:#9ca3af">'+esc(u.kat||'-')+'</span></div>'+
+            '<div class="numune-fav-actions">'+
+              '<button class="btn btn-sm" onclick="ctpNumuneFavSira('+i+',-1)" title="Yukarı"><i class="ti ti-chevron-up"></i></button>'+
+              '<button class="btn btn-sm" onclick="ctpNumuneFavSira('+i+',1)" title="Aşağı"><i class="ti ti-chevron-down"></i></button>'+
+              '<button class="btn btn-sm btn-r" onclick="ctpNumuneFavSil('+i+')" title="Kaldır"><i class="ti ti-trash"></i></button>'+
+            '</div>'+
+          '</div>';
+        }).join('');
+      }
+    }
+  };
+
+  window.ctpNumuneFavEkle=function(){
+    if(!hasDb()) return;
+    var id=V('n-fav-sec');
+    if(!id) return show('Öne almak için ürün seçmelisin.','e');
+    var ids=ensureFavDb();
+    if(ids.indexOf(String(id))>=0) return show('Bu ürün zaten sık kullanılanlarda.','e');
+    if(ids.length>=MAX_FAV) return show('En fazla '+MAX_FAV+' sık kullanılan numune ürünü seçebilirsin. Önce birini kaldır.','e');
+    ids.push(String(id));
+    saveDb();
+    window.ctpNumuneFavHepsiniYenile();
+    show('Ürün sık kullanılanlara eklendi. Artık numune ürün listesinde üstte görünecek.');
+  };
+  window.ctpNumuneFavSil=function(i){
+    var ids=ensureFavDb();
+    ids.splice(i,1);
+    saveDb();
+    window.ctpNumuneFavHepsiniYenile();
+  };
+  window.ctpNumuneFavSira=function(i,yon){
+    var ids=ensureFavDb();
+    var j=i+yon;
+    if(j<0 || j>=ids.length) return;
+    var t=ids[i]; ids[i]=ids[j]; ids[j]=t;
+    saveDb();
+    window.ctpNumuneFavHepsiniYenile();
+  };
+
+  window.ctpNumuneFavHepsiniYenile=function(){
+    window.ctpNumuneFavRender();
+    try{ if(typeof window.ctpNumuneUrunListesiDoldur==='function') window.ctpNumuneUrunListesiDoldur(); }catch(e){}
+    try{ if(typeof window.ctpNumuneTopluUrunListesiDoldur==='function') window.ctpNumuneTopluUrunListesiDoldur(); }catch(e){}
+  };
+
+  window.ctpNumuneUrunListesiDoldur=function(){
+    if(!hasDb()) return;
+    ensureFavDb();
+    var sel=E('n-urun'); if(!sel) return;
+    var old=sel.value;
+    var arr=sortProducts(DB.urunler||[]);
+    sel.innerHTML='<option value="">Ürün seç...</option>' + arr.map(function(u){
+      return '<option value="'+esc(u.id)+'">'+(isFav(u.id)?'★ ':'')+esc(u.ad||'Ürün')+(u.kat?' — '+esc(u.kat):'')+'</option>';
+    }).join('');
+    if(old && arr.some(function(u){return String(u.id)===String(old);})) sel.value=old;
+    try{ if(typeof window.ctpNumuneUrunDegisti==='function') window.ctpNumuneUrunDegisti(); }catch(e){}
+    try{ window.ctpNumuneFavRender(); }catch(e){}
+    try{ window.ctpNumuneTopluUrunListesiDoldur(); }catch(e){}
+  };
+
+  window.ctpNumuneTopluUrunListesiDoldur=function(){
+    if(!hasDb()) return;
+    ensureFavDb();
+    var sel=E('n-urun-toplu'); if(!sel) return;
+    var old=[].slice.call(sel.selectedOptions||[]).map(function(o){return String(o.value);});
+    var q=(V('n-urun-toplu-ara')||'').toLowerCase().trim();
+    var arr=sortProducts(DB.urunler||[]);
+    if(q){
+      arr=arr.filter(function(u){return String((u.ad||'')+' '+(u.kat||'')+' '+(u.bkod||'')).toLowerCase().indexOf(q)>=0;});
+    }
+    sel.innerHTML=arr.map(function(u){
+      var v=String(u.id);
+      return '<option value="'+esc(u.id)+'" '+(old.indexOf(v)>=0?'selected':'')+'>'+(isFav(u.id)?'★ ':'')+esc(u.ad||'Ürün')+(u.kat?' — '+esc(u.kat):'')+'</option>';
+    }).join('');
+  };
+
+  function patchHooks(){
+    if(window._ctpNumuneFavV3153Patched) return;
+    window._ctpNumuneFavV3153Patched=true;
+    var oldRender=window.ctpRenderNumune;
+    if(typeof oldRender==='function'){
+      window.ctpRenderNumune=function(){
+        var r=oldRender.apply(this,arguments);
+        setTimeout(function(){try{window.ctpNumuneFavHepsiniYenile();}catch(e){}},30);
+        return r;
+      };
+    }
+    var oldRenderU=window.renderU;
+    if(typeof oldRenderU==='function'){
+      window.renderU=function(){
+        var r=oldRenderU.apply(this,arguments);
+        setTimeout(function(){try{window.ctpNumuneFavHepsiniYenile();}catch(e){}},80);
+        return r;
+      };
+    }
+    var oldInit=window.initApp;
+    if(typeof oldInit==='function'){
+      window.initApp=function(){
+        var r=oldInit.apply(this,arguments);
+        setTimeout(function(){try{window.ctpNumuneFavHepsiniYenile();}catch(e){}},160);
+        return r;
+      };
+    }
+  }
+  function boot(){
+    try{ensureFavDb(); patchHooks(); window.ctpNumuneFavHepsiniYenile();}catch(e){console.warn('Numune favori sıralama yüklenemedi:',e);}
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){setTimeout(boot,180);}); else setTimeout(boot,180);
+  window.addEventListener('load',function(){setTimeout(boot,700);});
+})();
+</script>
+<!-- CTP_NUMUNE_FAVORI_SIRALAMA_V3153_END -->
+
+
+<!-- CTP_V3154_NUMUNE_MENU_SABIT_START -->
+<script>
+(function(){
+  // v3.1.54: Numune modülü görünürlük tamiri.
+  // Önceki pakette numune patch'i yanlış yere denk geldiği için tarayıcı onu CSS gibi okuyabiliyordu.
+  // Bu blok en sona konur ve menü + sayfa yüklemesini garanti eder.
+  try{window.CTP_NUMUNE_MENU_FIX_V3154=true;}catch(e){}
+})();
+</script>
+<!-- CTP_V3154_NUMUNE_MENU_SABIT_END -->
+
+<!-- CTP_V3154_NOT: Numune menüsü görünmeme hatası düzeltildi; ürün toplu seçim, sepet sıralama ve sık kullanılan ilk 5 ürün özelliği aktiftir. -->
