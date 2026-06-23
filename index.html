@@ -2446,7 +2446,7 @@ async function gdriveSave() {
 
     const now = new Date().toLocaleTimeString('tr-TR');
     gdriveStatusGuncelle('ok', `Son yedek: ${now} ✓`);
-    document.getElementById('gdrive-son').textContent = `Son yedek: ${now}`;
+    const gdriveSonEl = document.getElementById('gdrive-son'); if (gdriveSonEl) gdriveSonEl.textContent = `Son yedek: ${now}`;
     markSaved();
   } catch(e) {
     gdriveStatusGuncelle('error', 'Yedekleme hatası!');
@@ -7108,12 +7108,32 @@ body:not(.ctp-app-open) #ctp-view-toggle{display:none!important;}
     localStorage.setItem('ct_cloud_activated','1');
     localStorage.setItem('ct_cloud_last_ok', new Date().toISOString());
 
+    // Önce login cevabında veri geldiyse geçici olarak yükle; asıl kaynak hemen aşağıda çekilen bulut verisidir.
     if(res && res.data) copyDb(res.data);
 
     var role='personel';
     try{ role=(res.user && (res.user.role || res.user.yetki)) || res.role || role; }catch(e){}
     upsertLocalUser(email,password,role,true);
 
+    try{ if(typeof ensureUsers==='function') ensureUsers(); }catch(e){}
+    try{ if(typeof ctSaveLocal==='function') ctSaveLocal(); }catch(e){}
+
+    // KRİTİK AKIŞ: Uygulamayı açmadan önce buluttaki güncel müşteri verisini çek.
+    msg('Giriş başarılı. Buluttaki veriler yükleniyor...', true);
+    if(typeof bulutYukle === 'function'){
+      var cloudOk = false;
+      try{
+        cloudOk = await bulutYukle(false);
+      }catch(loadErr){
+        throw new Error('Buluttaki veriler çekilemedi: ' + (loadErr && loadErr.message ? loadErr.message : loadErr));
+      }
+      if(!cloudOk){
+        throw new Error('Buluttaki veriler çekilemedi. İnternet/API bağlantısını kontrol edip tekrar giriş yapın.');
+      }
+    }
+
+    // Bulut yüklemesi DB'yi değiştirmiş olabilir; giriş yapan kullanıcıyı tekrar garantiye al.
+    upsertLocalUser(email,password,role,true);
     try{ if(typeof ensureUsers==='function') ensureUsers(); }catch(e){}
     try{ if(typeof ctSaveLocal==='function') ctSaveLocal(); }catch(e){}
     try{ if(typeof ctRenderAll==='function') ctRenderAll(); }catch(e){}
@@ -7124,10 +7144,6 @@ body:not(.ctp-app-open) #ctp-view-toggle{display:none!important;}
     setTimeout(function(){
       try{ if(typeof login==='function') login(); }catch(e){}
     },120);
-
-    setTimeout(function(){
-      try{ if(typeof bulutYukle==='function') bulutYukle(false); }catch(e){}
-    },900);
   }
 
   async function nextStep(){
@@ -8363,7 +8379,77 @@ body:not(.ctp-app-open) #ctp-view-toggle{display:none!important;}
 
 <!-- CTP_MANUEL_ISKONTO_V3145_START -->
 <style id="ctp-manuel-iskonto-v3145-css">
-  .ctp-manuel-iskonto-box{display:none;margin-top:8px;background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:10px}
+  .ctp-manuel-iskonto-box{display:none;margin-top:8px;background:#fffbeb;border:1px
+
+<!-- CTP_CHATGPT_CLOUD_FIRST_LOGIN: Login sonrası uygulama açılmadan önce bulut verisi zorunlu yüklenir. -->
+<!-- CTP_CHATGPT_TEST_FIXES_START -->
+<script>
+(function(){
+  'use strict';
+
+  // Eksik fonksiyon koruması: Ürün kategori select'i urunTemizle2() çağırıyor.
+  if (typeof window.urunTemizle2 !== 'function') {
+    window.urunTemizle2 = function(){ return true; };
+  }
+
+  // Eksik fonksiyon koruması: Yeni ürün seçim modalı umSecInfo() çağırıyor; eski fonksiyon umSecGuncelle().
+  if (typeof window.umSecInfo !== 'function') {
+    window.umSecInfo = function(){
+      if (typeof window.umSecGuncelle === 'function') return window.umSecGuncelle();
+      var info = document.getElementById('um-sec-info');
+      if (info) {
+        var secili = document.querySelectorAll('.um-chk:checked').length;
+        info.textContent = secili + ' ürün seçili';
+      }
+    };
+  }
+
+  // Excel kütüphanesi yüklenmediğinde ReferenceError yerine anlaşılır uyarı ver.
+  function ctpExcelHazirMi(){
+    if (typeof window.XLSX === 'undefined') {
+      alert('Excel kütüphanesi yüklenemedi. İnternet bağlantısını kontrol edin veya XLSX dosyasını yerel olarak ekleyin.');
+      return false;
+    }
+    return true;
+  }
+  window.ctpExcelHazirMi = ctpExcelHazirMi;
+
+  ['excelExport','excelImport','excelExportStok','xlsxIndir'].forEach(function(fn){
+    var oldFn = window[fn];
+    if (typeof oldFn === 'function' && !oldFn.__ctpExcelGuard) {
+      var guarded = function(){
+        if (!ctpExcelHazirMi()) return false;
+        return oldFn.apply(this, arguments);
+      };
+      guarded.__ctpExcelGuard = true;
+      window[fn] = guarded;
+    }
+  });
+
+  // Eski Google Drive arayüzü yoksa otomatik yedek kodunun ekranda olmayan alanlara yazmasını engelle.
+  var oldGdriveStatus = window.gdriveStatusGuncelle;
+  if (typeof oldGdriveStatus === 'function' && !oldGdriveStatus.__ctpSafeStatus) {
+    var safeStatus = function(durum, mesaj){
+      var el = document.getElementById('gdrive-status');
+      if (!el) return false;
+      return oldGdriveStatus.apply(this, arguments);
+    };
+    safeStatus.__ctpSafeStatus = true;
+    window.gdriveStatusGuncelle = safeStatus;
+  }
+
+  // Stok düzeltme modalında eski patch'in aradığı sd-urun alanı yoksa eski kod hata vermesin.
+  if (!document.getElementById('sd-urun')) {
+    var sdHidden = document.createElement('input');
+    sdHidden.type = 'hidden';
+    sdHidden.id = 'sd-urun';
+    document.body.appendChild(sdHidden);
+  }
+})();
+</script>
+<!-- CTP_CHATGPT_TEST_FIXES_END -->
+
+ solid #fde68a;border-radius:12px;padding:10px}
   .ctp-manuel-iskonto-box.show{display:block}
   .ctp-manuel-iskonto-help{font-size:11px;color:#92400e;margin-top:5px;line-height:1.35}
 </style>
@@ -9572,3 +9658,338 @@ try{ if(typeof DB!=='undefined' && !window.DB){ window.DB=DB; } }catch(e){}
 <!-- CTP_V3154_NUMUNE_MENU_SABIT_END -->
 
 <!-- CTP_V3154_NOT: Numune menüsü görünmeme hatası düzeltildi; ürün toplu seçim, sepet sıralama ve sık kullanılan ilk 5 ürün özelliği aktiftir. -->
+
+<!-- CTP_CHATGPT_CLOUD_ENTRY_FIX_V2_START -->
+<script>
+(function(){
+  'use strict';
+
+  function E(id){ return document.getElementById(id); }
+  function getVal(id){ var x=E(id); return x ? String(x.value||'') : ''; }
+  function setMsg(text, ok){
+    var m=E('ctp-email-msg');
+    if(m){ m.textContent=text||''; m.className='cloud-license-msg '+(ok?'cloud-ok':'cloud-err'); }
+  }
+  function cloudLicenseKey(){ return localStorage.getItem('ct_cloud_license_key') || ''; }
+  function hasCloudLicense(){ return !!cloudLicenseKey(); }
+  function looksLikeEmail(v){ return /@/.test(String(v||'')); }
+
+  function showCloudFirst(prefill, message, ok){
+    var app=E('app'), login=E('login-screen'), cloud=E('cloud-license-screen');
+    if(app) app.style.display='none';
+    if(login) login.style.display='none';
+
+    try{
+      if(typeof window.cloudShowLicenseIfNeeded === 'function') window.cloudShowLicenseIfNeeded();
+      else if(cloud) cloud.style.display='flex';
+    }catch(e){ if(cloud) cloud.style.display='flex'; }
+
+    setTimeout(function(){
+      var c=E('cloud-license-screen'); if(c) c.style.display='flex';
+      var inp=E('ctp-email');
+      if(inp && prefill && looksLikeEmail(prefill)) inp.value=String(prefill).trim().toLowerCase();
+      if(message) setMsg(message, ok!==false);
+      if(inp) inp.focus();
+    },80);
+  }
+
+  function openAppAfterCloud(user){
+    currentUser=user;
+    try{ user.lastLogin=new Date().toLocaleString('tr-TR'); }catch(e){}
+    try{ if(typeof ctSaveLocal==='function') ctSaveLocal(); }catch(e){}
+
+    var cloud=E('cloud-license-screen'), login=E('login-screen'), app=E('app');
+    if(cloud) cloud.style.display='none';
+    if(login) login.style.display='none';
+    if(app) app.style.display='block';
+    document.body.classList.add('ctp-app-open');
+
+    try{ if(E('sb-av')) E('sb-av').textContent=String(user.username||'A')[0].toUpperCase(); }catch(e){}
+    try{ if(E('sb-name')) E('sb-name').textContent=String(user.username||'')+' — '+(typeof roleLabel==='function'?roleLabel(user.role):user.role||''); }catch(e){}
+    try{ if(typeof initApp==='function') initApp(); }catch(e){ console.error('initApp hata', e); }
+    try{ if(typeof applyRoleUI==='function') applyRoleUI(); }catch(e){}
+    try{ if(typeof ctpOturumKaydet==='function') ctpOturumKaydet(user.username); }catch(e){}
+    try{
+      if(typeof currentAllowedPages==='function' && typeof goPage==='function'){
+        var first=(currentAllowedPages()||[])[0] || 'dashboard';
+        setTimeout(function(){ goPage(first, document.querySelector('[onclick*="goPage(\\\''+first+'\\\'"]')); },80);
+      }
+    }catch(e){}
+    var err=E('l-err'); if(err) err.style.display='none';
+  }
+
+  // Fresh/gizli sekmede eski admin ekranı önce görünmesin; doğrudan Cloud e-posta ekranı açılsın.
+  function forceCloudOnFreshDevice(){
+    if(!hasCloudLicense()){
+      showCloudFirst('', 'E-posta ile devam edin.', true);
+      return true;
+    }
+    return false;
+  }
+
+  var oldLogin = window.login;
+  window.login = async function(){
+    var username=getVal('l-user').trim();
+    var password=getVal('l-pass');
+    var err=E('l-err');
+    var btn=document.querySelector('#login-screen button[onclick*="login"]');
+
+    // Lisans yoksa admin/1234 dahil hiçbir lokal girişe izin verme; önce Cloud hesabı açılsın.
+    if(!hasCloudLicense()){
+      showCloudFirst(username, 'Önce e-posta ile bulut hesabına giriş yapın.', true);
+      return false;
+    }
+
+    try{
+      if(typeof ensureUsers==='function') ensureUsers();
+      var users=(typeof DB!=='undefined' && Array.isArray(DB.users)) ? DB.users : [];
+      var user=users.find(function(x){ return String(x&&x.username||'').toLowerCase()===username.toLowerCase() && x.active!==false; });
+
+      // E-posta yazıldı ama lokal DB'de yoksa eski ekranda hata vermek yerine Cloud girişine yönlendir.
+      if(!user && looksLikeEmail(username)){
+        showCloudFirst(username, 'Bu e-posta için bulut girişi gerekiyor.', true);
+        return false;
+      }
+
+      if(user && typeof passHash==='function' && user.pass===passHash(password)){
+        if(err) err.style.display='none';
+        if(btn){ btn.disabled=true; btn.innerHTML='<i class="ti ti-cloud-download"></i> Buluttan yükleniyor...'; }
+
+        // Uygulama açılmadan önce bulutu çek.
+        if(typeof window.bulutYukle === 'function'){
+          var ok=false;
+          try{ ok = await window.bulutYukle(false); }catch(e){ ok=false; }
+          if(!ok){
+            if(err){ err.style.display='flex'; err.innerHTML='<i class="ti ti-alert-circle"></i> Bulut verileri çekilemedi. İnternet/API bağlantısını kontrol edin.'; }
+            if(btn){ btn.disabled=false; btn.innerHTML='<i class="ti ti-login"></i> Giriş Yap'; }
+            return false;
+          }
+        }
+
+        // Bulut yüklemesi DB'yi yeniledi; kullanıcıyı tekrar bul.
+        try{ if(typeof ensureUsers==='function') ensureUsers(); }catch(e){}
+        users=(typeof DB!=='undefined' && Array.isArray(DB.users)) ? DB.users : [];
+        var freshUser=users.find(function(x){ return String(x&&x.username||'').toLowerCase()===username.toLowerCase() && x.active!==false; }) || user;
+
+        openAppAfterCloud(freshUser);
+        if(btn){ btn.disabled=false; btn.innerHTML='<i class="ti ti-login"></i> Giriş Yap'; }
+        return true;
+      }
+
+      if(err){ err.style.display='flex'; err.innerHTML='<i class="ti ti-alert-circle"></i> Hatalı kullanıcı adı veya şifre'; }
+      return false;
+    }catch(e){
+      console.error('Cloud-first login hata:', e);
+      if(typeof oldLogin==='function') return oldLogin.apply(this, arguments);
+      return false;
+    }finally{
+      if(btn && btn.disabled){ btn.disabled=false; btn.innerHTML='<i class="ti ti-login"></i> Giriş Yap'; }
+    }
+  };
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(forceCloudOnFreshDevice,20); setTimeout(forceCloudOnFreshDevice,300); });
+  }else{
+    setTimeout(forceCloudOnFreshDevice,20);
+    setTimeout(forceCloudOnFreshDevice,300);
+  }
+  window.addEventListener('load', function(){ setTimeout(forceCloudOnFreshDevice,500); });
+})();
+</script>
+<!-- CTP_CHATGPT_CLOUD_ENTRY_FIX_V2_END -->
+
+<!-- CTP_CHATGPT_PREMIUM_FEATURES_V3_START -->
+<style id="ctp-premium-features-v3-css">
+:root{--premium-bg:#f4f7f5;--premium-card:#ffffff;--premium-ink:#0f172a;--premium-soft:#64748b;--premium-line:#e2e8f0;--premium-green:#176b3a;--premium-green2:#0f5130;--premium-gold:#c48a2c;--premium-shadow:0 14px 38px rgba(15,23,42,.08)}
+body{background:radial-gradient(circle at top left,#eefbf3 0,#f7faf8 38%,#f4f7f5 100%)!important;color:var(--premium-ink)}
+.sidebar{background:rgba(255,255,255,.92)!important;backdrop-filter:blur(14px);box-shadow:8px 0 32px rgba(15,23,42,.05);border-right:1px solid rgba(226,232,240,.95)!important}.main{background:transparent}.card,.stat,.tw{border-color:rgba(226,232,240,.95)!important;box-shadow:var(--premium-shadow)!important}.card{border-radius:18px!important}.stat{border-radius:18px!important}.page-title{font-size:22px!important;font-weight:850!important;letter-spacing:-.02em;color:#102033}.btn{border-radius:12px!important}.btn-g{background:linear-gradient(135deg,var(--premium-green),#23864c)!important;border-color:transparent!important}.btn-b{background:linear-gradient(135deg,#172554,#1e3a8a)!important;border-color:transparent!important}.btn-y{background:linear-gradient(135deg,#b7791f,#d99a32)!important;border-color:transparent!important}.sb-item{border-radius:12px!important;margin:3px 0!important}.sb-item.active{background:linear-gradient(135deg,#eaf8ef,#f7fbf8)!important;box-shadow:inset 3px 0 0 var(--premium-green);color:var(--premium-green)!important}.sb-logo{padding:16px 14px!important;gap:10px!important}.sb-logo .ic{width:42px!important;height:42px!important;border-radius:14px!important;overflow:hidden;background:linear-gradient(135deg,var(--premium-green),#2ba35c)!important;box-shadow:0 10px 24px rgba(29,111,66,.22)}.sb-logo .ic.has-logo{background:#fff!important;border:1px solid #e5e7eb}.sb-logo .ic img{width:100%;height:100%;object-fit:contain;padding:3px}.ctp-brand-title{display:block;font-size:14px;font-weight:850;color:#0f172a;line-height:1.1}.ctp-brand-sub{display:block;font-size:10px;color:#64748b;margin-top:3px;font-weight:650}.login-box,.cloud-license-box{box-shadow:0 30px 90px rgba(0,0,0,.25)!important;border:1px solid rgba(255,255,255,.55)}
+#fatura-modal .ctp-fatura-wa-actions{gap:7px!important}#fatura-modal .ctp-pdf-save{background:#0f5130;color:#fff;border-color:#0f5130}#fatura-modal .ctp-pdf-share{background:#c48a2c;color:#fff;border-color:#c48a2c}.ctp-pdf-busy{opacity:.65;pointer-events:none}
+#page-numune .numune-info{background:linear-gradient(135deg,#eef6ff,#f8fbff)!important;border-color:#bfdbfe!important;border-radius:16px!important;color:#1e3a8a!important}#page-numune .numune-bulk-box{background:linear-gradient(180deg,#ffffff,#f8fafc)!important;border-radius:16px!important}.numune-cart{border-radius:16px!important;box-shadow:inset 0 0 0 1px #e5e7eb}.numune-cart-row{border-top:1px solid #edf2f7!important}.numune-empty{background:#f8fafc;border-radius:14px}.ctp-numune-favbar{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 12px}.ctp-numune-chip{border:1px solid #d9eadf;background:#f4fbf6;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:800;color:#176b3a;cursor:pointer}.ctp-numune-chip:hover{background:#e8f7ed}.ctp-numune-count{font-size:11px;font-weight:800;color:#176b3a;margin-top:6px}.ctp-settings-logo-preview{width:92px;height:58px;border:1px dashed #cbd5e1;border-radius:14px;display:flex;align-items:center;justify-content:center;background:#f8fafc;overflow:hidden}.ctp-settings-logo-preview img{max-width:100%;max-height:100%;object-fit:contain}.ctp-settings-help{font-size:11px;color:#64748b;line-height:1.45;margin-top:6px}
+@media(max-width:780px){#fatura-modal .ctp-fatura-wa-actions{grid-template-columns:1fr 1fr!important}.ctp-numune-favbar{display:grid;grid-template-columns:1fr 1fr}.ctp-numune-chip{width:100%}}
+</style>
+<script id="ctp-premium-features-v3-js">
+(function(){
+  'use strict';
+  function E(id){return document.getElementById(id)}
+  function safe(v){return String(v==null?'':v).trim()}
+  function db(){try{return (typeof DB!=='undefined'&&DB)?DB:null}catch(e){return null}}
+  function ensureSettings(){var d=db(); if(!d)return {}; if(!d.ayarlar)d.ayarlar={}; if(!d.ayarlar.brand)d.ayarlar.brand={}; return d.ayarlar.brand}
+  function localBrand(){return {name:localStorage.getItem('ctp_brand_name')||'', sub:localStorage.getItem('ctp_brand_sub')||'', logo:localStorage.getItem('ctp_brand_logo')||''}}
+  function getBrand(){var b=ensureSettings(), l=localBrand(); return {name:safe(b.name||l.name||'Cari Takip Pro'), sub:safe(b.sub||l.sub||'v3.0.24 Sheets Lisanslı'), logo:safe(b.logo||l.logo||'')}}
+  function setLocalBrand(b){try{localStorage.setItem('ctp_brand_name',b.name||'');localStorage.setItem('ctp_brand_sub',b.sub||''); if(b.logo)localStorage.setItem('ctp_brand_logo',b.logo); else localStorage.removeItem('ctp_brand_logo')}catch(e){}}
+  window.ctpApplyBrand=function(){var b=getBrand(); setLocalBrand(b); try{document.title=b.name+' - Cari Takip';}catch(e){}
+    var logoBox=document.querySelector('.sb-logo .ic'); if(logoBox){ if(b.logo){logoBox.classList.add('has-logo'); logoBox.innerHTML='<img src="'+b.logo+'" alt="Logo">'} else {logoBox.classList.remove('has-logo'); logoBox.innerHTML='<i class="ti ti-building-store"></i>'}}
+    var title=document.querySelector('.sb-logo > span'); if(title) title.innerHTML='<span class="ctp-brand-title">'+b.name.replace(/</g,'&lt;')+'</span><span class="ctp-brand-sub">'+b.sub.replace(/</g,'&lt;')+'</span>';
+    var loginTitle=document.querySelector('.login-logo span'); if(loginTitle) loginTitle.textContent=b.name;
+    var loginSub=document.querySelector('.login-sub'); if(loginSub) loginSub.textContent=b.sub||'Şarküteri & Market Cari Sistemi';
+    var cloudTitle=document.querySelector('#cloud-license-screen h2'); if(cloudTitle) cloudTitle.textContent=b.name+' Cloud';
+  };
+  window.ctpBrandLogoSec=function(inp){var f=inp&&inp.files&&inp.files[0]; if(!f)return; if(f.size>1600000){alert('Logo dosyası çok büyük. Lütfen 1.5 MB altında PNG/JPG seç.'); inp.value=''; return;} var r=new FileReader(); r.onload=function(){var b=ensureSettings(); b.logo=String(r.result||''); setLocalBrand(getBrand()); window.ctpApplyBrand(); window.ctpRenderBrandSettings();}; r.readAsDataURL(f)};
+  window.ctpBrandLogoTemizle=function(){var b=ensureSettings(); b.logo=''; setLocalBrand(getBrand()); window.ctpApplyBrand(); window.ctpRenderBrandSettings();};
+  window.ctpBrandKaydet=function(){var b=ensureSettings(); b.name=safe(E('ctp-brand-name')&&E('ctp-brand-name').value)||'Cari Takip Pro'; b.sub=safe(E('ctp-brand-sub')&&E('ctp-brand-sub').value)||'v3.0.24 Sheets Lisanslı'; var lb=localBrand(); if(lb.logo&&!b.logo)b.logo=lb.logo; setLocalBrand(b); try{if(typeof dbSave==='function')dbSave(); else if(typeof ctSaveLocal==='function')ctSaveLocal();}catch(e){} try{if(typeof bulutKaydetPlanla==='function')bulutKaydetPlanla();}catch(e){} window.ctpApplyBrand(); alert('Marka ayarları kaydedildi.');};
+  window.ctpRenderBrandSettings=function(){var b=getBrand(); var n=E('ctp-brand-name'), s=E('ctp-brand-sub'), p=E('ctp-logo-preview'); if(n)n.value=b.name; if(s)s.value=b.sub; if(p)p.innerHTML=b.logo?'<img src="'+b.logo+'" alt="Logo">':'Logo yok'};
+  function patchPermissions(){try{if(typeof PAGE_LIST_V252!=='undefined'&&Array.isArray(PAGE_LIST_V252)&&!PAGE_LIST_V252.some(function(x){return x[0]==='ayarlar'}))PAGE_LIST_V252.push(['ayarlar','Ayarlar']); if(typeof ROLE_PAGE_PRESETS_V252!=='undefined'&&Array.isArray(ROLE_PAGE_PRESETS_V252.admin)&&ROLE_PAGE_PRESETS_V252.admin.indexOf('ayarlar')<0)ROLE_PAGE_PRESETS_V252.admin.push('ayarlar')}catch(e){}}
+  function addSettings(){patchPermissions(); var nav=document.querySelector('.sb-nav'); if(nav&&!document.querySelector('[data-ctp-page="ayarlar"]')){var item=document.createElement('div'); item.className='sb-item only-admin'; item.setAttribute('data-ctp-page','ayarlar'); item.setAttribute('onclick',"goPage('ayarlar',this)"); item.innerHTML='<i class="ti ti-settings"></i> Ayarlar'; nav.appendChild(item)} var main=document.querySelector('.main'); if(main&&!E('page-ayarlar'))main.insertAdjacentHTML('beforeend','<div id="page-ayarlar" class="page"><div class="page-title">Ayarlar</div><div class="g2" style="align-items:start"><div class="card"><div class="card-head"><div class="card-title"><i class="ti ti-brush"></i> Marka Ayarları</div></div><div class="g2"><div class="fg"><label>Sol Üst Uygulama Adı</label><input id="ctp-brand-name" placeholder="Örn: Tatsan Cari Takip"></div><div class="fg"><label>Alt Başlık / Sürüm Yazısı</label><input id="ctp-brand-sub" placeholder="Örn: Tatsan Cloud v1"></div></div><div class="fg"><label>Şirket Logosu</label><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><div class="ctp-settings-logo-preview" id="ctp-logo-preview">Logo yok</div><label class="btn"><i class="ti ti-upload"></i> Logo Seç<input type="file" accept="image/png,image/jpeg,image/webp" style="display:none" onchange="ctpBrandLogoSec(this)"></label><button class="btn btn-r" onclick="ctpBrandLogoTemizle()"><i class="ti ti-trash"></i> Logoyu Kaldır</button></div><div class="ctp-settings-help">Logo sol üst menüde, giriş ekranında ve marka alanlarında kullanılır. PNG/JPG önerilir.</div></div><div class="btn-row"><button class="btn btn-g" onclick="ctpBrandKaydet()"><i class="ti ti-device-floppy"></i> Ayarları Kaydet</button></div></div><div class="card"><div class="card-title"><i class="ti ti-sparkles"></i> Görünüm</div><div class="ctp-settings-help">Premium görünüm aktif. Kartlar, menü, butonlar ve numune ekranı modernleştirildi.</div></div></div></div>'); window.ctpRenderBrandSettings();}
+
+  function loadScriptOnce(id,url){return new Promise(function(resolve,reject){if(E(id))return resolve(); var s=document.createElement('script'); s.id=id; s.src=url; s.onload=function(){resolve()}; s.onerror=function(){reject(new Error('Kütüphane yüklenemedi: '+url))}; document.head.appendChild(s)})}
+  async function ensurePdfLibs(){await loadScriptOnce('ctp-html2canvas-lib','https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js'); await loadScriptOnce('ctp-jspdf-lib','https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'); if(!window.html2canvas||!window.jspdf)throw new Error('PDF kütüphanesi hazır değil')}
+  function pdfName(){var t=(E('fatura-icerik')&&E('fatura-icerik').innerText||'Fatura').match(/Fatura No\s*:\s*([^\n]+)/i); var no=t&&t[1]?t[1].replace(/[^A-Za-z0-9_-]/g,'_'):('Fatura_'+new Date().toISOString().slice(0,10)); return no+'.pdf'}
+  async function makePdf(){await ensurePdfLibs(); var node=document.querySelector('#fatura-icerik .ctp-inv-a4')||E('fatura-icerik'); if(!node||!safe(node.innerText||node.textContent))throw new Error('Önce fatura/irsaliye önizleme oluştur.'); var canvas=await html2canvas(node,{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false}); var pdf=new jspdf.jsPDF('p','mm','a4'); var img=canvas.toDataURL('image/jpeg',0.96); var w=210, h=canvas.height*w/canvas.width, left=h, y=0; pdf.addImage(img,'JPEG',0,y,w,h); left-=297; while(left>0){y=left-h; pdf.addPage(); pdf.addImage(img,'JPEG',0,y,w,h); left-=297} return pdf}
+  window.ctpFaturaPdfKaydet=async function(){var btn=E('ctp-fatura-pdf-save'); try{if(btn)btn.classList.add('ctp-pdf-busy'); var pdf=await makePdf(); pdf.save(pdfName())}catch(e){alert('PDF kaydedilemedi: '+(e.message||e))}finally{if(btn)btn.classList.remove('ctp-pdf-busy')}};
+  window.ctpFaturaPdfGonder=async function(){var btn=E('ctp-fatura-pdf-share'); try{if(btn)btn.classList.add('ctp-pdf-busy'); var pdf=await makePdf(); var blob=pdf.output('blob'); var file=new File([blob],pdfName(),{type:'application/pdf'}); if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Fatura / İrsaliye PDF',text:'Fatura / İrsaliye PDF ektedir.'})}else{pdf.save(pdfName()); alert('Bu tarayıcı PDF dosyasını doğrudan paylaşmayı desteklemiyor. PDF indirildi; WhatsApp/eposta üzerinden dosya olarak ekleyebilirsin.')}}catch(e){alert('PDF gönderilemedi: '+(e.message||e))}finally{if(btn)btn.classList.remove('ctp-pdf-busy')}};
+  function installPdfButtons(){var head=document.querySelector('#fatura-modal .modal-head'); if(!head||E('ctp-fatura-pdf-save'))return; var box=document.querySelector('#fatura-modal .ctp-fatura-wa-actions')||head.querySelector('div:last-child')||head; var closeBtn=box.querySelector('button[onclick*="closeModal"]'); var html='<button id="ctp-fatura-pdf-save" class="btn btn-sm ctp-pdf-save" type="button" onclick="ctpFaturaPdfKaydet()"><i class="ti ti-file-type-pdf"></i> PDF Kaydet</button><button id="ctp-fatura-pdf-share" class="btn btn-sm ctp-pdf-share" type="button" onclick="ctpFaturaPdfGonder()"><i class="ti ti-share"></i> PDF Gönder</button>'; if(closeBtn)closeBtn.insertAdjacentHTML('beforebegin',html); else box.insertAdjacentHTML('beforeend',html)}
+
+  function enhanceNumune(){var page=E('page-numune'); if(!page)return; var f=E('n-firma'); if(f){f.setAttribute('list','n-firma-list'); if(!E('n-firma-list')){var dl=document.createElement('datalist'); dl.id='n-firma-list'; document.body.appendChild(dl)} var d=db(); var opts=((d&&d.firmalar)||[]).map(function(x){return '<option value="'+safe(x.ad).replace(/"/g,'&quot;')+'">'}).join(''); E('n-firma-list').innerHTML=opts} var bulk=E('n-urun-toplu'); if(bulk&&!E('n-toplu-say')){bulk.insertAdjacentHTML('afterend','<div id="n-toplu-say" class="ctp-numune-count">0 ürün seçili</div>'); bulk.addEventListener('change',function(){var c=[].slice.call(bulk.selectedOptions||[]).length; E('n-toplu-say').textContent=c+' ürün seçili'})} var anchor=E('n-urun'); if(anchor&&!E('n-fav-products')){anchor.closest('.fg').insertAdjacentHTML('afterend','<div id="n-fav-products" class="ctp-numune-favbar"></div>')} renderNumuneFavs()}
+  function renderNumuneFavs(){var box=E('n-fav-products'), d=db(); if(!box||!d)return; var list=(d.urunler||[]).filter(function(u){return u.favori}).slice(0,10); if(!list.length){box.innerHTML='';return} box.innerHTML=list.map(function(u){return '<button class="ctp-numune-chip" type="button" onclick="ctpNumuneFavHizliEkle('+u.id+')">★ '+safe(u.ad).replace(/</g,'&lt;')+'</button>'}).join('')}
+  window.ctpNumuneFavHizliEkle=function(id){var u=E('n-urun'), m=E('n-miktar'); if(u)u.value=String(id); if(m&&!Number(m.value))m.value='1'; try{if(typeof ctpNumuneUrunDegisti==='function')ctpNumuneUrunDegisti(); if(typeof ctpNumuneSepeteEkle==='function')ctpNumuneSepeteEkle()}catch(e){alert('Favori numune eklenemedi: '+(e.message||e))}};
+
+  var oldOpen=window.openModal; if(typeof oldOpen==='function')window.openModal=function(id){var r=oldOpen.apply(this,arguments); if(id==='fatura-modal')setTimeout(installPdfButtons,40); return r};
+  ['faturaOnizle','faturaGoster'].forEach(function(fn){var old=window[fn]; if(typeof old==='function'&&!old.__ctpPdfWrap){var nw=function(){var r=old.apply(this,arguments); setTimeout(installPdfButtons,80); return r}; nw.__ctpPdfWrap=true; window[fn]=nw}});
+  var oldGo=window.goPage; if(typeof oldGo==='function')window.goPage=function(id,el){var r=oldGo.apply(this,arguments); if(id==='ayarlar')setTimeout(window.ctpRenderBrandSettings,60); if(id==='numune')setTimeout(enhanceNumune,80); return r};
+  var oldInit=window.initApp; if(typeof oldInit==='function')window.initApp=function(){var r=oldInit.apply(this,arguments); addSettings(); window.ctpApplyBrand(); setTimeout(enhanceNumune,200); return r};
+  function boot(){addSettings(); window.ctpApplyBrand(); installPdfButtons(); enhanceNumune(); try{if(typeof applyRoleUI==='function')applyRoleUI()}catch(e){}}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(boot,120);setTimeout(boot,800)}); else {setTimeout(boot,120);setTimeout(boot,800)}
+  window.addEventListener('load',function(){setTimeout(boot,600);setTimeout(boot,1600)});
+})();
+</script>
+<!-- CTP_CHATGPT_PREMIUM_FEATURES_V3_END -->
+
+
+<!-- CTP_CHATGPT_DASHBOARD_RANDEVU_CUSTOM_V4_START -->
+<style id="ctp-dashboard-randevu-custom-v4-css">
+.ctp-dash-topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:-4px 0 14px;flex-wrap:wrap}.ctp-dash-topbar .btn{box-shadow:0 8px 22px rgba(15,23,42,.08)}.ctp-dashboard-layout{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}.ctp-dash-widget{min-width:0}.ctp-dash-widget[data-span="full"]{grid-column:1/-1}.ctp-dash-widget[data-span="half"]{grid-column:span 1}.ctp-dash-widget>.stats{margin-bottom:0}.ctp-dashboard-settings{border:1px solid rgba(196,138,44,.24)!important;background:linear-gradient(180deg,#fffdf8,#ffffff)!important}.ctp-dash-setting-row{display:grid;grid-template-columns:1.4fr .7fr .7fr .9fr;gap:8px;align-items:center;padding:8px 0;border-top:1px solid #f1f5f9}.ctp-dash-setting-row:first-child{border-top:0}.ctp-dash-setting-name{font-weight:850;color:#0f172a;display:flex;align-items:center;gap:7px}.ctp-dash-setting-name small{display:block;font-weight:600;color:#94a3b8;margin-top:2px}.ctp-mini-label{font-size:10px;color:#64748b;font-weight:800;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}.ctp-randevu-card{border:1px solid rgba(23,107,58,.16)!important;background:linear-gradient(180deg,#ffffff 0%,#fbfffc 100%)!important;position:relative;overflow:hidden}.ctp-randevu-card:before{content:"";position:absolute;right:-70px;top:-90px;width:210px;height:210px;border-radius:999px;background:radial-gradient(circle,rgba(29,111,66,.12),rgba(29,111,66,0));pointer-events:none}.ctp-randevu-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.ctp-randevu-form{display:grid;grid-template-columns:1fr .75fr 1.1fr;gap:10px}.ctp-randevu-form-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ctp-randevu-quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}.ctp-randevu-pill{border:1px solid #d9eadf;background:#f4fbf6;color:#176b3a;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:800;cursor:pointer}.ctp-randevu-pill:hover{background:#e8f7ed}.ctp-randevu-empty{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:14px;text-align:center;padding:18px;color:#64748b;font-size:12px}.ctp-randevu-today{background:#dcfce7;color:#166534}.ctp-randevu-late{background:#fee2e2;color:#991b1b}.ctp-randevu-up{background:#dbeafe;color:#1e40af}.ctp-randevu-done{background:#f3f4f6;color:#374151}.ctp-randevu-cancel{background:#fee2e2;color:#991b1b}.ctp-randevu-actions{display:flex;gap:5px;justify-content:flex-end;flex-wrap:wrap}.ctp-randevu-note{font-size:10px;color:#94a3b8;margin-top:2px;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ctp-randevu-kpi{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.ctp-randevu-kpi .badge{font-size:10px;padding:4px 9px}.ctp-randevu-list-head{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}.ctp-randevu-filter{width:auto!important;min-height:34px!important;padding:5px 8px!important;font-size:12px!important}
+@media(max-width:980px){.ctp-dashboard-layout{grid-template-columns:1fr}.ctp-dash-widget[data-span="half"],.ctp-dash-widget[data-span="full"]{grid-column:1/-1}.ctp-randevu-form,.ctp-randevu-form-2,.ctp-dash-setting-row{grid-template-columns:1fr}.ctp-dash-setting-row{gap:6px}.ctp-randevu-card table{min-width:760px!important}}
+@media(max-width:780px){.ctp-dash-topbar{display:grid;grid-template-columns:1fr}.ctp-dash-topbar .btn{width:100%}.ctp-randevu-toolbar{display:grid;grid-template-columns:1fr 1fr;width:100%}.ctp-randevu-toolbar .btn{width:100%}}
+</style>
+<script id="ctp-dashboard-randevu-custom-v4-js">
+(function(){
+  'use strict';
+  function E(id){return document.getElementById(id)}
+  function D(){try{return (typeof DB!=='undefined'&&DB)?DB:null}catch(e){return null}}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function todayStr(){try{if(typeof today==='function')return today()}catch(e){} return new Date().toISOString().slice(0,10)}
+  function addDays(d,n){try{if(typeof addD==='function')return addD(d,n)}catch(e){} var x=new Date(String(d||todayStr())+'T00:00:00'); x.setDate(x.getDate()+n); return x.toISOString().slice(0,10)}
+  function dateTR(d){try{if(typeof d2s==='function')return d2s(d)}catch(e){} if(!d)return '-'; var p=String(d).split('-'); return p.length===3?p[2]+'.'+p[1]+'.'+p[0]:d}
+  function canEdit(){try{if(typeof canWrite==='function')return !!canWrite()}catch(e){} return true}
+  function canAdmin(){try{if(typeof isAdmin==='function')return !!isAdmin()}catch(e){} return true}
+  function save(){try{if(typeof dbSave==='function')dbSave(); else if(typeof ctSaveLocal==='function')ctSaveLocal()}catch(e){} try{if(typeof bulutKaydetPlanla==='function')bulutKaydetPlanla()}catch(e){} }
+  function ensure(){var d=D(); if(!d)return null; if(!Array.isArray(d.randevular))d.randevular=[]; if(!Number(d.nextRId)){var mx=d.randevular.reduce(function(m,r){return Math.max(m,+r.id||0)},0); d.nextRId=mx+1;} if(!d.ayarlar)d.ayarlar={}; if(!d.ayarlar.dashboard)d.ayarlar.dashboard={}; return d}
+  var oldBlank=window.ctBlankDB; if(typeof oldBlank==='function'&&!oldBlank.__ctpRandevu){var nb=function(){var o=oldBlank.apply(this,arguments)||{}; if(!Array.isArray(o.randevular))o.randevular=[]; if(!o.nextRId)o.nextRId=1; if(!o.ayarlar)o.ayarlar={}; return o}; nb.__ctpRandevu=true; window.ctBlankDB=nb}
+  var oldVeriSayisi=window.veriSayisi; if(typeof oldVeriSayisi==='function'&&!oldVeriSayisi.__ctpRandevu){var nv=function(d){var base=0; try{base=oldVeriSayisi(d)||0}catch(e){} return base+((d&&d.randevular&&d.randevular.length)||0)}; nv.__ctpRandevu=true; window.veriSayisi=nv}
+
+  var WIDGETS={
+    stats:{title:'Özet Kartları',desc:'Alacak, kasa, satış ve kritik stok kartları',icon:'ti ti-layout-dashboard',order:1,visible:true,span:'full'},
+    randevular:{title:'Randevular',desc:'Randevu ekleme ve yaklaşan randevular',icon:'ti ti-calendar-time',order:2,visible:true,span:'full'},
+    son:{title:'Son Cari Hareketler',desc:'Dashboard hareket listesi',icon:'ti ti-history',order:3,visible:true,span:'half'},
+    stok:{title:'Kritik Stoklar',desc:'Minimum altına düşen stoklar',icon:'ti ti-alert-triangle',order:4,visible:true,span:'half'},
+    odeme:{title:'Ödemesi Gelenler',desc:'Yaklaşan ve geciken faturalar',icon:'ti ti-clock-exclamation',order:5,visible:true,span:'full'}
+  };
+  function dashCfg(){var d=ensure(); var c=(d&&d.ayarlar&&d.ayarlar.dashboard)||{}; Object.keys(WIDGETS).forEach(function(k){if(!c[k])c[k]={}; var def=WIDGETS[k]; if(c[k].visible===undefined)c[k].visible=def.visible; if(!c[k].order)c[k].order=def.order; if(!c[k].span)c[k].span=def.span}); if(d)d.ayarlar.dashboard=c; return c}
+  function setMsg(id,msg,type){var el=E(id); if(!el)return; el.innerHTML='<div class="al '+(type==='e'?'al-e':'al-s')+'">'+esc(msg)+'</div>'; setTimeout(function(){if(el)el.innerHTML=''},3500)}
+
+  function randevuCardHtml(){return '<div id="ctp-randevu-card" class="card ctp-randevu-card">'+
+    '<div class="card-head"><div><div class="card-title"><i class="ti ti-calendar-time"></i> Randevular</div><div style="font-size:11px;color:#64748b;margin-top:4px">Tarih seç, randevunu ekle; yaklaşanları dashboarddan takip et.</div></div><div class="ctp-randevu-kpi"><span class="badge ctp-randevu-today" id="r-bugun-say">Bugün 0</span><span class="badge ctp-randevu-up" id="r-yaklasan-say">Yaklaşan 0</span></div></div>'+
+    '<div id="r-al"></div><input type="hidden" id="r-id">'+
+    '<div class="ctp-randevu-form"><div class="fg"><label>Tarih *</label><input id="r-tarih" type="date"></div><div class="fg"><label>Saat</label><input id="r-saat" type="time"></div><div class="fg"><label>Başlık / Konu</label><input id="r-baslik" placeholder="Örn: Tahsilat görüşmesi"></div></div>'+
+    '<div class="ctp-randevu-form-2"><div class="fg"><label>Firma / Kişi *</label><input id="r-firma" list="r-firma-list" placeholder="Firma veya kişi adı"><datalist id="r-firma-list"></datalist></div><div class="fg"><label>Telefon</label><input id="r-tel" placeholder="İsteğe bağlı"></div></div>'+
+    '<div class="fg"><label>Not</label><input id="r-not" placeholder="Randevu notu, adres, hatırlatma vb."></div>'+
+    '<div class="btn-row" style="align-items:center"><button class="btn btn-g" onclick="ctpRandevuKaydet()"><i class="ti ti-device-floppy"></i> Randevu Kaydet</button><button class="btn" onclick="ctpRandevuTemizle()"><i class="ti ti-plus"></i> Yeni</button><div class="ctp-randevu-quick"><button type="button" class="ctp-randevu-pill" onclick="ctpRandevuTarihSec(0)">Bugün</button><button type="button" class="ctp-randevu-pill" onclick="ctpRandevuTarihSec(1)">Yarın</button><button type="button" class="ctp-randevu-pill" onclick="ctpRandevuTarihSec(7)">+7 Gün</button></div></div>'+
+    '<hr class="divider"><div class="ctp-randevu-list-head"><div class="card-title"><i class="ti ti-list-check"></i> Yaklaşan Randevular</div><select id="r-filtre" class="ctp-randevu-filter" onchange="ctpRenderRandevular()"><option value="yaklasan">Yaklaşan</option><option value="bugun">Bugün</option><option value="tum">Tümü</option><option value="tamamlanan">Tamamlanan</option></select></div>'+
+    '<div class="tw"><table><thead><tr><th>Tarih</th><th>Saat</th><th>Firma / Kişi</th><th>Konu</th><th>Durum</th><th></th></tr></thead><tbody id="r-tb"></tbody></table></div></div>'}
+
+  function findCardByChild(id){var el=E(id); return el?el.closest('.card'):null}
+  function ensureTopbar(){var page=E('page-dashboard'); if(!page)return; if(E('ctp-dash-topbar'))return; var title=page.querySelector('.page-title'); var bar=document.createElement('div'); bar.id='ctp-dash-topbar'; bar.className='ctp-dash-topbar'; bar.innerHTML='<div style="font-size:12px;color:#64748b;font-weight:700">Dashboard görünümünü ve randevuları buradan yönetebilirsin.</div><button class="btn btn-y only-admin" onclick="ctpDashboardAyarToggle()"><i class="ti ti-layout-grid"></i> Dashboard Düzenle</button>'; if(title)title.insertAdjacentElement('afterend',bar); else page.insertBefore(bar,page.firstChild)}
+  function ensureSettingsPanel(){var page=E('page-dashboard'); if(!page)return; if(E('ctp-dashboard-settings'))return; var rows=Object.keys(WIDGETS).map(function(k){var w=WIDGETS[k]; return '<div class="ctp-dash-setting-row" data-widget-row="'+k+'"><div class="ctp-dash-setting-name"><i class="'+w.icon+'"></i><div>'+esc(w.title)+'<small>'+esc(w.desc)+'</small></div></div><div><div class="ctp-mini-label">Göster</div><select id="dash-vis-'+k+'"><option value="1">Göster</option><option value="0">Gizle</option></select></div><div><div class="ctp-mini-label">Sıra</div><select id="dash-order-'+k+'">'+[1,2,3,4,5].map(function(n){return '<option value="'+n+'">'+n+'</option>'}).join('')+'</select></div><div><div class="ctp-mini-label">Genişlik</div><select id="dash-span-'+k+'"><option value="full">Tam genişlik</option><option value="half">Yarım</option></select></div></div>'}).join(''); var panel=document.createElement('div'); panel.id='ctp-dashboard-settings'; panel.className='card ctp-dashboard-settings'; panel.style.display='none'; panel.innerHTML='<div class="card-head"><div><div class="card-title"><i class="ti ti-adjustments"></i> Dashboard Görünüm Ayarları</div><div style="font-size:11px;color:#64748b;margin-top:4px">Hangi bölüm görünsün, hangi sırada ve hangi genişlikte dursun seç.</div></div><button class="btn btn-sm" onclick="ctpDashboardAyarToggle(false)"><i class="ti ti-x"></i></button></div>'+rows+'<div class="btn-row"><button class="btn btn-g" onclick="ctpDashboardAyarKaydet()"><i class="ti ti-device-floppy"></i> Görünümü Kaydet</button><button class="btn" onclick="ctpDashboardAyarVarsayilan()"><i class="ti ti-refresh"></i> Varsayılana Dön</button></div><div id="dash-al"></div>'; var anchor=E('ctp-dash-topbar')||page.querySelector('.page-title'); if(anchor)anchor.insertAdjacentElement('afterend',panel); else page.insertBefore(panel,page.firstChild); fillSettingsPanel()}
+  function fillSettingsPanel(){var c=dashCfg(); Object.keys(WIDGETS).forEach(function(k){if(E('dash-vis-'+k))E('dash-vis-'+k).value=c[k].visible?'1':'0'; if(E('dash-order-'+k))E('dash-order-'+k).value=String(c[k].order||WIDGETS[k].order); if(E('dash-span-'+k))E('dash-span-'+k).value=c[k].span||WIDGETS[k].span})}
+  window.ctpDashboardAyarToggle=function(force){ensureSettingsPanel(); var p=E('ctp-dashboard-settings'); if(!p)return; if(force===false)p.style.display='none'; else p.style.display=(p.style.display==='none'||!p.style.display)?'block':'none'; fillSettingsPanel()};
+  window.ctpDashboardAyarKaydet=function(){var d=ensure(); if(!d)return; var c=d.ayarlar.dashboard||{}; Object.keys(WIDGETS).forEach(function(k){c[k]={visible:E('dash-vis-'+k)&&E('dash-vis-'+k).value==='1', order:+(E('dash-order-'+k)&&E('dash-order-'+k).value||WIDGETS[k].order), span:(E('dash-span-'+k)&&E('dash-span-'+k).value)||WIDGETS[k].span}}); d.ayarlar.dashboard=c; save(); applyDashboardLayout(); setMsg('dash-al','Dashboard görünümü kaydedildi.')};
+  window.ctpDashboardAyarVarsayilan=function(){var d=ensure(); if(!d)return; d.ayarlar.dashboard={}; dashCfg(); fillSettingsPanel(); save(); applyDashboardLayout(); setMsg('dash-al','Dashboard görünümü varsayılana döndü.')};
+
+  function ensureRandevuUI(){var page=E('page-dashboard'); if(!page)return; if(!E('ctp-randevu-card')){var stats=page.querySelector('.stats'); if(stats)stats.insertAdjacentHTML('afterend',randevuCardHtml()); else page.insertAdjacentHTML('beforeend',randevuCardHtml())} fillFirmaList(); if(E('r-tarih')&&!E('r-tarih').value)E('r-tarih').value=todayStr()}
+  function fillFirmaList(){var d=D(), list=E('r-firma-list'); if(!d||!list)return; list.innerHTML=(d.firmalar||[]).map(function(f){return '<option value="'+esc(f.ad||'')+'" data-tel="'+esc(f.tel||'')+'">'}).join('')}
+  function widgetWrap(key,node){if(!node)return null; var wrap=E('ctp-widget-'+key); if(!wrap){wrap=document.createElement('div'); wrap.id='ctp-widget-'+key; wrap.className='ctp-dash-widget'; wrap.setAttribute('data-widget',key)} if(node.parentNode!==wrap){wrap.appendChild(node)} return wrap}
+  function ensureLayout(){var page=E('page-dashboard'); if(!page)return; ensureTopbar(); ensureSettingsPanel(); ensureRandevuUI(); var layout=E('ctp-dashboard-layout'); if(!layout){layout=document.createElement('div'); layout.id='ctp-dashboard-layout'; layout.className='ctp-dashboard-layout'; var panel=E('ctp-dashboard-settings'); if(panel)panel.insertAdjacentElement('afterend',layout); else page.appendChild(layout)} var stats=page.querySelector(':scope > .stats')||document.querySelector('#ctp-widget-stats > .stats'); var son=findCardByChild('db-son'); var stok=findCardByChild('db-stok'); var odeme=findCardByChild('db-odeme'); var ran=E('ctp-randevu-card'); var map={stats:stats,randevular:ran,son:son,stok:stok,odeme:odeme}; Object.keys(map).forEach(function(k){var n=map[k]; if(!n)return; var w=widgetWrap(k,n); if(w.parentNode!==layout)layout.appendChild(w)}); document.querySelectorAll('#page-dashboard > .g2').forEach(function(g){if(!g.children.length)g.remove()}); return layout}
+  function applyDashboardLayout(){var layout=ensureLayout(); if(!layout)return; var c=dashCfg(); Object.keys(WIDGETS).forEach(function(k){var w=E('ctp-widget-'+k); if(!w)return; var cfg=c[k]||WIDGETS[k]; w.style.display=cfg.visible?'':'none'; w.style.order=String(+cfg.order||WIDGETS[k].order); w.setAttribute('data-span',cfg.span||WIDGETS[k].span)})}
+
+  function rStatus(r){var t=todayStr(), d=String(r.tarih||''); if(r.durum==='TAMAMLANDI')return '<span class="badge ctp-randevu-done">Tamamlandı</span>'; if(r.durum==='IPTAL')return '<span class="badge ctp-randevu-cancel">İptal</span>'; if(d<t)return '<span class="badge ctp-randevu-late">Geçmiş</span>'; if(d===t)return '<span class="badge ctp-randevu-today">Bugün</span>'; return '<span class="badge ctp-randevu-up">Yaklaşan</span>'}
+  function sortedRandevular(){var d=ensure(); return d?(d.randevular||[]).slice().sort(function(a,b){return String(a.tarih||'').localeCompare(String(b.tarih||''))||String(a.saat||'').localeCompare(String(b.saat||''))}):[]}
+  window.ctpRenderRandevular=function(){ensureRandevuUI(); fillFirmaList(); var d=ensure(); if(!d)return; var t=todayStr(); var bugun=d.randevular.filter(function(r){return r.tarih===t&&r.durum!=='IPTAL'&&r.durum!=='TAMAMLANDI'}).length; var yak=d.randevular.filter(function(r){return String(r.tarih||'')>=t&&r.durum!=='IPTAL'&&r.durum!=='TAMAMLANDI'}).length; if(E('r-bugun-say'))E('r-bugun-say').textContent='Bugün '+bugun; if(E('r-yaklasan-say'))E('r-yaklasan-say').textContent='Yaklaşan '+yak; var filter=(E('r-filtre')&&E('r-filtre').value)||'yaklasan'; var arr=sortedRandevular().filter(function(r){if(filter==='bugun')return r.tarih===t&&r.durum!=='IPTAL'; if(filter==='tamamlanan')return r.durum==='TAMAMLANDI'; if(filter==='tum')return true; return String(r.tarih||'')>=t&&r.durum!=='IPTAL'&&r.durum!=='TAMAMLANDI'}); if(filter==='yaklasan')arr=arr.slice(0,12); var tb=E('r-tb'); if(!tb)return; tb.innerHTML=arr.map(function(r){return '<tr><td><strong>'+dateTR(r.tarih)+'</strong></td><td>'+(esc(r.saat)||'-')+'</td><td><strong>'+esc(r.firma||'-')+'</strong><div class="ctp-randevu-note">'+esc(r.tel||'')+'</div></td><td>'+esc(r.baslik||'Randevu')+'<div class="ctp-randevu-note">'+esc(r.not||'')+'</div></td><td>'+rStatus(r)+'</td><td><div class="ctp-randevu-actions"><button class="btn btn-sm" onclick="ctpRandevuDuzenle('+r.id+')"><i class="ti ti-edit"></i></button><button class="btn btn-sm btn-g" onclick="ctpRandevuDurum('+r.id+',\'TAMAMLANDI\')"><i class="ti ti-check"></i></button><button class="btn btn-sm btn-r" onclick="ctpRandevuSil('+r.id+')"><i class="ti ti-trash"></i></button></div></td></tr>'}).join('')||'<tr><td colspan="6"><div class="ctp-randevu-empty">Bu filtrede randevu yok.</div></td></tr>'};
+  window.ctpRandevuTarihSec=function(n){if(E('r-tarih'))E('r-tarih').value=addDays(todayStr(),+n||0)};
+  window.ctpRandevuTemizle=function(){['r-id','r-baslik','r-firma','r-tel','r-not'].forEach(function(id){if(E(id))E(id).value=''}); if(E('r-tarih'))E('r-tarih').value=todayStr(); if(E('r-saat'))E('r-saat').value=''};
+  window.ctpRandevuKaydet=function(){if(!canEdit())return alert('Randevu ekleme/değiştirme yetkiniz yok.'); var d=ensure(); if(!d)return; var tarih=(E('r-tarih')&&E('r-tarih').value)||'', saat=(E('r-saat')&&E('r-saat').value)||'', firma=(E('r-firma')&&E('r-firma').value||'').trim(), baslik=(E('r-baslik')&&E('r-baslik').value||'').trim(), tel=(E('r-tel')&&E('r-tel').value||'').trim(), not=(E('r-not')&&E('r-not').value||'').trim(); if(!tarih)return setMsg('r-al','Randevu tarihi seçin.','e'); if(!firma&&!baslik)return setMsg('r-al','Firma/kişi veya başlık girin.','e'); var id=+(E('r-id')&&E('r-id').value||0); var obj={tarih:tarih,saat:saat,firma:firma,baslik:baslik||'Randevu',tel:tel,not:not,durum:'PLANLANDI'}; if(id){var r=d.randevular.find(function(x){return +x.id===id}); if(r)Object.assign(r,obj,{updatedAt:new Date().toISOString()})}else{obj.id=d.nextRId++; obj.createdAt=new Date().toISOString(); d.randevular.push(obj)} save(); window.ctpRandevuTemizle(); window.ctpRenderRandevular(); applyDashboardLayout(); setMsg('r-al','Randevu kaydedildi.')};
+  window.ctpRandevuDuzenle=function(id){var d=ensure(), r=d&&d.randevular.find(function(x){return +x.id===+id}); if(!r)return; if(E('r-id'))E('r-id').value=r.id; if(E('r-tarih'))E('r-tarih').value=r.tarih||todayStr(); if(E('r-saat'))E('r-saat').value=r.saat||''; if(E('r-baslik'))E('r-baslik').value=r.baslik||''; if(E('r-firma'))E('r-firma').value=r.firma||''; if(E('r-tel'))E('r-tel').value=r.tel||''; if(E('r-not'))E('r-not').value=r.not||''; setMsg('r-al','Randevu düzenleme modunda.')};
+  window.ctpRandevuDurum=function(id,durum){if(!canEdit())return alert('Randevu güncelleme yetkiniz yok.'); var d=ensure(), r=d&&d.randevular.find(function(x){return +x.id===+id}); if(!r)return; r.durum=durum||'PLANLANDI'; r.updatedAt=new Date().toISOString(); save(); window.ctpRenderRandevular(); setMsg('r-al','Randevu durumu güncellendi.')};
+  window.ctpRandevuSil=function(id){if(!canEdit())return alert('Randevu silme yetkiniz yok.'); if(!confirm('Randevu silinsin mi?'))return; var d=ensure(); if(!d)return; d.randevular=d.randevular.filter(function(x){return +x.id!==+id}); save(); window.ctpRenderRandevular(); setMsg('r-al','Randevu silindi.')};
+
+  function run(){ensure(); ensureLayout(); applyDashboardLayout(); window.ctpRenderRandevular(); try{if(typeof applyRoleUI==='function')applyRoleUI()}catch(e){} }
+  var oldRender=window.renderDashboard; if(typeof oldRender==='function'&&!oldRender.__ctpRandevuDash){var nr=function(){var r=oldRender.apply(this,arguments); setTimeout(run,20); return r}; nr.__ctpRandevuDash=true; window.renderDashboard=nr}
+  var oldInit=window.initApp; if(typeof oldInit==='function'&&!oldInit.__ctpRandevuDash){var ni=function(){var r=oldInit.apply(this,arguments); setTimeout(run,80); setTimeout(run,700); return r}; ni.__ctpRandevuDash=true; window.initApp=ni}
+  var oldGo=window.goPage; if(typeof oldGo==='function'&&!oldGo.__ctpRandevuDash){var ng=function(id,el){var r=oldGo.apply(this,arguments); if(id==='dashboard')setTimeout(run,80); return r}; ng.__ctpRandevuDash=true; window.goPage=ng}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(run,160);setTimeout(run,900)}); else {setTimeout(run,160);setTimeout(run,900)}
+  window.addEventListener('load',function(){setTimeout(run,600);setTimeout(run,1800)});
+})();
+</script>
+<!-- CTP_CHATGPT_DASHBOARD_RANDEVU_CUSTOM_V4_END -->
+
+
+
+<!-- CTP_CHATGPT_LOGIN_SPEED_FIX_V5_START -->
+<style id="ctp-login-speed-fix-v5-css">
+#ctp-login-loader{position:fixed;inset:0;z-index:1000001;background:linear-gradient(135deg,rgba(15,23,42,.92),rgba(23,107,58,.90));display:none;align-items:center;justify-content:center;padding:18px;color:#fff}#ctp-login-loader.show{display:flex}.ctp-login-loader-box{width:420px;max-width:94vw;background:rgba(255,255,255,.96);color:#0f172a;border-radius:22px;padding:24px;box-shadow:0 30px 90px rgba(0,0,0,.35);text-align:center}.ctp-login-spinner{width:42px;height:42px;border-radius:50%;border:4px solid #d9eadf;border-top-color:#176b3a;margin:0 auto 14px;animation:ctpSpin .8s linear infinite}.ctp-login-loader-title{font-size:17px;font-weight:900;margin-bottom:6px}.ctp-login-loader-msg{font-size:12px;color:#64748b;line-height:1.45}.ctp-login-loader-bar{height:7px;background:#e5e7eb;border-radius:999px;margin-top:16px;overflow:hidden}.ctp-login-loader-bar span{display:block;height:100%;width:45%;background:linear-gradient(90deg,#176b3a,#c48a2c);border-radius:999px;animation:ctpBar 1.4s ease-in-out infinite}@keyframes ctpSpin{to{transform:rotate(360deg)}}@keyframes ctpBar{0%{transform:translateX(-120%)}100%{transform:translateX(240%)}}
+</style>
+<script id="ctp-login-speed-fix-v5-js">
+(function(){
+  'use strict';
+  function E(id){return document.getElementById(id)}
+  function ensureLoader(){var l=E('ctp-login-loader'); if(l)return l; l=document.createElement('div'); l.id='ctp-login-loader'; l.innerHTML='<div class="ctp-login-loader-box"><div class="ctp-login-spinner"></div><div class="ctp-login-loader-title">Bulut verileri yükleniyor</div><div class="ctp-login-loader-msg" id="ctp-login-loader-msg">Lütfen bekleyin. Firma verileri buluttan güvenli şekilde çekiliyor.</div><div class="ctp-login-loader-bar"><span></span></div></div>'; document.body.appendChild(l); return l}
+  function show(msg){var l=ensureLoader(), m=E('ctp-login-loader-msg'); if(m&&msg)m.textContent=msg; l.classList.add('show')}
+  function hide(){var l=E('ctp-login-loader'); if(l)l.classList.remove('show')}
+  window.ctpShowLoginLoader=show; window.ctpHideLoginLoader=hide;
+
+  var realLoad=window.bulutYukle;
+  if(typeof realLoad==='function'&&!realLoad.__ctpSpeedFix){
+    var wrapped=async function(showAlert){
+      var now=Date.now();
+      // Cloud e-posta ekranındaki finishLogin zaten bulutu çektiyse,
+      // hemen arkasından çalışan klasik login tekrar aynı veriyi çekmesin.
+      if(showAlert===false && window.ctpLastCloudLoadOkAt && (now-window.ctpLastCloudLoadOkAt)<60000){
+        return true;
+      }
+      var visibleApp=E('app')&&E('app').style.display==='block';
+      if(showAlert===false && !visibleApp) show('Lütfen bekleyin. Önce buluttaki güncel veriler çekiliyor.');
+      try{
+        var ok=await realLoad.apply(this,arguments);
+        if(ok) window.ctpLastCloudLoadOkAt=Date.now();
+        return ok;
+      }finally{
+        if(showAlert===false) hide();
+      }
+    };
+    wrapped.__ctpSpeedFix=true;
+    window.bulutYukle=wrapped;
+    window.cloudLoadFromCustomerSheet=wrapped;
+  }
+
+  // Login cevabı veriyle geldiyse veya kullanıcı cloud ekranından geçiyorsa,
+  // ikinci yüklemeyi atlamak için başarılı yükleme zamanını güncel tut.
+  var realCopy=window.ctRenderAll;
+  if(typeof realCopy==='function'&&!realCopy.__ctpSpeedFix){
+    var rc=function(){var r=realCopy.apply(this,arguments); try{window.ctpLastCloudLoadOkAt=Date.now()}catch(e){} return r};
+    rc.__ctpSpeedFix=true;
+    window.ctRenderAll=rc;
+  }
+
+  // App açıldığında loader kesin kapansın.
+  var realInit=window.initApp;
+  if(typeof realInit==='function'&&!realInit.__ctpSpeedFix){
+    var ri=function(){var r=realInit.apply(this,arguments); setTimeout(hide,80); return r};
+    ri.__ctpSpeedFix=true;
+    window.initApp=ri;
+  }
+  window.addEventListener('load',function(){setTimeout(hide,3000)});
+})();
+</script>
+<!-- CTP_CHATGPT_LOGIN_SPEED_FIX_V5_END -->
+
+</body>
+</html>
