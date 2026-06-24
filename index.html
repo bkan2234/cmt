@@ -1328,7 +1328,7 @@ function logout(){if(confirm('Çıkış yapmak istiyor musunuz?')){ctpOturumSil(
 
 const CTP_OTURUM_KEY='ctp_oturum_v4_user';
 const CTP_OTURUM_LAST='ctp_oturum_v4_last';
-const CTP_OTURUM_LIMIT=10*60*1000;
+const CTP_OTURUM_LIMIT=60*60*1000;
 function ctpOturumKaydet(username){
   try{
     if(!username) return;
@@ -1381,7 +1381,7 @@ function ctpOturumKontrol(){
       app.style.display='none';
       document.getElementById('login-screen').style.display='flex';
       const err=document.getElementById('l-err');
-      if(err){err.style.display='flex';err.innerHTML='<i class="ti ti-alert-circle"></i> 10 dakika işlem yapılmadığı için çıkış yapıldı';}
+      if(err){err.style.display='flex';err.innerHTML='<i class="ti ti-alert-circle"></i> 1 saat işlem yapılmadığı için çıkış yapıldı';}
     }
   }catch(e){}
 }
@@ -10796,9 +10796,6 @@ body{background:radial-gradient(circle at top left,#eefbf3 0,#f7faf8 38%,#f4f7f5
 </script>
 <!-- CTP_CHATGPT_BILDIRIM_OKUNDU_KALICI_V7_9_END -->
 
-</body>
-</html>
-
 <!-- CTP_CHATGPT_MOBILE_V8_0_START: Son katman mobil görünüm iyileştirme -->
 <style id="ctp-chatgpt-mobile-v80-css">
 @media(max-width:780px){
@@ -11073,3 +11070,79 @@ body{background:radial-gradient(circle at top left,#eefbf3 0,#f7faf8 38%,#f4f7f5
 </script>
 <!-- CTP_CHATGPT_MOBILE_MENU_AYAR_V9_END -->
 
+<!-- CTP_CHATGPT_TEKLIF_FIYAT_ARTIS_V11_START -->
+<style id="ctp-teklif-fiyat-artis-v11-css">
+#page-teklifler .ctp-business-form-grid.ctp-price-markup-grid{grid-template-columns:1.35fr .62fr .62fr .58fr!important;gap:10px!important;align-items:start!important}
+#tk-artis-wrap .ctp-price-markup-quick{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+#tk-artis-wrap .ctp-price-markup-quick button{border:1px solid #dbe3ea;background:#fff;color:#1f2937;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:900;cursor:pointer;line-height:1.1}
+#tk-artis-wrap .ctp-price-markup-quick button:hover{background:#ecfdf5;border-color:#bbf7d0;color:#166534}
+#tk-artis-bilgi{font-size:10.5px;color:#64748b;line-height:1.35;margin-top:6px;min-height:15px}
+#tk-artis-bilgi strong{color:#1d6f42;font-weight:900}
+#tk-artis-bilgi .ctp-price-muted{color:#94a3b8}
+.ctp-price-markup-badge{display:inline-flex;align-items:center;gap:3px;background:#ecfdf5;color:#166534;border:1px solid #bbf7d0;border-radius:999px;padding:2px 6px;font-size:10px;font-weight:900;margin-left:5px;vertical-align:middle}
+.ctp-price-markup-help{font-size:11px;color:#64748b;line-height:1.4;margin-top:6px;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:10px;padding:7px 9px}
+@media(max-width:780px){
+  #page-teklifler .ctp-business-form-grid.ctp-price-markup-grid{grid-template-columns:1fr!important}
+  #tk-artis-wrap .ctp-price-markup-quick{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+  #tk-artis-wrap .ctp-price-markup-quick button{min-height:34px;border-radius:12px;font-size:11px}
+  #tk-artis-bilgi{font-size:11px}
+}
+</style>
+<script id="ctp-teklif-fiyat-artis-v11-js">
+(function(){
+  'use strict';
+  var STORE='ctp_teklif_fiyat_artis_yuzde_v11';
+  function E(id){return document.getElementById(id)}
+  function D(){try{return (typeof DB!=='undefined'&&DB)?DB:null}catch(e){return null}}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function money(n){try{if(typeof tl==='function')return tl(+n||0)}catch(e){} return '₺'+((+n||0).toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2}))}
+  function parseNum(v){v=String(v==null?'':v).trim().replace('%','').replace(',','.'); var n=+v; return isFinite(n)?n:0}
+  function round2(n){return Math.round((+n||0)*100)/100}
+  function products(){var d=D(); return (d&&Array.isArray(d.urunler))?d.urunler:[]}
+  function listPrice(u){if(!u)return 0; return +(u.fiy||u.fiyAdet||u.fiyKg||u.fiyKoli||0)||0}
+  function productName(u){return String((u&&u.ad)||'Ürün')}
+  function selectedProduct(){var id=E('tk-urun')?E('tk-urun').value:''; if(!id)return null; return products().find(function(x){return String(x.id)===String(id)})||null}
+  function getRate(){var el=E('tk-artis'); var raw=el?el.value:''; if(raw===''){try{raw=localStorage.getItem(STORE)||''}catch(e){raw=''}} var n=parseNum(raw); if(n<0)n=0; if(n>500)n=500; return n}
+  function storeRate(v){var n=parseNum(v); if(n<0)n=0; if(n>500)n=500; try{if(n)localStorage.setItem(STORE,String(n)); else localStorage.removeItem(STORE)}catch(e){} return n}
+  function adjusted(base,rate){return round2((+base||0)*(1+(+rate||0)/100))}
+  function updateInfo(u,base,rate,price){var box=E('tk-artis-bilgi'); if(!box)return; if(!u){box.innerHTML='<span class="ctp-price-muted">Ürün seçince liste fiyatı üzerinden artış uygulanır.</span>'; return;} if(!base){box.innerHTML='<span class="ctp-price-muted">Bu üründe liste fiyatı bulunamadı.</span>'; return;} if(rate>0){box.innerHTML='Liste: '+money(base)+' → <strong>+%'+String(rate).replace('.',',')+' = '+money(price)+'</strong>';} else {box.innerHTML='Liste fiyatı: <strong>'+money(base)+'</strong>';} }
+  function applyMarkup(){var u=selectedProduct(), rate=getRate(), base=listPrice(u), price=adjusted(base,rate); var f=E('tk-fiyat'); if(u&&f){f.value=base?String(price):''; f.dataset.listeFiyati=String(base||0); f.dataset.artisOrani=String(rate||0);} updateInfo(u,base,rate,price); refreshBulkLabels();}
+  function rateLabel(rate){return rate>0?' → +%'+String(rate).replace('.',',')+' '+money(adjusted(1,rate)).replace('₺1,','x1,'):''}
+  function optionText(u,rate){var base=listPrice(u); var t=productName(u)+(u&&u.kat?' — '+String(u.kat):''); if(base){t+=' — Liste '+money(base); if(rate>0)t+=' → +%'+String(rate).replace('.',',')+' '+money(adjusted(base,rate));} return t;}
+  function refreshBulkLabels(){var sel=E('tk-toplu-urunler'); if(!sel)return; var rate=getRate(); Array.prototype.forEach.call(sel.options||[],function(o){var u=products().find(function(x){return String(x.id)===String(o.value)}); if(u)o.textContent=optionText(u,rate);}); var help=E('tk-artis-toplu-help'); if(help){help.innerHTML=(rate>0?'<strong>+%'+String(rate).replace('.',',')+'</strong> artış, tekli ve toplu eklenen ürünlerin teklif fiyatına uygulanır.':'Artış boş/0 iken ürünler liste fiyatıyla eklenir.')+' Ürün kataloğundaki ana fiyat değişmez.';}}
+  function installUI(){
+    var price=E('tk-fiyat'); if(!price)return;
+    var grid=(E('tk-urun')&&E('tk-urun').closest('.g3'))||(price.closest('.g3'));
+    if(grid)grid.classList.add('ctp-price-markup-grid');
+    if(!E('tk-artis-wrap')){
+      var priceFg=price.closest('.fg')||price.parentNode;
+      var html='<div class="fg" id="tk-artis-wrap"><label>Fiyat Artış %</label><input id="tk-artis" type="number" inputmode="decimal" step="0.01" min="0" max="500" placeholder="Örn: 10" oninput="ctpTeklifArtisDegisti()"><div class="ctp-price-markup-quick"><button type="button" onclick="ctpTeklifArtisSet(10)">%10</button><button type="button" onclick="ctpTeklifArtisSet(15)">%15</button><button type="button" onclick="ctpTeklifArtisSet(0)">Yok</button></div><div id="tk-artis-bilgi"></div></div>';
+      if(priceFg&&priceFg.insertAdjacentHTML)priceFg.insertAdjacentHTML('afterend',html);
+    }
+    var art=E('tk-artis'); if(art&&art.value===''){try{var saved=localStorage.getItem(STORE)||''; if(saved)art.value=saved;}catch(e){}}
+    if(!E('tk-artis-toplu-help')){
+      var bulk=E('tk-toplu-box');
+      if(bulk){var title=bulk.querySelector('.ctp-offer-extra-title'); if(title)title.insertAdjacentHTML('afterend','<div id="tk-artis-toplu-help" class="ctp-price-markup-help"></div>');}
+    }
+    var u=E('tk-urun'); if(u&&!u.__ctpPriceMarkupV11){u.__ctpPriceMarkupV11=true; u.addEventListener('change',function(){setTimeout(applyMarkup,0)});}
+    refreshBulkLabels(); updateInfo(selectedProduct(),listPrice(selectedProduct()),getRate(),adjusted(listPrice(selectedProduct()),getRate()));
+  }
+  window.ctpTeklifArtisDegisti=function(){var el=E('tk-artis'); storeRate(el?el.value:0); applyMarkup();};
+  window.ctpTeklifArtisSet=function(v){installUI(); var el=E('tk-artis'); if(el)el.value=(+v||0)?String(v):''; storeRate(v); applyMarkup();};
+  function wrapFunctions(){
+    if(typeof window.ctpTeklifUrunSecildi==='function'&&!window.ctpTeklifUrunSecildi.__ctpPriceMarkupV11){var oldSel=window.ctpTeklifUrunSecildi; var ns=function(){var r=oldSel.apply(this,arguments); setTimeout(applyMarkup,0); return r}; ns.__ctpPriceMarkupV11=true; window.ctpTeklifUrunSecildi=ns;}
+    if(typeof window.ctpTeklifTopluKategoriGuncelle==='function'&&!window.ctpTeklifTopluKategoriGuncelle.__ctpPriceMarkupV11){var oldCat=window.ctpTeklifTopluKategoriGuncelle; var nc=function(){var r=oldCat.apply(this,arguments); setTimeout(refreshBulkLabels,0); return r}; nc.__ctpPriceMarkupV11=true; window.ctpTeklifTopluKategoriGuncelle=nc;}
+    if(typeof window.ctpTeklifTemizle==='function'&&!window.ctpTeklifTemizle.__ctpPriceMarkupV11){var oldClear=window.ctpTeklifTemizle; var ncl=function(){var r=oldClear.apply(this,arguments); setTimeout(function(){installUI(); applyMarkup();},80); return r}; ncl.__ctpPriceMarkupV11=true; window.ctpTeklifTemizle=ncl;}
+  }
+  function boot(){installUI(); wrapFunctions(); setTimeout(function(){installUI(); refreshBulkLabels();},120);}
+  var oldGo=window.goPage; if(typeof oldGo==='function'&&!oldGo.__ctpPriceMarkupV11){var ng=function(id,el){var r=oldGo.apply(this,arguments); if(id==='teklifler')setTimeout(boot,120); return r}; ng.__ctpPriceMarkupV11=true; window.goPage=ng;}
+  var oldMob=window.goPageMobile; if(typeof oldMob==='function'&&!oldMob.__ctpPriceMarkupV11){var nm=function(id,el){var r=oldMob.apply(this,arguments); if(id==='teklifler')setTimeout(boot,120); return r}; nm.__ctpPriceMarkupV11=true; window.goPageMobile=nm;}
+  var oldInit=window.initApp; if(typeof oldInit==='function'&&!oldInit.__ctpPriceMarkupV11){var ni=function(){var r=oldInit.apply(this,arguments); setTimeout(boot,250); setTimeout(boot,1200); return r}; ni.__ctpPriceMarkupV11=true; window.initApp=ni;}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(boot,400);setTimeout(boot,1600)}); else {setTimeout(boot,400);setTimeout(boot,1600)}
+  window.addEventListener('load',function(){setTimeout(boot,900);setTimeout(boot,2200)});
+})();
+</script>
+<!-- CTP_CHATGPT_TEKLIF_FIYAT_ARTIS_V11_END -->
+
+</body>
+</html>
