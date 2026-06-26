@@ -872,7 +872,7 @@ tr:hover td{background:#fafafa}
         <div id="bulut-al"></div>
         <div class="fg">
           <label>Apps Script /exec Linki</label>
-          <input id="gs-url" placeholder="https://script.google.com/macros/s/.../exec">
+          <input id="gs-url" placeholder="https://script.google.com/macros/s/AKfycbzlp40u00iJVIGEqHvReD56X_jzNDs4ujo6lGM7NTLhKSzJVOuWvynLyytt4oOZl86vJQ/exec">
         </div>
         <div class="fg">
           <label>Gizli Anahtar</label>
@@ -1910,7 +1910,7 @@ function initApp(){
 // ══════════════════════════════════════════════════════════════
 // GOOGLE SHEETS BULUT YEDEKLEME
 // ══════════════════════════════════════════════════════════════
-const GS_DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbxBKCDmaT9Q3L-jLhrXlRvouKac-8z9nwJeHVkjmAHmT84w7VwHHQRl2463yotRvlUH/exec';
+const GS_DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbzlp40u00iJVIGEqHvReD56X_jzNDs4ujo6lGM7NTLhKSzJVOuWvynLyytt4oOZl86vJQ/exec';
 const GS_DEFAULT_TOKEN = '1234';
 let autoYedekInterval = null;
 
@@ -5346,7 +5346,7 @@ initApp = function(){
 (function(){
   'use strict';
 
-  var MASTER_API_URL = 'https://script.google.com/macros/s/AKfycbxBKCDmaT9Q3L-jLhrXlRvouKac-8z9nwJeHVkjmAHmT84w7VwHHQRl2463yotRvlUH/exec';
+  var MASTER_API_URL = 'https://script.google.com/macros/s/AKfycbzlp40u00iJVIGEqHvReD56X_jzNDs4ujo6lGM7NTLhKSzJVOuWvynLyytt4oOZl86vJQ/exec';
   var saveTimer = null;
   var saving = false;
   var lastSent = '';
@@ -6371,7 +6371,7 @@ body:not(.ctp-app-open) #ctp-view-toggle{display:none!important;}
   function el(id){return document.getElementById(id);} 
   function setMsg(text,ok){var m=el('cloud-license-msg'); if(m){m.textContent=text; m.className='cloud-license-msg '+(ok?'cloud-ok':'cloud-err');}}
   window.cloudMsg=setMsg;
-  var CLOUD_API_URL='https://script.google.com/macros/s/AKfycbxBKCDmaT9Q3L-jLhrXlRvouKac-8z9nwJeHVkjmAHmT84w7VwHHQRl2463yotRvlUH/exec';
+  var CLOUD_API_URL='https://script.google.com/macros/s/AKfycbzlp40u00iJVIGEqHvReD56X_jzNDs4ujo6lGM7NTLhKSzJVOuWvynLyytt4oOZl86vJQ/exec';
   // API linki müşteriye gösterilmez; sistem içinden sabit kullanılır.
   try{localStorage.removeItem('ct_cloud_api_url');}catch(e){}
   function deviceId(){var id=localStorage.getItem('ct_cloud_device_id'); if(!id){id='dev_'+((window.crypto&&crypto.randomUUID)?crypto.randomUUID():(Date.now()+'_'+Math.random().toString(16).slice(2))); localStorage.setItem('ct_cloud_device_id',id);} return id;}
@@ -6615,7 +6615,7 @@ body:not(.ctp-app-open) #ctp-view-toggle{display:none!important;}
 (function(){
   'use strict';
 
-  var CLOUD_API_URL_FIXED = 'https://script.google.com/macros/s/AKfycbxBKCDmaT9Q3L-jLhrXlRvouKac-8z9nwJeHVkjmAHmT84w7VwHHQRl2463yotRvlUH/exec';
+  var CLOUD_API_URL_FIXED = 'https://script.google.com/macros/s/AKfycbzlp40u00iJVIGEqHvReD56X_jzNDs4ujo6lGM7NTLhKSzJVOuWvynLyytt4oOZl86vJQ/exec';
   var __ctpCloudTimer = null;
   var __ctpCloudBusy = false;
   var __ctpCloudLastJson = '';
@@ -6741,7 +6741,7 @@ body:not(.ctp-app-open) #ctp-view-toggle{display:none!important;}
    - load JSONP ile yapılır; save GitHub Pages için POST no-cors ile gönderilir. */
 (function(){
   'use strict';
-  var MASTER_API_URL = 'https://script.google.com/macros/s/AKfycbxBKCDmaT9Q3L-jLhrXlRvouKac-8z9nwJeHVkjmAHmT84w7VwHHQRl2463yotRvlUH/exec';
+  var MASTER_API_URL = 'https://script.google.com/macros/s/AKfycbzlp40u00iJVIGEqHvReD56X_jzNDs4ujo6lGM7NTLhKSzJVOuWvynLyytt4oOZl86vJQ/exec';
   var saveTimer = null;
   var saving = false;
   var cloudLoaded = false;
@@ -6931,7 +6931,7 @@ body:not(.ctp-app-open) #ctp-view-toggle{display:none!important;}
 (function(){
   'use strict';
 
-  var MASTER_API_URL = 'https://script.google.com/macros/s/AKfycbxBKCDmaT9Q3L-jLhrXlRvouKac-8z9nwJeHVkjmAHmT84w7VwHHQRl2463yotRvlUH/exec';
+  var MASTER_API_URL = 'https://script.google.com/macros/s/AKfycbzlp40u00iJVIGEqHvReD56X_jzNDs4ujo6lGM7NTLhKSzJVOuWvynLyytt4oOZl86vJQ/exec';
   var loginMode = 'email';
 
   function el(id){ return document.getElementById(id); }
