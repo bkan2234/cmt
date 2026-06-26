@@ -11253,285 +11253,59 @@ body{background:radial-gradient(circle at top left,#eefbf3 0,#f7faf8 38%,#f4f7f5
 })();
 </script>
 <!-- CTP_CHATGPT_NUMUNE_CIFT_TIK_PANEL_KALDIR_V13_END -->
-
-<!-- CTP_CHATGPT_BULUT_KAYIT_CIKIS_KORUMA_V14_START -->
-<style id="ctp-cloud-exit-guard-v14-css">
-.ctp-cloud-exit-guard-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:1000002;background:#991b1b;color:#fff;border-radius:16px;padding:12px 15px;box-shadow:0 18px 55px rgba(0,0,0,.28);font-size:13px;font-weight:800;line-height:1.35;max-width:min(520px,92vw);display:none;text-align:center}.ctp-cloud-exit-guard-toast.show{display:block}.ctp-cloud-exit-guard-toast small{display:block;font-size:11px;font-weight:600;opacity:.9;margin-top:3px}@media(max-width:780px){.ctp-cloud-exit-guard-toast{left:10px;right:10px;bottom:calc(104px + env(safe-area-inset-bottom));transform:none;max-width:none;border-radius:18px;padding:13px 12px}}
-</style>
-<script id="ctp-cloud-exit-guard-v14-js">
-/* Bulut kayıt tamamlanmadan çıkışı engeller.
-   Sadece son katman yamasıdır; login/numune/proforma sistemine dokunmaz. */
-(function(){
-  'use strict';
-  if(window.__ctpCloudExitGuardV14Installed) return;
-  window.__ctpCloudExitGuardV14Installed=true;
-
-  var CLOUD_RE=/script\.google\.com\/macros\/s\//i;
-  var state={dirty:false,saving:false,lastOk:Number(localStorage.getItem('ctp_cloud_last_save_ok_ms')||0),lastErr:''};
-  var allowMarkSaved=false;
-
-  function E(id){return document.getElementById(id)}
-  function status(msg,color){
-    try{var s=E('auto-son'); if(s){s.textContent=msg; if(color)s.style.color=color;}}catch(e){}
-  }
-  function ensureToast(){
-    var t=E('ctp-cloud-exit-guard-toast');
-    if(t) return t;
-    t=document.createElement('div');
-    t.id='ctp-cloud-exit-guard-toast';
-    t.className='ctp-cloud-exit-guard-toast';
-    document.body.appendChild(t);
-    return t;
-  }
-  function toast(msg,sub){
-    var t=ensureToast();
-    t.innerHTML=String(msg||'')+(sub?'<small>'+String(sub)+'</small>':'');
-    t.classList.add('show');
-    clearTimeout(t.__tm);
-    t.__tm=setTimeout(function(){t.classList.remove('show');},4500);
-  }
-  function showUnsavedBar(){
-    try{window.hasUnsaved=true; var ub=E('unsaved-bar'); if(ub)ub.classList.add('show');}catch(e){}
-  }
-  function hideUnsavedBar(){
-    try{window.hasUnsaved=false; var ub=E('unsaved-bar'); if(ub)ub.classList.remove('show');}catch(e){}
-  }
-  function markPending(reason){
-    state.dirty=true;
-    showUnsavedBar();
-    status(reason||'Bulut kaydı bekliyor...', '#e08c00');
-  }
-  function markSaving(){
-    state.dirty=true;
-    state.saving=true;
-    showUnsavedBar();
-    status('Bulut kaydı devam ediyor, çıkış kapalı...', '#e08c00');
-  }
-  function markOk(){
-    state.dirty=false;
-    state.saving=false;
-    state.lastErr='';
-    state.lastOk=Date.now();
-    localStorage.setItem('ctp_cloud_last_save_ok_ms', String(state.lastOk));
-    status('Bulut kaydı tamamlandı: '+new Date().toLocaleString('tr-TR'), '#166534');
-    allowMarkSaved=true;
-    try{ if(typeof window.__ctpOldMarkSavedV14==='function') window.__ctpOldMarkSavedV14(); else hideUnsavedBar(); }catch(e){ hideUnsavedBar(); }
-    allowMarkSaved=false;
-  }
-  function markFail(err){
-    state.saving=false;
-    state.dirty=true;
-    state.lastErr=(err && (err.message||err)) ? String(err.message||err) : 'Bulut kaydı tamamlanamadı';
-    showUnsavedBar();
-    status('Bulut kayıt hatası: '+state.lastErr, '#991b1b');
-  }
-  function isCloudSaveFetch(input, init){
-    try{
-      var url=String((input && input.url) || input || '');
-      var method=String((init&&init.method) || (input&&input.method) || 'GET').toUpperCase();
-      var body=String((init&&init.body) || '');
-      return method==='POST' && CLOUD_RE.test(url) && body.indexOf('"action":"save"')>-1;
-    }catch(e){return false;}
-  }
-  function pendingLogoutBlock(){
-    return !!(state.saving || state.dirty || window.hasUnsaved===true);
-  }
-  function warnAndTrySave(){
-    var msg=state.saving ? 'Bulut kaydı hâlâ devam ediyor.' : 'Bulut kaydı tamamlanmadan çıkış yapılamaz.';
-    var sub='Lütfen “Bulut kaydı tamamlandı” bilgisini bekleyip tekrar çıkış yapın.';
-    toast(msg,sub);
-    alert(msg+'\n\n'+sub);
-    try{
-      if(!state.saving && typeof window.ctpForceCloudSave==='function'){
-        markSaving();
-        Promise.resolve(window.ctpForceCloudSave()).then(function(ok){ if(ok!==false) markOk(); else markFail('Bulut kaydı onaylanmadı'); }).catch(markFail);
-      }
-    }catch(e){ markFail(e); }
-    return false;
-  }
-
-  // fetch seviyesinde bulut POST kaydını izler; kayıt bitmeden çıkışa izin vermez.
-  if(!window.__ctpNativeFetchV14 && typeof window.fetch==='function'){
-    window.__ctpNativeFetchV14=window.fetch.bind(window);
-    window.fetch=function(input,init){
-      var cloudSave=isCloudSaveFetch(input,init);
-      if(cloudSave) markSaving();
-      return window.__ctpNativeFetchV14(input,init).then(function(resp){
-        if(cloudSave) markOk();
-        return resp;
-      }).catch(function(err){
-        if(cloudSave) markFail(err);
-        throw err;
-      });
-    };
-  }
-
-  // dbSave çağrılan her işlemde önce bekleyen kayıt bayrağı açılır.
-  var oldDbSave=window.dbSave;
-  if(typeof oldDbSave==='function' && !oldDbSave.__ctpCloudExitGuardV14){
-    var dbWrapped=function(){
-      markPending('Yerel kayıt alındı, bulut kaydı bekleniyor...');
-      return oldDbSave.apply(this,arguments);
-    };
-    dbWrapped.__ctpCloudExitGuardV14=true;
-    window.dbSave=dbWrapped;
-  }
-
-  // Manuel “Yok say” bulut bekliyorken kaydı temizlemesin.
-  window.__ctpOldMarkSavedV14=window.markSaved;
-  if(typeof window.markSaved==='function' && !window.markSaved.__ctpCloudExitGuardV14){
-    var ms=function(){
-      if(!allowMarkSaved && (state.saving || state.dirty)){
-        toast('Bulut kaydı tamamlanmadan bu uyarı kapatılamaz.','Kayıt bitince uyarı otomatik kapanır.');
-        return false;
-      }
-      return window.__ctpOldMarkSavedV14.apply(this,arguments);
-    };
-    ms.__ctpCloudExitGuardV14=true;
-    window.markSaved=ms;
-  }
-
-  // Bulut kayıt fonksiyonları doğrudan çağrılırsa da takip et.
-  ['ctpForceCloudSave','cloudSaveToCustomerSheet','bulutKaydet','manuelYedekle'].forEach(function(fn){
-    var old=window[fn];
-    if(typeof old==='function' && !old.__ctpCloudExitGuardV14){
-      var w=function(){
-        markSaving();
-        try{
-          var r=old.apply(this,arguments);
-          if(r && typeof r.then==='function'){
-            return r.then(function(ok){ if(ok!==false) markOk(); else markFail('Bulut kaydı onaylanmadı'); return ok; }).catch(function(e){ markFail(e); throw e; });
-          }
-          if(r!==false) markOk(); else markFail('Bulut kaydı onaylanmadı');
-          return r;
-        }catch(e){ markFail(e); throw e; }
-      };
-      w.__ctpCloudExitGuardV14=true;
-      window[fn]=w;
-    }
-  });
-
-  // Çıkış butonunu koru.
-  var oldLogout=window.logout;
-  if(typeof oldLogout==='function' && !oldLogout.__ctpCloudExitGuardV14){
-    var out=function(){
-      if(pendingLogoutBlock()) return warnAndTrySave();
-      return oldLogout.apply(this,arguments);
-    };
-    out.__ctpCloudExitGuardV14=true;
-    window.logout=out;
-  }
-
-  // Sekme/tarayıcı kapatma için de uyarı.
-  window.addEventListener('beforeunload',function(e){
-    if(pendingLogoutBlock()){
-      e.preventDefault();
-      e.returnValue='Bulut kaydı tamamlanmadı. Sayfayı kapatmadan önce kaydın bitmesini bekleyin.';
-      return e.returnValue;
-    }
-  });
-
-  window.ctpCloudKayitCikisKorumaDurum=function(){return {dirty:state.dirty,saving:state.saving,lastOk:state.lastOk,lastErr:state.lastErr,hasUnsaved:!!window.hasUnsaved};};
-})();
-</script>
-<!-- CTP_CHATGPT_BULUT_KAYIT_CIKIS_KORUMA_V14_END -->
-
-
-
-
-
-<!-- CTP_CHATGPT_SIPARIS_GERI_ALMA_V18_START -->
-<script id="ctp-siparis-geri-alma-v18-js">
-(function(){
-  'use strict';
-  if(window.__ctpSiparisGeriAlmaV18Installed) return;
-  window.__ctpSiparisGeriAlmaV18Installed=true;
-
-  /* V18: V15/V16/V17 bulut doğrulama-kuyruk yamalarını geri alır.
-     Ama sipariş kaydından sonra otomatik bulut kaydını tetiklemeye devam eder.
-     Çıkışı sonsuz kilitleyen bekleyen sipariş localStorage kayıtları temizlenir. */
-  var OLD_KEYS=[
-    'ctp_siparis_cloud_pending_v15',
-    'ctp_siparis_cloud_pending_v16',
-    'ctp_siparis_cloud_order_backup_v16',
-    'ctp_siparis_kayip_onleme_queue_v17'
-  ];
-  function cleanOld(){
-    try{OLD_KEYS.forEach(function(k){localStorage.removeItem(k);});}catch(e){}
-  }
-  cleanOld();
-
-  function getDB(){return window.DB || window.db || window.CARI_DB || null;}
-  function isOrder(h){
-    return !!(h && h.tur==='FATURA' && ((h.urunler&&h.urunler.length)||(h.sepet&&h.sepet.length)||String(h.belge||'').indexOf('SIP')===0));
-  }
-  function key(h){return [h.id||'',h.belge||'',h.fKod||'',h.tarih||'',h.tutar||''].join('|');}
-  function snap(){
-    var d=getDB(), m={};
-    ((d&&d.hareketler)||[]).forEach(function(h){if(isOrder(h))m[key(h)]=1;});
-    return m;
-  }
-  function lastNew(before){
-    var d=getDB(), arr=((d&&d.hareketler)||[]).filter(isOrder), found=null;
-    arr.forEach(function(h){if(!before[key(h)]) found=h;});
-    return found;
-  }
-  function show(msg,err){
-    try{
-      if(typeof showA==='function') showA('sp-al',msg,err?'e':undefined);
-      var el=document.getElementById('auto-son');
-      if(el){el.textContent=msg;el.style.color=err?'#991b1b':'#166534';}
-    }catch(e){}
-  }
-  function saveLocal(){
-    try{if(typeof ctSaveLocal==='function')ctSaveLocal();else if(typeof dbSave==='function')dbSave();}catch(e){}
-  }
-  function forceCloud(){
-    try{
-      if(typeof window.ctpForceCloudSave==='function') return Promise.resolve(window.ctpForceCloudSave());
-      if(typeof window.cloudSaveToCustomerSheet==='function') return Promise.resolve(window.cloudSaveToCustomerSheet(false));
-      if(typeof window.bulutKaydet==='function') return Promise.resolve(window.bulutKaydet(false,true));
-      if(typeof window.bulutKaydetPlanla==='function'){window.bulutKaydetPlanla();return Promise.resolve(true);}
-    }catch(e){return Promise.reject(e);}
-    return Promise.resolve(false);
-  }
-  function afterOrder(order){
-    if(!order) return;
-    cleanOld();
-    try{localStorage.setItem('ctp_last_siparis_local_backup_v18',JSON.stringify({ts:Date.now(),order:order}));}catch(e){}
-    saveLocal();
-    show('Sipariş yerel kaydedildi. Buluta gönderiliyor...');
-    forceCloud().then(function(ok){
-      if(ok===false) show('Sipariş yerelde kayıtlı; bulut kaydı onay vermedi. Excel & Yedek > Buluta Kaydet ile tekrar dene.',true);
-      else show('Sipariş kaydı buluta gönderildi.');
-    }).catch(function(e){
-      show('Sipariş yerelde kayıtlı; bulut gönderim hatası: '+(e&&e.message?e.message:e),true);
-    });
-    setTimeout(function(){cleanOld();forceCloud().catch(function(){});},3000);
-  }
-
-  function wrap(){
-    var old=window.siparisCariKaydet;
-    if(typeof old==='function' && !old.__ctpSiparisV18){
-      var w=function(){
-        cleanOld();
-        var before=snap();
-        var r=old.apply(this,arguments);
-        setTimeout(function(){afterOrder(lastNew(before));},120);
-        return r;
-      };
-      w.__ctpSiparisV18=true;
-      window.siparisCariKaydet=w;
-    }
-  }
-  wrap();
-  document.addEventListener('DOMContentLoaded',function(){cleanOld();setTimeout(wrap,500);setTimeout(cleanOld,1500);});
-})();
-</script>
-<!-- CTP_CHATGPT_SIPARIS_GERI_ALMA_V18_END -->
-
 </body>
 </html>
 
 
+<!-- CTP_CHATGPT_TEMIZ_BULUT_GERI_DONUS_V19_START -->
+<script id="ctp-temiz-bulut-geri-donus-v19-js">
+(function(){
+  'use strict';
+  /* V19: V14/V15/V16/V17/V18 bulut doğrulama-kilit yamalarının bıraktığı
+     bekleyen anahtarları temizler. Mevcut uygulamanın orijinal bulut kayıt
+     motoruna dokunmaz; sipariş/numune/form kayıt akışını kilitlemez. */
+  var keys=[
+    'ctp_siparis_cloud_pending_v15',
+    'ctp_siparis_cloud_pending_v16',
+    'ctp_siparis_cloud_order_backup_v16',
+    'ctp_siparis_kayip_onleme_queue_v17',
+    'ctp_last_siparis_local_backup_v18',
+    'ctp_cloud_pending_save_v14',
+    'ctp_cloud_exit_guard_dirty_v14'
+  ];
+  try{keys.forEach(function(k){localStorage.removeItem(k);});}catch(e){}
+  try{window.__ctpCloudExitGuardV14Installed=false;}catch(e){}
+  try{window.__ctpSiparisCloudV15Installed=false;window.__ctpSiparisCloudV16Installed=false;window.__ctpSiparisKayipOnlemeV17Installed=false;window.__ctpSiparisGeriAlmaV18Installed=false;}catch(e){}
+
+  function E(id){return document.getElementById(id);}
+  function msg(t,c){try{var a=E('auto-son');if(a){a.textContent=t;if(c)a.style.color=c;}}catch(e){}}
+
+  // Sipariş kaydından sonra sadece mevcut bulut kaydını tetikle; doğrulama/kilit yapma.
+  function wrapSiparis(){
+    var old=window.siparisCariKaydet;
+    if(typeof old==='function' && !old.__ctpV19CleanWrap){
+      var w=function(){
+        var r=old.apply(this,arguments);
+        setTimeout(function(){
+          try{
+            if(typeof window.bulutKaydetPlanla==='function') window.bulutKaydetPlanla();
+            else if(typeof window.cloudAutoSave==='function') window.cloudAutoSave();
+            else if(typeof window.ctpForceCloudSave==='function') window.ctpForceCloudSave();
+            msg('Sipariş kaydedildi. Bulut kaydı arka planda gönderiliyor.', '#166534');
+          }catch(e){
+            msg('Sipariş yerel kaydedildi. Buluta gönderim tekrar denenebilir: '+(e&&e.message?e.message:e), '#e08c00');
+          }
+        },250);
+        return r;
+      };
+      w.__ctpV19CleanWrap=true;
+      window.siparisCariKaydet=w;
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){setTimeout(wrapSiparis,400);});
+  else setTimeout(wrapSiparis,400);
+  window.addEventListener('load',function(){setTimeout(wrapSiparis,900);});
+})();
+</script>
+<!-- CTP_CHATGPT_TEMIZ_BULUT_GERI_DONUS_V19_END -->
 
