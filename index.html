@@ -11144,5 +11144,613 @@ body{background:radial-gradient(circle at top left,#eefbf3 0,#f7faf8 38%,#f4f7f5
 </script>
 <!-- CTP_CHATGPT_TEKLIF_FIYAT_ARTIS_V11_END -->
 
+
+
+<!-- CTP_CHATGPT_NUMUNE_CIFT_TIK_PANEL_KALDIR_V13_START -->
+<style id="ctp-numune-cift-tik-panel-kaldir-v13-css">
+/* Numune: sık kullanılan sarı panel kaldırıldı, çift tıkla toplu listeye ekleme hazırlandı */
+#page-numune #numune-fav-panel{display:none!important}
+#page-numune #n-urun-toplu option{padding:8px 10px;cursor:pointer}
+#page-numune .ctp-numune-dbl-note{font-size:11px;color:#176b3a;background:#f4fbf6;border:1px solid #d9eadf;border-radius:10px;padding:8px 10px;margin-top:6px;line-height:1.35;font-weight:700}
+@media(max-width:780px){
+  #page-numune #n-urun-toplu{min-height:190px!important;font-size:14px!important}
+  #page-numune #n-urun-toplu option{padding:10px 9px}
+}
+</style>
+<script id="ctp-numune-cift-tik-panel-kaldir-v13-js">
+(function(){
+  'use strict';
+  function E(id){return document.getElementById(id);}
+  function removeFavPanel(){
+    var p=E('numune-fav-panel');
+    if(p && p.parentNode) p.parentNode.removeChild(p);
+  }
+  function updateBulkHelp(){
+    var sel=E('n-urun-toplu');
+    if(!sel) return;
+    if(!E('ctp-numune-dbl-note')){
+      sel.insertAdjacentHTML('afterend','<div id="ctp-numune-dbl-note" class="ctp-numune-dbl-note"><i class="ti ti-hand-click"></i> Ürünün üstüne çift tıklarsan seçili ürün direkt aşağıdaki numune listesine eklenir.</div>');
+    }
+    var help=document.querySelector('#page-numune .numune-bulk-help');
+    if(help){
+      help.textContent='Listeden ürünleri seçip toplu ekleyebilirsin. Tek ürünü hızlı eklemek için ürünün üstüne çift tıkla. Eklenen ürünlerin miktarını ve sırasını aşağıdaki numune listesinde düzenleyebilirsin.';
+    }
+  }
+  function setSelectedCountText(n){
+    var c=E('n-toplu-say');
+    if(c) c.textContent=(n||0)+' ürün seçili';
+  }
+  window.ctpNumuneTopluCiftTiklaEkle=function(ev){
+    var sel=E('n-urun-toplu');
+    if(!sel) return;
+    var opt=null;
+    if(ev && ev.target && String(ev.target.tagName||'').toUpperCase()==='OPTION') opt=ev.target;
+    if(!opt && sel.selectedIndex>=0) opt=sel.options[sel.selectedIndex];
+    if(!opt || !opt.value) return;
+    var opts=[].slice.call(sel.options||[]);
+    opts.forEach(function(o){o.selected=false;});
+    opt.selected=true;
+    setSelectedCountText(1);
+    try{
+      if(typeof window.ctpNumuneTopluEkle==='function'){
+        window.ctpNumuneTopluEkle();
+        setSelectedCountText(0);
+        return;
+      }
+      if(typeof window.ctpNumuneSepeteEkle==='function'){
+        var u=E('n-urun'), m=E('n-miktar'), tm=E('n-toplu-miktar');
+        if(u) u.value=String(opt.value);
+        if(m && tm) m.value=tm.value||'1';
+        if(typeof window.ctpNumuneUrunDegisti==='function') window.ctpNumuneUrunDegisti();
+        window.ctpNumuneSepeteEkle();
+        setSelectedCountText(0);
+      }
+    }catch(e){
+      alert('Ürün listeye eklenemedi: '+(e && e.message ? e.message : e));
+    }
+  };
+  function installDoubleClick(){
+    var sel=E('n-urun-toplu');
+    if(!sel) return;
+    if(!sel.__ctpNumuneDblAddV13){
+      sel.__ctpNumuneDblAddV13=true;
+      sel.addEventListener('dblclick',function(ev){
+        if(ev && ev.preventDefault) ev.preventDefault();
+        window.ctpNumuneTopluCiftTiklaEkle(ev);
+      });
+    }
+  }
+  function disableOldFavPanel(){
+    window.ctpNumuneFavPanelEkle=function(){removeFavPanel();};
+    window.ctpNumuneFavRender=function(){removeFavPanel();};
+  }
+  function boot(){
+    try{disableOldFavPanel();removeFavPanel();installDoubleClick();updateBulkHelp();}catch(e){console.warn('Numune çift tık yaması yüklenemedi:',e);}
+  }
+  var oldGo=window.goPage;
+  if(typeof oldGo==='function' && !oldGo.__ctpNumuneDblV13){
+    var wrapped=function(id,el){
+      var r=oldGo.apply(this,arguments);
+      if(id==='numune') setTimeout(boot,80);
+      return r;
+    };
+    wrapped.__ctpNumuneDblV13=true;
+    window.goPage=wrapped;
+  }
+  var oldGoMobile=window.goPageMobile;
+  if(typeof oldGoMobile==='function' && !oldGoMobile.__ctpNumuneDblV13){
+    var wrappedM=function(id,el){
+      var r=oldGoMobile.apply(this,arguments);
+      if(id==='numune') setTimeout(boot,80);
+      return r;
+    };
+    wrappedM.__ctpNumuneDblV13=true;
+    window.goPageMobile=wrappedM;
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){setTimeout(boot,120);setTimeout(boot,800);});
+  else {setTimeout(boot,120);setTimeout(boot,800);}
+  window.addEventListener('load',function(){setTimeout(boot,700);setTimeout(boot,1800);});
+})();
+</script>
+<!-- CTP_CHATGPT_NUMUNE_CIFT_TIK_PANEL_KALDIR_V13_END -->
+
+<!-- CTP_CHATGPT_BULUT_KAYIT_CIKIS_KORUMA_V14_START -->
+<style id="ctp-cloud-exit-guard-v14-css">
+.ctp-cloud-exit-guard-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:1000002;background:#991b1b;color:#fff;border-radius:16px;padding:12px 15px;box-shadow:0 18px 55px rgba(0,0,0,.28);font-size:13px;font-weight:800;line-height:1.35;max-width:min(520px,92vw);display:none;text-align:center}.ctp-cloud-exit-guard-toast.show{display:block}.ctp-cloud-exit-guard-toast small{display:block;font-size:11px;font-weight:600;opacity:.9;margin-top:3px}@media(max-width:780px){.ctp-cloud-exit-guard-toast{left:10px;right:10px;bottom:calc(104px + env(safe-area-inset-bottom));transform:none;max-width:none;border-radius:18px;padding:13px 12px}}
+</style>
+<script id="ctp-cloud-exit-guard-v14-js">
+/* Bulut kayıt tamamlanmadan çıkışı engeller.
+   Sadece son katman yamasıdır; login/numune/proforma sistemine dokunmaz. */
+(function(){
+  'use strict';
+  if(window.__ctpCloudExitGuardV14Installed) return;
+  window.__ctpCloudExitGuardV14Installed=true;
+
+  var CLOUD_RE=/script\.google\.com\/macros\/s\//i;
+  var state={dirty:false,saving:false,lastOk:Number(localStorage.getItem('ctp_cloud_last_save_ok_ms')||0),lastErr:''};
+  var allowMarkSaved=false;
+
+  function E(id){return document.getElementById(id)}
+  function status(msg,color){
+    try{var s=E('auto-son'); if(s){s.textContent=msg; if(color)s.style.color=color;}}catch(e){}
+  }
+  function ensureToast(){
+    var t=E('ctp-cloud-exit-guard-toast');
+    if(t) return t;
+    t=document.createElement('div');
+    t.id='ctp-cloud-exit-guard-toast';
+    t.className='ctp-cloud-exit-guard-toast';
+    document.body.appendChild(t);
+    return t;
+  }
+  function toast(msg,sub){
+    var t=ensureToast();
+    t.innerHTML=String(msg||'')+(sub?'<small>'+String(sub)+'</small>':'');
+    t.classList.add('show');
+    clearTimeout(t.__tm);
+    t.__tm=setTimeout(function(){t.classList.remove('show');},4500);
+  }
+  function showUnsavedBar(){
+    try{window.hasUnsaved=true; var ub=E('unsaved-bar'); if(ub)ub.classList.add('show');}catch(e){}
+  }
+  function hideUnsavedBar(){
+    try{window.hasUnsaved=false; var ub=E('unsaved-bar'); if(ub)ub.classList.remove('show');}catch(e){}
+  }
+  function markPending(reason){
+    state.dirty=true;
+    showUnsavedBar();
+    status(reason||'Bulut kaydı bekliyor...', '#e08c00');
+  }
+  function markSaving(){
+    state.dirty=true;
+    state.saving=true;
+    showUnsavedBar();
+    status('Bulut kaydı devam ediyor, çıkış kapalı...', '#e08c00');
+  }
+  function markOk(){
+    state.dirty=false;
+    state.saving=false;
+    state.lastErr='';
+    state.lastOk=Date.now();
+    localStorage.setItem('ctp_cloud_last_save_ok_ms', String(state.lastOk));
+    status('Bulut kaydı tamamlandı: '+new Date().toLocaleString('tr-TR'), '#166534');
+    allowMarkSaved=true;
+    try{ if(typeof window.__ctpOldMarkSavedV14==='function') window.__ctpOldMarkSavedV14(); else hideUnsavedBar(); }catch(e){ hideUnsavedBar(); }
+    allowMarkSaved=false;
+  }
+  function markFail(err){
+    state.saving=false;
+    state.dirty=true;
+    state.lastErr=(err && (err.message||err)) ? String(err.message||err) : 'Bulut kaydı tamamlanamadı';
+    showUnsavedBar();
+    status('Bulut kayıt hatası: '+state.lastErr, '#991b1b');
+  }
+  function isCloudSaveFetch(input, init){
+    try{
+      var url=String((input && input.url) || input || '');
+      var method=String((init&&init.method) || (input&&input.method) || 'GET').toUpperCase();
+      var body=String((init&&init.body) || '');
+      return method==='POST' && CLOUD_RE.test(url) && body.indexOf('"action":"save"')>-1;
+    }catch(e){return false;}
+  }
+  function pendingLogoutBlock(){
+    return !!(state.saving || state.dirty || window.hasUnsaved===true);
+  }
+  function warnAndTrySave(){
+    var msg=state.saving ? 'Bulut kaydı hâlâ devam ediyor.' : 'Bulut kaydı tamamlanmadan çıkış yapılamaz.';
+    var sub='Lütfen “Bulut kaydı tamamlandı” bilgisini bekleyip tekrar çıkış yapın.';
+    toast(msg,sub);
+    alert(msg+'\n\n'+sub);
+    try{
+      if(!state.saving && typeof window.ctpForceCloudSave==='function'){
+        markSaving();
+        Promise.resolve(window.ctpForceCloudSave()).then(function(ok){ if(ok!==false) markOk(); else markFail('Bulut kaydı onaylanmadı'); }).catch(markFail);
+      }
+    }catch(e){ markFail(e); }
+    return false;
+  }
+
+  // fetch seviyesinde bulut POST kaydını izler; kayıt bitmeden çıkışa izin vermez.
+  if(!window.__ctpNativeFetchV14 && typeof window.fetch==='function'){
+    window.__ctpNativeFetchV14=window.fetch.bind(window);
+    window.fetch=function(input,init){
+      var cloudSave=isCloudSaveFetch(input,init);
+      if(cloudSave) markSaving();
+      return window.__ctpNativeFetchV14(input,init).then(function(resp){
+        if(cloudSave) markOk();
+        return resp;
+      }).catch(function(err){
+        if(cloudSave) markFail(err);
+        throw err;
+      });
+    };
+  }
+
+  // dbSave çağrılan her işlemde önce bekleyen kayıt bayrağı açılır.
+  var oldDbSave=window.dbSave;
+  if(typeof oldDbSave==='function' && !oldDbSave.__ctpCloudExitGuardV14){
+    var dbWrapped=function(){
+      markPending('Yerel kayıt alındı, bulut kaydı bekleniyor...');
+      return oldDbSave.apply(this,arguments);
+    };
+    dbWrapped.__ctpCloudExitGuardV14=true;
+    window.dbSave=dbWrapped;
+  }
+
+  // Manuel “Yok say” bulut bekliyorken kaydı temizlemesin.
+  window.__ctpOldMarkSavedV14=window.markSaved;
+  if(typeof window.markSaved==='function' && !window.markSaved.__ctpCloudExitGuardV14){
+    var ms=function(){
+      if(!allowMarkSaved && (state.saving || state.dirty)){
+        toast('Bulut kaydı tamamlanmadan bu uyarı kapatılamaz.','Kayıt bitince uyarı otomatik kapanır.');
+        return false;
+      }
+      return window.__ctpOldMarkSavedV14.apply(this,arguments);
+    };
+    ms.__ctpCloudExitGuardV14=true;
+    window.markSaved=ms;
+  }
+
+  // Bulut kayıt fonksiyonları doğrudan çağrılırsa da takip et.
+  ['ctpForceCloudSave','cloudSaveToCustomerSheet','bulutKaydet','manuelYedekle'].forEach(function(fn){
+    var old=window[fn];
+    if(typeof old==='function' && !old.__ctpCloudExitGuardV14){
+      var w=function(){
+        markSaving();
+        try{
+          var r=old.apply(this,arguments);
+          if(r && typeof r.then==='function'){
+            return r.then(function(ok){ if(ok!==false) markOk(); else markFail('Bulut kaydı onaylanmadı'); return ok; }).catch(function(e){ markFail(e); throw e; });
+          }
+          if(r!==false) markOk(); else markFail('Bulut kaydı onaylanmadı');
+          return r;
+        }catch(e){ markFail(e); throw e; }
+      };
+      w.__ctpCloudExitGuardV14=true;
+      window[fn]=w;
+    }
+  });
+
+  // Çıkış butonunu koru.
+  var oldLogout=window.logout;
+  if(typeof oldLogout==='function' && !oldLogout.__ctpCloudExitGuardV14){
+    var out=function(){
+      if(pendingLogoutBlock()) return warnAndTrySave();
+      return oldLogout.apply(this,arguments);
+    };
+    out.__ctpCloudExitGuardV14=true;
+    window.logout=out;
+  }
+
+  // Sekme/tarayıcı kapatma için de uyarı.
+  window.addEventListener('beforeunload',function(e){
+    if(pendingLogoutBlock()){
+      e.preventDefault();
+      e.returnValue='Bulut kaydı tamamlanmadı. Sayfayı kapatmadan önce kaydın bitmesini bekleyin.';
+      return e.returnValue;
+    }
+  });
+
+  window.ctpCloudKayitCikisKorumaDurum=function(){return {dirty:state.dirty,saving:state.saving,lastOk:state.lastOk,lastErr:state.lastErr,hasUnsaved:!!window.hasUnsaved};};
+})();
+</script>
+<!-- CTP_CHATGPT_BULUT_KAYIT_CIKIS_KORUMA_V14_END -->
+
+<!-- CTP_CHATGPT_SIPARIS_BULUT_DOGRULAMA_V16_START -->
+<style id="ctp-siparis-cloud-verify-v16-css">
+.ctp-cloud-verify-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:1000004;background:#1a2744;color:#fff;border-radius:16px;padding:12px 16px;box-shadow:0 18px 55px rgba(0,0,0,.30);font-size:13px;font-weight:800;line-height:1.35;max-width:min(620px,92vw);display:none;text-align:center}.ctp-cloud-verify-toast.show{display:block}.ctp-cloud-verify-toast.err{background:#991b1b}.ctp-cloud-verify-toast.warn{background:#b45309}.ctp-cloud-verify-toast.ok{background:#166534}.ctp-cloud-verify-toast small{display:block;font-size:11px;font-weight:600;opacity:.92;margin-top:3px}.ctp-cloud-verify-toast button{margin-top:8px;border:0;border-radius:999px;background:#fff;color:#1a2744;font-weight:900;font-size:11px;padding:7px 12px;cursor:pointer}@media(max-width:780px){.ctp-cloud-verify-toast{left:10px;right:10px;bottom:calc(106px + env(safe-area-inset-bottom));transform:none;max-width:none;border-radius:18px;padding:13px 12px}}
+</style>
+<script id="ctp-siparis-cloud-verify-v16-js">
+/* V16: Sipariş bulutta görünmeden çıkışı kapatır; ancak API gecikmelerinde kırmızı hataya erken düşmez.
+   Bekleyen sipariş ayrıca yerel yedekte tutulur; buluttan eski veri gelirse sipariş DB'ye geri eklenip tekrar gönderilir. */
+(function(){
+  'use strict';
+  if(window.__ctpSiparisCloudVerifyV16Installed) return;
+  window.__ctpSiparisCloudVerifyV16Installed=true;
+
+  var STORE='ctp_siparis_cloud_pending_v16';
+  var LEGACY_STORE='ctp_siparis_cloud_pending_v15';
+  var BACKUP_STORE='ctp_siparis_cloud_order_backup_v16';
+  var MASTER_API_URL='https://script.google.com/macros/s/AKfycbxBKCDmaT9Q3L-jLhrXlRvouKac-8z9nwJeHVkjmAHmT84w7VwHHQRl2463yotRvlUH/exec';
+  var verifying=false;
+  var retryTimer=null;
+  var maxRetry=36;       // 36 x 5 sn ~= 3 dakika. Apps Script/Sheets gecikmesine tolerans.
+  var retryDelay=5000;
+
+  function E(id){return document.getElementById(id);}
+  function getDB(){try{if(typeof DB!=='undefined'&&DB)return DB;}catch(e){} return window.DB||null;}
+  function licenseKey(){try{if(typeof window.cloudLicenseKey==='function')return window.cloudLicenseKey()||'';}catch(e){} try{return localStorage.getItem('ct_cloud_license_key')||'';}catch(e){return '';}}
+  function deviceId(){try{if(typeof window.cloudDeviceId==='function')return window.cloudDeviceId()||'';}catch(e){} var id=''; try{id=localStorage.getItem('ct_cloud_device_id')||'';}catch(e){} if(!id){id='dev_'+(Date.now()+'_'+Math.random().toString(16).slice(2));try{localStorage.setItem('ct_cloud_device_id',id);}catch(e){}} return id;}
+  function storageKey(){try{if(typeof window.ctStorageKey==='function')return window.ctStorageKey();}catch(e){} return 'cari_pro_v3_LISANS_'+String(licenseKey()||'NO_LICENSE').replace(/[^A-Za-z0-9_-]/g,'_');}
+  function clone(o){try{return JSON.parse(JSON.stringify(o));}catch(e){return null;}}
+  function num(v){var n=Number(v); return isFinite(n)?Math.round(n*100)/100:0;}
+  function same(a,b){return String(a||'')===String(b||'');}
+  function saveLocal(){try{var db=getDB(); if(db){db.ts=new Date().toISOString(); localStorage.setItem(storageKey(),JSON.stringify(db)); localStorage.setItem('cari_local_ts',db.ts);}}catch(e){}}
+  function renderSafe(){['ensureUsers','renderDashboard','renderF','renderU','renderSF','renderCF','renderStok','renderKategoriler','yedekBilgi'].forEach(function(fn){try{if(typeof window[fn]==='function')window[fn]();}catch(e){}});}
+  function status(msg,color){try{var s=E('auto-son'); if(s){s.textContent=msg; if(color)s.style.color=color;}}catch(e){}}
+  function toast(msg,sub,kind,buttonText,buttonFn){
+    var t=E('ctp-cloud-verify-toast');
+    if(!t){t=document.createElement('div');t.id='ctp-cloud-verify-toast';t.className='ctp-cloud-verify-toast';document.body.appendChild(t);}
+    t.className='ctp-cloud-verify-toast show '+(kind||'');
+    t.innerHTML=String(msg||'')+(sub?'<small>'+String(sub)+'</small>':'')+(buttonText?'<button type="button" id="ctp-cloud-verify-btn">'+String(buttonText)+'</button>':'');
+    var b=E('ctp-cloud-verify-btn'); if(b&&buttonFn)b.onclick=buttonFn;
+    clearTimeout(t.__tm); if(kind==='ok')t.__tm=setTimeout(function(){t.classList.remove('show');},6000);
+  }
+  function setUnsaved(on){try{window.hasUnsaved=!!on; var ub=E('unsaved-bar'); if(ub){if(on)ub.classList.add('show'); else ub.classList.remove('show');}}catch(e){}}
+  function normalizeRemote(r){
+    var d=r;
+    if(r&&r.data!==undefined)d=r.data;
+    if(typeof d==='string'){try{d=JSON.parse(d);}catch(e){}}
+    if(d&&d.data!==undefined){d=d.data; if(typeof d==='string'){try{d=JSON.parse(d);}catch(e){}}}
+    if(d&&d.db!==undefined){d=d.db; if(typeof d==='string'){try{d=JSON.parse(d);}catch(e){}}}
+    return d&&typeof d==='object'?d:null;
+  }
+  function hareketKey(h){
+    h=h||{};
+    return [h.id,h.belge,h.fKod,h.tarih,num(h.tutar),h.tur||'',h.durum||h.dur||''].map(function(x){return String(x==null?'':x);}).join('|');
+  }
+  function lastHareket(db){var a=(db&&db.hareketler)||[]; return a.length?a[a.length-1]:null;}
+  function orderExists(db,orderOrSig){
+    var arr=(db&&db.hareketler)||[];
+    var s=(orderOrSig&&orderOrSig.sig)||orderOrSig||{};
+    var key=s.key||hareketKey(s);
+    for(var i=0;i<arr.length;i++){
+      var h=arr[i]||{};
+      if(s.id!==undefined && s.id!==null && s.belge && same(h.id,s.id) && same(h.belge,s.belge)) return true;
+      if(s.belge && same(h.belge,s.belge) && (!s.fKod || same(h.fKod,s.fKod)) && Math.abs(num(h.tutar)-num(s.tutar))<0.01) return true;
+      if(key && hareketKey(h)===key) return true;
+    }
+    return false;
+  }
+  function getPending(){
+    try{var p=JSON.parse(localStorage.getItem(STORE)||'null'); if(p)return p;}catch(e){}
+    try{var l=JSON.parse(localStorage.getItem(LEGACY_STORE)||'null'); if(l){l.fromLegacy=true; return l;}}catch(e){}
+    return null;
+  }
+  function setPending(p){try{localStorage.setItem(STORE,JSON.stringify(p)); localStorage.removeItem(LEGACY_STORE);}catch(e){} setUnsaved(true);}
+  function setBackup(order){try{if(order)localStorage.setItem(BACKUP_STORE,JSON.stringify(order));}catch(e){}}
+  function getBackup(){try{return JSON.parse(localStorage.getItem(BACKUP_STORE)||'null');}catch(e){return null;}}
+  function clearPending(){try{localStorage.removeItem(STORE);localStorage.removeItem(LEGACY_STORE);localStorage.removeItem(BACKUP_STORE);}catch(e){} setUnsaved(false); status('Bulut doğrulandı: '+new Date().toLocaleString('tr-TR'),'#166534');}
+  function makePendingFromOrder(order,reason){
+    if(!order)return null;
+    var db=getDB()||{};
+    var p={reason:reason||'siparis',ts:(db.ts||new Date().toISOString()),count:((db.hareketler||[]).length),sig:{id:order.id,belge:order.belge,fKod:order.fKod,tarih:order.tarih,tutar:order.tutar,tur:order.tur,durum:order.durum||order.dur,key:hareketKey(order)},order:clone(order),createdAt:Date.now(),tryCount:0,lastError:''};
+    setPending(p); setBackup(p.order);
+    status('Sipariş yerel kaydedildi; bulut doğrulaması bekleniyor...','#e08c00');
+    return p;
+  }
+  function makePendingFromLast(reason){var h=lastHareket(getDB()); return makePendingFromOrder(h,reason);}
+  function mergePendingToLocal(){
+    var p=getPending(); if(!p)return false;
+    var db=getDB(); if(!db)return false;
+    var order=p.order||getBackup(); if(!order)return false;
+    if(orderExists(db,p))return false;
+    if(!Array.isArray(db.hareketler))db.hareketler=[];
+    db.hareketler.push(clone(order));
+    if(db.nextHId===undefined || Number(db.nextHId)<=Number(order.id||0))db.nextHId=Number(order.id||0)+1;
+    saveLocal(); renderSafe(); setUnsaved(true);
+    status('Buluttan eski veri geldi; bekleyen sipariş yerel yedekten geri eklendi. Tekrar buluta gönderiliyor...','#e08c00');
+    return true;
+  }
+  function jsonp(params){
+    if(typeof window.cloudJsonp==='function')return window.cloudJsonp(params);
+    return new Promise(function(resolve,reject){
+      var cb='ctp_v16_cb_'+Date.now()+'_'+Math.random().toString(16).slice(2);
+      params.callback=cb; params._t=Date.now();
+      var script=document.createElement('script'),done=false;
+      var timer=setTimeout(function(){if(done)return;done=true;try{delete window[cb];script.remove();}catch(e){} reject(new Error('API cevap vermedi'));},25000);
+      window[cb]=function(res){if(done)return;done=true;clearTimeout(timer);try{delete window[cb];script.remove();}catch(e){} resolve(res);};
+      script.onerror=function(){if(done)return;done=true;clearTimeout(timer);try{delete window[cb];script.remove();}catch(e){} reject(new Error('API bağlantısı kurulamadı'));};
+      script.src=MASTER_API_URL+'?'+new URLSearchParams(params).toString();
+      document.body.appendChild(script);
+    });
+  }
+  function delay(ms){return new Promise(function(res){setTimeout(res,ms);});}
+  async function forceCloudSave(){
+    mergePendingToLocal();
+    var ok=false, err='';
+    try{
+      if(typeof window.ctpForceCloudSave==='function'){ok=await window.ctpForceCloudSave();}
+      else if(typeof window.cloudSaveToCustomerSheet==='function'){ok=await window.cloudSaveToCustomerSheet(false);}
+      else if(typeof window.bulutKaydet==='function'){ok=await window.bulutKaydet();}
+      else throw new Error('Bulut kayıt fonksiyonu bulunamadı');
+    }catch(e){err=e&&e.message?e.message:String(e);}
+    // no-cors kullanılan kayıtlarda ok=false dönebilir; yine de doğrulama load ile yapılacak.
+    if(err) status('Bulut kayıt isteği sırasında uyarı: '+err,'#e08c00');
+    return ok;
+  }
+  async function loadRemote(){
+    var key=licenseKey();
+    if(!key)throw new Error('Lisans bulunamadı. Bulut doğrulaması yapılamıyor.');
+    var r=await jsonp({action:'load',licenseKey:key,deviceId:deviceId(),_verify:'siparis_v16'});
+    if(r&&r.ok===false)throw new Error(r.error||'Buluttan kontrol cevabı alınamadı');
+    return normalizeRemote(r);
+  }
+  async function verifyNow(showMessage){
+    var p=getPending();
+    if(!p)return true;
+    if(verifying)return false;
+    verifying=true;
+    setUnsaved(true);
+    try{
+      mergePendingToLocal();
+      status('Buluta kayıt gönderiliyor; sipariş görünene kadar çıkış kapalı...','#e08c00');
+      if(showMessage)toast('Bulut doğrulaması yapılıyor.','Yeşil doğrulama mesajını bekle.','warn');
+      await forceCloudSave();
+      await delay(p.tryCount?retryDelay:5500);
+      var remote=await loadRemote();
+      if(orderExists(remote,p)){
+        clearPending();
+        toast('Sipariş bulutta doğrulandı.','Artık güvenle çıkış yapabilirsin.','ok');
+        return true;
+      }
+      p.tryCount=(p.tryCount||0)+1;
+      p.lastError='Sipariş load cevabında görünmedi';
+      setPending(p);
+      if(p.tryCount<maxRetry){
+        status('Bulut kayıt gecikmesi var; tekrar denenecek ('+p.tryCount+'/'+maxRetry+').','#e08c00');
+        toast('Bulut henüz siparişi göstermedi.','Sistem otomatik tekrar deniyor. İnterneti kapatma, sekmeyi kapatma.','warn','Şimdi Tekrar Dene',function(){verifyNow(true);});
+        clearTimeout(retryTimer);
+        retryTimer=setTimeout(function(){verifyNow(false);},retryDelay);
+      }else{
+        status('Bulut doğrulaması tamamlanamadı; bekleyen sipariş yerelde korundu.','#991b1b');
+        toast('Sipariş hâlâ bulutta görünmedi.','Çıkış kapalı. İnternet/API bağlantısını kontrol edip tekrar dene. Yerel yedek korunuyor.','err','Tekrar Dene',function(){var q=getPending(); if(q){q.tryCount=0;setPending(q);} verifyNow(true);});
+      }
+      return false;
+    }catch(e){
+      var q=getPending(); if(q){q.tryCount=(q.tryCount||0)+1;q.lastError=e&&e.message?e.message:String(e);setPending(q);}
+      status('Bulut doğrulama hatası: '+(e.message||e),'#991b1b');
+      toast('Bulut doğrulaması yapılamadı.',String(e.message||e),'err','Tekrar Dene',function(){verifyNow(true);});
+      clearTimeout(retryTimer);
+      retryTimer=setTimeout(function(){verifyNow(false);},retryDelay);
+      return false;
+    }finally{verifying=false;}
+  }
+
+  function wrapSiparis(){
+    var old=window.siparisCariKaydet;
+    if(typeof old==='function' && !old.__ctpCloudVerifyV16){
+      var w=function(){
+        var db=getDB(), before=((db&&db.hareketler)||[]).length;
+        var r=old.apply(this,arguments);
+        setTimeout(function(){
+          var d=getDB(), after=((d&&d.hareketler)||[]).length;
+          if(after>before){makePendingFromLast('siparis'); verifyNow(false);}
+        },120);
+        return r;
+      };
+      w.__ctpCloudVerifyV16=true; window.siparisCariKaydet=w;
+    }
+  }
+  function wrapBulutYukle(){
+    var old=window.bulutYukle;
+    if(typeof old==='function' && !old.__ctpCloudVerifyV16){
+      var w=async function(){
+        var r=await old.apply(this,arguments);
+        setTimeout(function(){
+          if(getPending()){
+            if(mergePendingToLocal())verifyNow(false);
+            else verifyNow(false);
+          }
+        },350);
+        return r;
+      };
+      w.__ctpCloudVerifyV16=true; window.bulutYukle=w;
+    }
+  }
+  function wrapLogout(){
+    var old=window.logout;
+    if(typeof old==='function' && !old.__ctpCloudVerifyV16){
+      var w=function(){
+        if(getPending()){
+          mergePendingToLocal();
+          toast('Sipariş bulutta doğrulanmadan çıkış yapılamaz.','Sistem tekrar kontrol ediyor; yeşil doğrulama mesajını bekle.','err','Tekrar Dene',function(){verifyNow(true);});
+          verifyNow(true);
+          return false;
+        }
+        return old.apply(this,arguments);
+      };
+      w.__ctpCloudVerifyV16=true; window.logout=w;
+    }
+  }
+  function wrapMarkSavedName(name){
+    var old=window[name];
+    if(typeof old==='function' && !old.__ctpCloudVerifyV16){
+      var w=function(){
+        if(getPending()){
+          setUnsaved(true);
+          status('Sipariş bulutta doğrulanmadan kayıt uyarısı kapatılamaz.','#e08c00');
+          return false;
+        }
+        return old.apply(this,arguments);
+      };
+      w.__ctpCloudVerifyV16=true; window[name]=w;
+    }
+  }
+  function install(){wrapSiparis();wrapBulutYukle();wrapLogout();wrapMarkSavedName('markSaved');wrapMarkSavedName('__ctpOldMarkSavedV14'); if(getPending()){mergePendingToLocal(); setTimeout(function(){verifyNow(false);},1200);}}
+
+  window.ctpSiparisBulutDogrula=function(){return verifyNow(true);};
+  window.ctpSiparisBulutDurum=function(){return {pending:getPending(),verifying:verifying,license:!!licenseKey(),backup:!!getBackup(),api:MASTER_API_URL};};
+  window.ctpSiparisBulutBekleyenTemizle=function(){clearPending(); toast('Bekleyen bulut doğrulama temizlendi.','','ok');};
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(install,150);setTimeout(install,1000);setTimeout(install,3500);});
+  else{setTimeout(install,150);setTimeout(install,1000);setTimeout(install,3500);}
+  window.addEventListener('load',function(){setTimeout(install,700);setTimeout(install,2500);});
+  window.addEventListener('beforeunload',function(e){if(getPending()){mergePendingToLocal(); e.preventDefault(); e.returnValue='Sipariş bulutta doğrulanmadı. Çıkmadan önce doğrulamayı bekleyin.'; return e.returnValue;}});
+})();
+</script>
+<!-- CTP_CHATGPT_SIPARIS_BULUT_DOGRULAMA_V16_END -->
+
+
+<!-- CTP_CHATGPT_SIPARIS_KAYIP_ONLEME_V17_START -->
+<style id="ctp-siparis-kayip-onleme-v17-css">
+.ctp-v17-cloud-note{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:1000006;background:#1a2744;color:#fff;border-radius:16px;padding:12px 16px;box-shadow:0 18px 55px rgba(0,0,0,.30);font-size:13px;font-weight:850;line-height:1.35;max-width:min(640px,92vw);display:none;text-align:center}.ctp-v17-cloud-note.show{display:block}.ctp-v17-cloud-note.warn{background:#b45309}.ctp-v17-cloud-note.err{background:#991b1b}.ctp-v17-cloud-note.ok{background:#166534}.ctp-v17-cloud-note small{display:block;font-size:11px;font-weight:650;opacity:.92;margin-top:3px}@media(max-width:780px){.ctp-v17-cloud-note{left:10px;right:10px;bottom:calc(108px + env(safe-area-inset-bottom));transform:none;max-width:none;border-radius:18px;padding:13px 12px}}
+</style>
+<script id="ctp-siparis-kayip-onleme-v17-js">
+/* V17: Sipariş kaybını önleme.
+   Kök sorun: gecikmeli/çakışan bulut yüklemeleri yeni siparişi eski bulut verisiyle ezebiliyor.
+   Bu katman yeni siparişi anında ayrı yerel kuyruğa alır; her bulut yüklemesinden sonra kuyruğu geri birleştirir ve buluta tekrar gönderir. */
+(function(){
+  'use strict';
+  if(window.__ctpSiparisKayipOnlemeV17Installed) return;
+  window.__ctpSiparisKayipOnlemeV17Installed=true;
+
+  var QKEY='ctp_siparis_kayip_onleme_queue_v17';
+  var MASTER_API_URL='https://script.google.com/macros/s/AKfycbxBKCDmaT9Q3L-jLhrXlRvouKac-8z9nwJeHVkjmAHmT84w7VwHHQRl2463yotRvlUH/exec';
+  var verifying=false;
+  var verifyTimer=null;
+
+  function E(id){return document.getElementById(id);}
+  function getDB(){try{if(typeof DB!=='undefined'&&DB)return DB;}catch(e){} return window.DB||null;}
+  function licenseKey(){try{if(typeof window.cloudLicenseKey==='function')return window.cloudLicenseKey()||'';}catch(e){} try{return localStorage.getItem('ct_cloud_license_key')||'';}catch(e){return '';}}
+  function deviceId(){try{if(typeof window.cloudDeviceId==='function')return window.cloudDeviceId()||'';}catch(e){} var id=''; try{id=localStorage.getItem('ct_cloud_device_id')||'';}catch(e){} if(!id){id='dev_'+(Date.now()+'_'+Math.random().toString(16).slice(2));try{localStorage.setItem('ct_cloud_device_id',id);}catch(e){}} return id;}
+  function storageKey(){try{if(typeof window.ctStorageKey==='function')return window.ctStorageKey();}catch(e){} return 'cari_pro_v3_LISANS_'+String(licenseKey()||'NO_LICENSE').replace(/[^A-Za-z0-9_-]/g,'_');}
+  function clone(o){try{return JSON.parse(JSON.stringify(o));}catch(e){return null;}}
+  function num(v){var n=Number(v);return isFinite(n)?Math.round(n*100)/100:0;}
+  function safe(v){return String(v==null?'':v);}
+  function keyOf(h){h=h||{};return [h.id,h.belge,h.fKod,h.tarih,num(h.tutar),h.tur||'',h.durum||h.dur||''].map(function(x){return safe(x);}).join('|');}
+  function looseKey(h){h=h||{};return [h.belge,h.fKod,h.tarih,num(h.tutar)].map(function(x){return safe(x);}).join('|');}
+  function isOrder(h){return !!(h && (h.sipDurum || ((h.urunler||h.sepet||[]).length && String(h.tur||'').toUpperCase()==='FATURA')));}
+  function qRead(){try{var a=JSON.parse(localStorage.getItem(QKEY)||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}}
+  function qWrite(a){try{localStorage.setItem(QKEY,JSON.stringify((a||[]).slice(-80)));}catch(e){} setUnsaved(qRead().length>0);}
+  function qClear(){try{localStorage.removeItem(QKEY);}catch(e){} setUnsaved(false); status('Sipariş bulut/yerel koruma temiz: '+new Date().toLocaleString('tr-TR'),'#166534');}
+  function setUnsaved(on){try{window.hasUnsaved=!!on;var ub=E('unsaved-bar');if(ub){if(on)ub.classList.add('show');else ub.classList.remove('show');}}catch(e){}}
+  function status(msg,color){try{var s=E('auto-son');if(s){s.textContent=msg;if(color)s.style.color=color;}}catch(e){}}
+  function note(msg,sub,kind,ms){var t=E('ctp-v17-cloud-note');if(!t){t=document.createElement('div');t.id='ctp-v17-cloud-note';t.className='ctp-v17-cloud-note';document.body.appendChild(t);}t.className='ctp-v17-cloud-note show '+(kind||'');t.innerHTML=safe(msg)+(sub?'<small>'+safe(sub)+'</small>':'');clearTimeout(t.__tm);if(ms!==0)t.__tm=setTimeout(function(){t.classList.remove('show');},ms||4800);}
+  function saveLocal(){try{var db=getDB();if(db){db.ts=new Date().toISOString();localStorage.setItem(storageKey(),JSON.stringify(db));try{if(typeof window.ctSaveLocal==='function')window.ctSaveLocal();}catch(e){}}}catch(e){}}
+  function renderSafe(){['renderDashboard','renderF','renderU','renderSF','renderCF','renderStok','ctpRenderSiparisDurum','yedekBilgi'].forEach(function(fn){try{if(typeof window[fn]==='function')window[fn]();}catch(e){}});}
+  function existsIn(db,h){var arr=(db&&db.hareketler)||[];var k=keyOf(h), lk=looseKey(h);for(var i=0;i<arr.length;i++){var x=arr[i]||{};if(k&&keyOf(x)===k)return true;if(lk&&looseKey(x)===lk)return true;if(h.belge&&String(x.belge||'')===String(h.belge||'')&&Math.abs(num(x.tutar)-num(h.tutar))<0.01)return true;}return false;}
+  function normalizeOrder(h){if(!h)return h;if(!h.sipDurum)h.sipDurum='HAZIRLANIYOR';if(h.takipNo===undefined)h.takipNo='';if(!h.dur&&h.durum)h.dur=h.durum;if(!h.durum&&h.dur)h.durum=h.dur;if(!h.durum&&!h.dur){h.durum='ACIK';h.dur='ACIK';}return h;}
+  function addQueue(order,reason){if(!order||!isOrder(order))return false;order=normalizeOrder(clone(order));if(!order)return false;var q=qRead(), k=keyOf(order), lk=looseKey(order);var found=q.some(function(x){return keyOf(x.order||x)===k || looseKey(x.order||x)===lk;});if(!found){q.push({order:order,key:k,loose:lk,ts:Date.now(),reason:reason||'siparis'});qWrite(q);}setUnsaved(true);status('Sipariş güvenli kuyruğa alındı; buluta gönderiliyor...','#e08c00');return true;}
+  function mergeQueueToDB(){var q=qRead(), db=getDB(), changed=false;if(!q.length||!db)return false;if(!Array.isArray(db.hareketler))db.hareketler=[];q.forEach(function(item){var h=normalizeOrder(clone(item.order||item));if(!h)return;if(!existsIn(db,h)){db.hareketler.push(h);changed=true;if(db.nextHId===undefined||Number(db.nextHId)<=Number(h.id||0))db.nextHId=Number(h.id||0)+1;}});if(changed){saveLocal();renderSafe();status('Bulut eski veri getirdi; kayıp sipariş yerel yedekten geri eklendi.','#e08c00');}setUnsaved(q.length>0);return changed;}
+  function silenceOldPending(){try{localStorage.removeItem('ctp_siparis_cloud_pending_v16');localStorage.removeItem('ctp_siparis_cloud_pending_v15');localStorage.removeItem('ctp_siparis_cloud_order_backup_v16');}catch(e){}}
+  function jsonp(params){if(typeof window.cloudJsonp==='function')return window.cloudJsonp(params);return new Promise(function(resolve,reject){var cb='ctp_v17_cb_'+Date.now()+'_'+Math.random().toString(16).slice(2);params.callback=cb;params._t=Date.now();var s=document.createElement('script'),done=false;var to=setTimeout(function(){if(done)return;done=true;try{delete window[cb];s.remove();}catch(e){}reject(new Error('API cevap vermedi'));},25000);window[cb]=function(r){if(done)return;done=true;clearTimeout(to);try{delete window[cb];s.remove();}catch(e){}resolve(r);};s.onerror=function(){if(done)return;done=true;clearTimeout(to);try{delete window[cb];s.remove();}catch(e){}reject(new Error('API bağlantısı kurulamadı'));};s.src=MASTER_API_URL+'?'+new URLSearchParams(params).toString();document.body.appendChild(s);});}
+  function remoteData(r){var d=r;if(r&&r.data!==undefined)d=r.data;if(typeof d==='string'){try{d=JSON.parse(d);}catch(e){}}if(d&&d.data!==undefined){d=d.data;if(typeof d==='string'){try{d=JSON.parse(d);}catch(e){}}}return d&&typeof d==='object'?d:null;}
+  async function forceSave(){mergeQueueToDB();saveLocal();if(typeof window.ctpForceCloudSave==='function')return await window.ctpForceCloudSave();if(typeof window.cloudSaveToCustomerSheet==='function')return await window.cloudSaveToCustomerSheet(false);if(typeof window.bulutKaydet==='function')return await window.bulutKaydet(false,true);throw new Error('Bulut kayıt fonksiyonu bulunamadı');}
+  async function verifyQueue(showToast){var q=qRead();if(!q.length){qClear();return true;}if(verifying)return false;verifying=true;setUnsaved(true);try{silenceOldPending();mergeQueueToDB();if(showToast)note('Sipariş buluta gönderiliyor','Lütfen yeşil tamamlandı mesajını bekle.','warn',0);status('Sipariş buluta gönderiliyor; çıkış bekletiliyor...','#e08c00');try{await forceSave();}catch(saveErr){status('Bulut kayıt isteği hata verdi: '+(saveErr.message||saveErr),'#991b1b');}
+      await new Promise(function(r){setTimeout(r,6500);});
+      var key=licenseKey();if(!key)throw new Error('Lisans bulunamadı');var r=await jsonp({action:'load',licenseKey:key,deviceId:deviceId(),_verify:'v17'});if(r&&r.ok===false)throw new Error(r.error||'Bulut yükleme cevabı başarısız');var rd=remoteData(r)||{};var missing=qRead().filter(function(item){return !existsIn(rd,item.order||item);});
+      if(!missing.length){qClear();silenceOldPending();note('Sipariş bulutta doğrulandı','Artık güvenle çıkış yapabilirsin.','ok');return true;}
+      mergeQueueToDB();qWrite(missing);note('Sipariş henüz bulutta görünmedi','Yerel yedek korundu. Sistem tekrar deneyecek; internet/API bağlantısını kontrol et.','err',0);status('Sipariş hâlâ bulutta görünmedi; yerel yedek korundu.','#991b1b');clearTimeout(verifyTimer);verifyTimer=setTimeout(function(){verifyQueue(false);},9000);return false;
+    }catch(e){mergeQueueToDB();note('Bulut doğrulaması yapılamadı',String(e.message||e),'err',0);status('Bulut doğrulaması yapılamadı: '+(e.message||e),'#991b1b');clearTimeout(verifyTimer);verifyTimer=setTimeout(function(){verifyQueue(false);},10000);return false;}finally{verifying=false;}}
+  function snapshotKeys(){var db=getDB(), m={};((db&&db.hareketler)||[]).forEach(function(h){m[keyOf(h)]=1;m[looseKey(h)]=1;});return m;}
+  function captureNewOrders(before){var db=getDB(), added=false;((db&&db.hareketler)||[]).forEach(function(h){if(!isOrder(h))return;if(before && (before[keyOf(h)]||before[looseKey(h)]))return;normalizeOrder(h);if(addQueue(h,'siparis-ekle'))added=true;});if(added){saveLocal();renderSafe();silenceOldPending();verifyQueue(false);}return added;}
+  function wrapSiparis(){var old=window.siparisCariKaydet;if(typeof old==='function'&&!old.__ctpSiparisKayipV17){var w=function(){var before=snapshotKeys();var r=old.apply(this,arguments);captureNewOrders(before);setTimeout(function(){captureNewOrders(before);silenceOldPending();},180);setTimeout(function(){captureNewOrders(before);},700);return r;};w.__ctpSiparisKayipV17=true;window.siparisCariKaydet=w;}}
+  function wrapLoad(){var old=window.bulutYukle;if(typeof old==='function'&&!old.__ctpSiparisKayipV17){var w=async function(){var r=await old.apply(this,arguments);setTimeout(function(){if(qRead().length){mergeQueueToDB();verifyQueue(false);}},100);return r;};w.__ctpSiparisKayipV17=true;window.bulutYukle=w;window.cloudLoadFromCustomerSheet=w;}}
+  function wrapLogout(){var old=window.logout;if(typeof old==='function'&&!old.__ctpSiparisKayipV17){var w=function(){if(qRead().length){mergeQueueToDB();verifyQueue(true);alert('Sipariş bulutta doğrulanmadan çıkış yapılamaz.\n\nYeşil doğrulama mesajını bekleyip tekrar çıkış yap.');return false;}return old.apply(this,arguments);};w.__ctpSiparisKayipV17=true;window.logout=w;}}
+  function wrapDbSave(){var old=window.dbSave;if(typeof old==='function'&&!old.__ctpSiparisKayipV17){var w=function(){var r=old.apply(this,arguments);try{mergeQueueToDB();}catch(e){}return r;};w.__ctpSiparisKayipV17=true;window.dbSave=w;}}
+  function boot(){try{if(typeof DB!=='undefined'&&DB&&!window.DB)window.DB=DB;}catch(e){}wrapSiparis();wrapLoad();wrapLogout();wrapDbSave();if(qRead().length){mergeQueueToDB();silenceOldPending();setTimeout(function(){verifyQueue(false);},900);}}
+  window.ctpSiparisKayipOnlemeDurum=function(){return {queue:qRead(),license:!!licenseKey(),verifying:verifying};};
+  window.ctpSiparisKayipOnlemeTekrarDene=function(){return verifyQueue(true);};
+  window.ctpSiparisKayipOnlemeKuyrukTemizle=function(){qClear();silenceOldPending();note('Sipariş koruma kuyruğu temizlendi','','ok');};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(boot,120);setTimeout(boot,900);setTimeout(boot,2500);});else{setTimeout(boot,120);setTimeout(boot,900);setTimeout(boot,2500);}window.addEventListener('load',function(){setTimeout(boot,700);setTimeout(boot,2200);});
+  window.addEventListener('beforeunload',function(e){if(qRead().length){mergeQueueToDB();e.preventDefault();e.returnValue='Sipariş bulutta doğrulanmadı. Çıkmadan önce doğrulamayı bekleyin.';return e.returnValue;}});
+})();
+</script>
+<!-- CTP_CHATGPT_SIPARIS_KAYIP_ONLEME_V17_END -->
+
 </body>
 </html>
+
+
+
