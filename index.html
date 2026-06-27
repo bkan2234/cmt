@@ -11144,5 +11144,190 @@ body{background:radial-gradient(circle at top left,#eefbf3 0,#f7faf8 38%,#f4f7f5
 </script>
 <!-- CTP_CHATGPT_TEKLIF_FIYAT_ARTIS_V11_END -->
 
+
+<!-- CTP_CHATGPT_JSON_RESTORE_FORCE_CLOUD_SAVE_V25_START -->
+<script>
+/*
+  Cari Takip Pro v4 CLEAN - JSON Geri Yükle -> Zorunlu Bulut Kaydet FIX
+  Tarih: 27.06.2026
+  Not: Bu blok dosyanın en sonunda çalışır ve eski jsonYukle fonksiyonunu ezer.
+*/
+(function(){
+  'use strict';
+  if(window.__ctpJsonRestoreCloudFixV25) return;
+  window.__ctpJsonRestoreCloudFixV25 = true;
+
+  function E(id){ return document.getElementById(id); }
+  function log(){ try{ console.log.apply(console, ['[CTP JSON BULUT FIX]'].concat([].slice.call(arguments))); }catch(e){} }
+  function msg(text, err){
+    try{ if(typeof window.showA === 'function'){ window.showA('yedek-al', text, err ? 'e' : undefined); return; } }catch(e){}
+    try{ alert(text); }catch(e){ log(text); }
+  }
+  function status(text, color){
+    var ids=['auto-son','gs-durum','bulut-al','yedek-al','ctp-email-msg'];
+    for(var i=0;i<ids.length;i++){
+      try{
+        var el=E(ids[i]);
+        if(el){
+          if(ids[i]==='bulut-al' || ids[i]==='yedek-al'){
+            el.innerHTML='<div class="al '+(color==='#991b1b'?'al-e':'al-s')+'">'+String(text).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})+'</div>';
+          }else{
+            el.textContent=text;
+            if(color) el.style.color=color;
+          }
+          break;
+        }
+      }catch(e){}
+    }
+    log(text);
+  }
+  function getDB(){
+    try{ if(typeof DB !== 'undefined' && DB && typeof DB === 'object') return DB; }catch(e){}
+    try{ if(window.DB && typeof window.DB === 'object') return window.DB; }catch(e){}
+    return null;
+  }
+  function bindWindowDB(){
+    try{ var db=getDB(); if(db && window.DB !== db) window.DB = db; return db; }catch(e){ return getDB(); }
+  }
+  function apiUrl(){
+    try{ if(typeof window.cloudApiUrl === 'function' && window.cloudApiUrl()) return String(window.cloudApiUrl()).trim(); }catch(e){}
+    try{ if(typeof window.gsUrl === 'function' && window.gsUrl()) return String(window.gsUrl()).trim(); }catch(e){}
+    try{ if(window.MASTER_API_URL) return String(window.MASTER_API_URL).trim(); }catch(e){}
+    try{ var inp=E('cloud-api-url') || E('gs-url') || E('api'); if(inp && inp.value) return String(inp.value).trim(); }catch(e){}
+    var keys=['ct_cloud_api_url','CLOUD_API_URL','apiUrl','gs_url','ctp_api_url'];
+    for(var i=0;i<keys.length;i++){ try{ var v=localStorage.getItem(keys[i]); if(v) return String(v).trim(); }catch(e){} }
+    return 'https://script.google.com/macros/s/AKfycbx2XBJ6FP5oXCPg8r_NNdYErWxa6g4QphQfJLBWq9-qMhAKkBz0ndGVLBnPr9u6UvLR/exec';
+  }
+  function licenseKey(){
+    try{ if(typeof window.cloudLicenseKey === 'function' && window.cloudLicenseKey()) return String(window.cloudLicenseKey()).trim(); }catch(e){}
+    var keys=['ct_cloud_license_key','ctp_license_key','licenseKey','cloud_license_key','CTP_LICENSE_KEY'];
+    for(var i=0;i<keys.length;i++){ try{ var v=localStorage.getItem(keys[i]); if(v) return String(v).trim(); }catch(e){} }
+    try{ var inp=E('cloud-license-key') || E('licenseKey'); if(inp && inp.value) return String(inp.value).trim(); }catch(e){}
+    return '';
+  }
+  function deviceId(){
+    var keys=['ct_cloud_device_id','ctp_device_id','deviceId','CTP_DEVICE_ID'];
+    for(var i=0;i<keys.length;i++){ try{ var v=localStorage.getItem(keys[i]); if(v) return String(v); }catch(e){} }
+    var id='dev_'+Date.now()+'_'+Math.random().toString(16).slice(2);
+    try{ localStorage.setItem('ct_cloud_device_id', id); }catch(e){}
+    return id;
+  }
+  function hasRealData(d){
+    return !!(d && typeof d === 'object' && (
+      Array.isArray(d.firmalar) || Array.isArray(d.hareketler) || Array.isArray(d.urunler) || Array.isArray(d.users)
+    ));
+  }
+  function normalizeDB(d){
+    if(!d || typeof d !== 'object') throw new Error('DB bulunamadı.');
+    ['firmalar','hareketler','urunler','users','kategoriler','stokHareketler','randevular','teklifler','gorevler','logs','numuneler','numuneUrunler','numuneFavoriUrunler'].forEach(function(k){ if(!Array.isArray(d[k])) d[k]=[]; });
+    if(!d.katRenkler || typeof d.katRenkler !== 'object') d.katRenkler={};
+    if(!d.ayarlar || typeof d.ayarlar !== 'object') d.ayarlar={};
+    d.nextFId=Number(d.nextFId || ((d.firmalar||[]).reduce(function(m,x){return Math.max(m,Number(x.id)||0)},0)+1) || 1);
+    d.nextHId=Number(d.nextHId || ((d.hareketler||[]).reduce(function(m,x){return Math.max(m,Number(x.id)||0)},0)+1) || 1);
+    d.nextUId=Number(d.nextUId || ((d.urunler||[]).reduce(function(m,x){return Math.max(m,Number(x.id)||0)},0)+1) || 1);
+    d.nextRId=Number(d.nextRId || ((d.randevular||[]).reduce(function(m,x){return Math.max(m,Number(x.id)||0)},0)+1) || 1);
+    d.nextTeklifId=Number(d.nextTeklifId || ((d.teklifler||[]).reduce(function(m,x){return Math.max(m,Number(x.id)||0)},0)+1) || 1);
+    d.nextGorevId=Number(d.nextGorevId || ((d.gorevler||[]).reduce(function(m,x){return Math.max(m,Number(x.id)||0)},0)+1) || 1);
+    d.ts=new Date().toISOString();
+    return d;
+  }
+  function localSave(d){
+    try{ if(typeof window.cloudNormalizeUsers === 'function') window.cloudNormalizeUsers(); }catch(e){}
+    try{ if(typeof window.ensureUsers === 'function') window.ensureUsers(); }catch(e){}
+    try{ if(typeof window.ctSaveLocal === 'function'){ window.ctSaveLocal(); return; } }catch(e){}
+    try{
+      var key='cari_pro_v3_LISANS_'+String(licenseKey()||'NO_LICENSE').replace(/[^A-Za-z0-9_-]/g,'_');
+      localStorage.setItem(key, JSON.stringify(d));
+    }catch(e){ log('local kayıt hatası', e); }
+  }
+  function renderAll(){
+    var fns=['ensureUsers','renderDashboard','renderF','renderU','renderHF','renderSF','renderCF','renderStok','renderKullanicilar','renderKatSelect','renderKategoriSelects','renderKategoriler','yedekBilgi','renderFavoriUrunler'];
+    fns.forEach(function(fn){ try{ if(typeof window[fn] === 'function') window[fn](); }catch(e){} });
+  }
+  async function directPostSave(){
+    var d=bindWindowDB();
+    normalizeDB(d);
+    var api=apiUrl();
+    var key=licenseKey();
+    if(!api) throw new Error('API linki bulunamadı.');
+    if(!key) throw new Error('Lisans anahtarı bulunamadı. Önce lisanslı giriş yap.');
+    var payload={action:'save', licenseKey:key, deviceId:deviceId(), data:d};
+    await fetch(api, {
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify(payload)
+    });
+    return true;
+  }
+  async function forceCloudSave(){
+    var d=bindWindowDB();
+    normalizeDB(d);
+    localSave(d);
+
+    var methods=[];
+    if(typeof window.cloudSaveToCustomerSheet === 'function') methods.push(function(){ return window.cloudSaveToCustomerSheet(false); });
+    if(typeof window.bulutKaydet === 'function') methods.push(function(){ return window.bulutKaydet(false, true); });
+    if(typeof window.ctpForceCloudSave === 'function') methods.push(function(){ return window.ctpForceCloudSave(false, true); });
+    methods.push(function(){ return directPostSave(); });
+
+    var lastErr=null;
+    for(var i=0;i<methods.length;i++){
+      try{
+        var r=await methods[i]();
+        if(r !== false){
+          try{ if(typeof window.markSaved === 'function') window.markSaved(); }catch(e){}
+          status('JSON yedeği buluta gönderildi: '+new Date().toLocaleString('tr-TR'), '#166534');
+          return true;
+        }
+      }catch(e){ lastErr=e; log('bulut kayıt denemesi hata', e); }
+    }
+    throw lastErr || new Error('Buluta kayıt başarısız.');
+  }
+
+  window.ctpJsonYedekBulutaBas = function(){ return forceCloudSave(); };
+
+  window.jsonYukle = async function(inp){
+    var file=inp && inp.files && inp.files[0];
+    if(!file) return;
+    var reader=new FileReader();
+    reader.onload=async function(ev){
+      try{
+        if(!confirm('Tüm veriler silinip yedeğiniz yüklenecek ve buluta gönderilecek. Devam?')) return;
+        var imported=JSON.parse(ev.target.result);
+        if(!hasRealData(imported)) throw new Error('Geçersiz Cari Takip yedeği. firmalar/hareketler/urunler alanları yok.');
+
+        var d=bindWindowDB();
+        if(!d) throw new Error('Uygulama DB bulunamadı.');
+        Object.keys(d).forEach(function(k){ delete d[k]; });
+        Object.assign(d, imported);
+        normalizeDB(d);
+
+        localSave(d);
+        renderAll();
+        status('JSON yüklendi. Buluta gönderiliyor...', '#e08c00');
+
+        var ok=await forceCloudSave();
+        renderAll();
+        if(ok){
+          msg((d.firmalar.length||0)+' firma, '+(d.hareketler.length||0)+' hareket, '+(d.urunler.length||0)+' ürün yüklendi ve buluta gönderildi.', false);
+        }else{
+          msg('JSON yüklendi ama buluta gönderilemedi.', true);
+        }
+      }catch(err){
+        console.error('[CTP JSON BULUT FIX] Hata:', err);
+        msg('Hata: '+(err && err.message ? err.message : err), true);
+      }finally{
+        try{ inp.value=''; }catch(e){}
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  status('JSON geri yükle -> bulut kayıt fix aktif.', '#166534');
+})();
+</script>
+<!-- CTP_CHATGPT_JSON_RESTORE_FORCE_CLOUD_SAVE_V25_END -->
+
 </body>
 </html>
