@@ -1,9 +1,24 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+
+<script>
+(function(){
+  var API = 'https://script.google.com/macros/s/AKfycbz-N2VRUucCptbzWGj5rHok224Q9XO8zH85RzHyPMJwMuxXsV1psjagCGAAdw7mBrUa/exec';
+  try{ localStorage.setItem('ct_cloud_api_url', API); }catch(e){}
+  try{ localStorage.setItem('ct_cloud_license_key', '1234'); }catch(e){}
+  try{ localStorage.setItem('ct_cloud_activated', '1'); }catch(e){}
+  try{ localStorage.setItem('ct_cloud_loaded_once', '1'); }catch(e){}
+  window.MASTER_API_URL = API;
+  window.cloudLicenseKey = function(){ return '1234'; };
+  window.hasCloudLicense = function(){ return true; };
+  window.gsToken = function(){ return '1234'; };
+})();
+</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cari Takip Pro v4.0 CLEAN Sheets Lisanslı</title>
+<title>Cari Takip Pro v4.0 CLEAN Sheets Girişsiz</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -265,6 +280,28 @@ tr:hover td{background:#fafafa}
 @media(max-width:780px){.ih-result-price{font-size:23px}.ih-line{font-size:13px}}
 
 </style>
+
+<!-- CTP_CHATGPT_NUMUNE_FAVORI_SAFE_CSS_START -->
+<style>
+/* Sadece Numune ekranındaki sık kullanılan/favori ürün alanını gizler. JS yoktur. */
+#page-numune .fav-box,
+#page-numune .fav-products,
+#page-numune .fav-chip,
+#page-numune .fav-star,
+#page-numune .fav-unit-row,
+#page-numune #numune-favori-box,
+#page-numune #numune-favori-list,
+#page-numune #numune-fav-box,
+#page-numune #numune-fav-list,
+#page-numune [id*="numune-fav"],
+#page-numune [id*="numuneFav"],
+#page-numune [class*="numune-fav"],
+#page-numune [class*="numuneFav"]{
+  display:none!important;
+}
+</style>
+<!-- CTP_CHATGPT_NUMUNE_FAVORI_SAFE_CSS_END -->
+
 </head>
 <body>
 <!-- Cloud Lisans / E-posta Giriş Ekranı v3.0.24 -->
@@ -872,7 +909,7 @@ tr:hover td{background:#fafafa}
         <div id="bulut-al"></div>
         <div class="fg">
           <label>Apps Script /exec Linki</label>
-          <input id="gs-url" placeholder="https://script.google.com/macros/s/.../exec">
+          <input id="gs-url" placeholder="https://script.google.com/macros/s/AKfycbz-N2VRUucCptbzWGj5rHok224Q9XO8zH85RzHyPMJwMuxXsV1psjagCGAAdw7mBrUa/exec">
         </div>
         <div class="fg">
           <label>Gizli Anahtar</label>
@@ -880,8 +917,8 @@ tr:hover td{background:#fafafa}
         </div>
         <div class="btn-row">
           <button class="btn btn-g" onclick="gsBaglantiKaydet()"><i class="ti ti-device-floppy"></i> Bağlantıyı Kaydet</button>
-          <button class="btn" onclick="manuelYedekle()"><i class="ti ti-cloud-upload"></i> Buluta Kaydet</button>
-          <button class="btn btn-b" onclick="bulutYukle()"><i class="ti ti-cloud-download"></i> Buluttan Yükle</button>
+          <button class="btn" onclick="ctpSafeCloudSave(true)"><i class="ti ti-cloud-upload"></i> Buluta Kaydet</button>
+          <button class="btn btn-b" onclick="ctpSafeCloudLoad(true)"><i class="ti ti-cloud-download"></i> Buluttan Yükle</button>
           <button class="btn btn-b" onclick="musteriCihazlariListele()"><i class="ti ti-devices"></i> Kayıtlı Cihazları Göster</button>
           <button class="btn btn-y" onclick="musteriCihazlariSifirla()"><i class="ti ti-devices-off"></i> Tüm Cihazlardan Çıkış Ver</button>
           <button class="btn btn-r" onclick="musteriVerileriniSifirla()"><i class="ti ti-trash"></i> Müşteri Verilerini Sıfırla</button>
@@ -1910,7 +1947,7 @@ function initApp(){
 // ══════════════════════════════════════════════════════════════
 // GOOGLE SHEETS BULUT YEDEKLEME
 // ══════════════════════════════════════════════════════════════
-const GS_DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbx2XBJ6FP5oXCPg8r_NNdYErWxa6g4QphQfJLBWq9-qMhAKkBz0ndGVLBnPr9u6UvLR/exec';
+const GS_DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbz-N2VRUucCptbzWGj5rHok224Q9XO8zH85RzHyPMJwMuxXsV1psjagCGAAdw7mBrUa/exec';
 const GS_DEFAULT_TOKEN = '1234';
 let autoYedekInterval = null;
 
@@ -5346,7 +5383,7 @@ initApp = function(){
 (function(){
   'use strict';
 
-  var MASTER_API_URL = 'https://script.google.com/macros/s/AKfycbx2XBJ6FP5oXCPg8r_NNdYErWxa6g4QphQfJLBWq9-qMhAKkBz0ndGVLBnPr9u6UvLR/exec';
+  var MASTER_API_URL = 'https://script.google.com/macros/s/AKfycbz-N2VRUucCptbzWGj5rHok224Q9XO8zH85RzHyPMJwMuxXsV1psjagCGAAdw7mBrUa/exec';
   var saveTimer = null;
   var saving = false;
   var lastSent = '';
@@ -5354,8 +5391,8 @@ initApp = function(){
   function el(id){ return document.getElementById(id); }
 
   function licenseKey(){
-    if(typeof window.cloudLicenseKey === 'function') return window.cloudLicenseKey() || '';
-    return localStorage.getItem('ct_cloud_license_key') || '';
+    if(typeof window.cloudLicenseKey === 'function') return window.cloudLicenseKey() || '1234';
+    return '1234';
   }
 
   function deviceId(){
@@ -5435,7 +5472,7 @@ initApp = function(){
 
   window.cloudApiUrl = function(){ return MASTER_API_URL; };
   window.gsUrl = function(){ return MASTER_API_URL; };
-  window.gsToken = function(){ return ''; };
+  window.gsToken = function(){ return '1234'; };
   window.cloudSaveToCustomerSheet = autoCloudSave;
   window.ctpForceCloudSave = autoCloudSave;
   window.bulutKaydetPlanla = planAutoCloudSave;
@@ -5495,7 +5532,7 @@ initApp = function(){
   function emailVal(){ return String((el('ctp-email')||{}).value||'').trim().toLowerCase(); }
   function passVal(){ return String((el('ctp-pass')||{}).value||''); }
   function licenseVal(){ return String((el('ctp-license')||{}).value||'').trim(); }
-  function lk(){ return localStorage.getItem('ct_cloud_license_key') || ''; }
+  function lk(){ return '1234'; }
   function dev(){
     var id=localStorage.getItem('ct_cloud_device_id');
     if(!id){ id='dev_'+(Date.now()+'_'+Math.random().toString(16).slice(2)); localStorage.setItem('ct_cloud_device_id',id); }
@@ -5665,10 +5702,7 @@ initApp = function(){
   var autoLoadRunning=false;
   var autoLoadDoneForKey='';
   function el(id){return document.getElementById(id);}
-  function licenseKey(){
-    try{ if(typeof window.cloudLicenseKey==='function') return window.cloudLicenseKey()||''; }catch(e){}
-    return localStorage.getItem('ct_cloud_license_key')||'';
-  }
+  function licenseKey(){ return '1234'; }
   function setStatus(txt,color){
     var s=el('auto-son');
     if(s){ s.textContent=txt; if(color) s.style.color=color; }
@@ -6371,13 +6405,13 @@ body:not(.ctp-app-open) #ctp-view-toggle{display:none!important;}
   function el(id){return document.getElementById(id);} 
   function setMsg(text,ok){var m=el('cloud-license-msg'); if(m){m.textContent=text; m.className='cloud-license-msg '+(ok?'cloud-ok':'cloud-err');}}
   window.cloudMsg=setMsg;
-  var CLOUD_API_URL='https://script.google.com/macros/s/AKfycbx2XBJ6FP5oXCPg8r_NNdYErWxa6g4QphQfJLBWq9-qMhAKkBz0ndGVLBnPr9u6UvLR/exec';
+  var CLOUD_API_URL='https://script.google.com/macros/s/AKfycbz-N2VRUucCptbzWGj5rHok224Q9XO8zH85RzHyPMJwMuxXsV1psjagCGAAdw7mBrUa/exec';
   // API linki müşteriye gösterilmez; sistem içinden sabit kullanılır.
   try{localStorage.removeItem('ct_cloud_api_url');}catch(e){}
   function deviceId(){var id=localStorage.getItem('ct_cloud_device_id'); if(!id){id='dev_'+((window.crypto&&crypto.randomUUID)?crypto.randomUUID():(Date.now()+'_'+Math.random().toString(16).slice(2))); localStorage.setItem('ct_cloud_device_id',id);} return id;}
   window.cloudDeviceId=deviceId;
   function apiUrl(){return CLOUD_API_URL;} window.cloudApiUrl=apiUrl;
-  function licenseKey(){return localStorage.getItem('ct_cloud_license_key')||'';} window.cloudLicenseKey=licenseKey;
+  function licenseKey(){ return '1234'; } window.cloudLicenseKey=licenseKey;
   function show(){var s=el('cloud-license-screen'); if(s){var a=el('cloud-api-url'), k=el('cloud-license-key'); if(a)a.value=apiUrl(); if(k)k.value=licenseKey(); s.style.display='flex';}}
   function hide(){var s=el('cloud-license-screen'); if(s)s.style.display='none';}
   window.cloudShowLicense=show;
@@ -6416,7 +6450,7 @@ body:not(.ctp-app-open) #ctp-view-toggle{display:none!important;}
     }catch(e){if(showAlert)alert('Buluttan yüklenemedi: '+e.message); return false;}
   }
   window.cloudLoadFromCustomerSheet=loadData;
-  async function saveData(showAlert){try{if(!apiUrl()){if(showAlert)alert('Cloud API linki yok'); return false;} normalizeUsers(); var res=await fetch(apiUrl(),{method:'POST',body:JSON.stringify({action:'save',licenseKey:licenseKey(),deviceId:deviceId(),data:window.DB})}); var text=await res.text(); var r={ok:true}; try{r=JSON.parse(text);}catch(e){} if(!r.ok){if(showAlert)alert(r.error||'Buluta kaydetme hatası'); return false;} if(showAlert)alert('Müşteri bulutuna kaydedildi.'); return true;}catch(e){if(showAlert)alert('Buluta kaydedilemedi: '+e.message); return false;}}
+  async function saveData(showAlert){try{if(!apiUrl()){if(showAlert)alert('Cloud API linki yok'); return false;} normalizeUsers(); var res=await fetch(apiUrl(),{method:'POST',body:JSON.stringify({action:'save',token:'1234',licenseKey:'1234',deviceId:'GIRISSIZ',data:window.DB})}); var text=await res.text(); var r={ok:true}; try{r=JSON.parse(text);}catch(e){} if(!r.ok){if(showAlert)alert(r.error||'Buluta kaydetme hatası'); return false;} if(showAlert)alert('Müşteri bulutuna kaydedildi.'); return true;}catch(e){if(showAlert)alert('Buluta kaydedilemedi: '+e.message); return false;}}
   window.cloudSaveToCustomerSheet=saveData;
   window.cloudActivateLicense=async function(){var a=el('cloud-api-url'), k=el('cloud-license-key'), btn=el('cloud-activate-btn'); var api=apiUrl(), key=(k&&k.value||'').trim(); if(a)a.value=api; if(!key){setMsg('Lisans anahtarı zorunlu.',false); return;} localStorage.removeItem('ct_cloud_api_url'); localStorage.setItem('ct_cloud_license_key',key); try{if(btn){btn.disabled=true;btn.textContent='Kontrol ediliyor...';} setMsg('Lisans kontrol ediliyor...',true); var r=await check(); if(!r||!r.ok){setMsg((r&&r.error)||'Lisans geçersiz.',false); return;} localStorage.setItem('ct_cloud_tenant_name',r.customerName||''); localStorage.setItem('ct_cloud_expires_at',r.expiresAt||''); localStorage.setItem('ct_cloud_activated','1'); localStorage.setItem('ct_cloud_last_ok',new Date().toISOString()); setMsg('Lisans aktif. Müşteri verisi hazırlanıyor...',true); await loadData(false); hide();}catch(e){setMsg(e.message||'Lisans kontrol hatası.',false);}finally{if(btn){btn.disabled=false;btn.textContent='Lisansı Aktifleştir';}}};
   window.cloudTestApi=async function(){var a=el('cloud-api-url'), k=el('cloud-license-key'); var api=apiUrl(), key=(k&&k.value||'').trim(); if(a)a.value=api; if(!key){setMsg('Test için lisans gir.',false);return;} localStorage.removeItem('ct_cloud_api_url'); localStorage.setItem('ct_cloud_license_key',key); try{setMsg('API test ediliyor...',true); var r=await check(); if(r&&r.ok)setMsg('API tamam, lisans geçerli: '+(r.customerName||''),true); else setMsg((r&&r.error)||'API cevap verdi ama lisans geçersiz.',false);}catch(e){setMsg(e.message||'API test hatası.',false);}};
@@ -6615,7 +6649,7 @@ body:not(.ctp-app-open) #ctp-view-toggle{display:none!important;}
 (function(){
   'use strict';
 
-  var CLOUD_API_URL_FIXED = 'https://script.google.com/macros/s/AKfycbx2XBJ6FP5oXCPg8r_NNdYErWxa6g4QphQfJLBWq9-qMhAKkBz0ndGVLBnPr9u6UvLR/exec';
+  var CLOUD_API_URL_FIXED = 'https://script.google.com/macros/s/AKfycbz-N2VRUucCptbzWGj5rHok224Q9XO8zH85RzHyPMJwMuxXsV1psjagCGAAdw7mBrUa/exec';
   var __ctpCloudTimer = null;
   var __ctpCloudBusy = false;
   var __ctpCloudLastJson = '';
@@ -6625,8 +6659,8 @@ body:not(.ctp-app-open) #ctp-view-toggle{display:none!important;}
     return CLOUD_API_URL_FIXED;
   }
   function getLicense(){
-    if(typeof window.cloudLicenseKey === 'function') return window.cloudLicenseKey() || '';
-    return localStorage.getItem('ct_cloud_license_key') || '';
+    if(typeof window.cloudLicenseKey === 'function') return window.cloudLicenseKey() || '1234';
+    return '1234';
   }
   function getDevice(){
     if(typeof window.cloudDeviceId === 'function') return window.cloudDeviceId() || '';
@@ -6741,7 +6775,7 @@ body:not(.ctp-app-open) #ctp-view-toggle{display:none!important;}
    - load JSONP ile yapılır; save GitHub Pages için POST no-cors ile gönderilir. */
 (function(){
   'use strict';
-  var MASTER_API_URL = 'https://script.google.com/macros/s/AKfycbx2XBJ6FP5oXCPg8r_NNdYErWxa6g4QphQfJLBWq9-qMhAKkBz0ndGVLBnPr9u6UvLR/exec';
+  var MASTER_API_URL = 'https://script.google.com/macros/s/AKfycbz-N2VRUucCptbzWGj5rHok224Q9XO8zH85RzHyPMJwMuxXsV1psjagCGAAdw7mBrUa/exec';
   var saveTimer = null;
   var saving = false;
   var cloudLoaded = false;
@@ -6766,7 +6800,7 @@ body:not(.ctp-app-open) #ctp-view-toggle{display:none!important;}
     if(!hasRealDB(db)) return false;
     return (db.firmalar&&db.firmalar.length) || (db.hareketler&&db.hareketler.length) || (db.urunler&&db.urunler.length) || (db.kategoriler&&db.kategoriler.length) || (db.stokHareketler&&db.stokHareketler.length);
   }
-  function licenseKey(){ return localStorage.getItem('ct_cloud_license_key') || ''; }
+  function licenseKey(){ return '1234'; }
   function deviceId(){
     var id=localStorage.getItem('ct_cloud_device_id');
     if(!id){ id='dev_'+(Date.now()+'_'+Math.random().toString(16).slice(2)); localStorage.setItem('ct_cloud_device_id',id); }
@@ -6821,7 +6855,7 @@ body:not(.ctp-app-open) #ctp-view-toggle{display:none!important;}
     if(!key){ if(showAlert) alert('Lisans yok.'); return false; }
     try{
       status('Buluttan veri yükleniyor...', '#1a2744');
-      var r=await jsonp({action:'load', licenseKey:key, deviceId:deviceId()});
+      var r=await jsonp({action:'load', token:'1234', licenseKey:'1234', deviceId:'GIRISSIZ'});
       if(!r || !r.ok) throw new Error((r&&r.error)||'Buluttan yüklenemedi');
       var db=getDB();
       if(!db) throw new Error('Uygulama DB bulunamadı');
@@ -6871,8 +6905,9 @@ body:not(.ctp-app-open) #ctp-view-toggle{display:none!important;}
         headers:{'Content-Type':'text/plain;charset=utf-8'},
         body:JSON.stringify({
           action:'save',
-          licenseKey:key,
-          deviceId:deviceId(),
+          token:'1234',
+          licenseKey:'1234',
+          deviceId:'GIRISSIZ',
           data:db
         })
       });
@@ -6931,7 +6966,7 @@ body:not(.ctp-app-open) #ctp-view-toggle{display:none!important;}
 (function(){
   'use strict';
 
-  var MASTER_API_URL = 'https://script.google.com/macros/s/AKfycbx2XBJ6FP5oXCPg8r_NNdYErWxa6g4QphQfJLBWq9-qMhAKkBz0ndGVLBnPr9u6UvLR/exec';
+  var MASTER_API_URL = 'https://script.google.com/macros/s/AKfycbz-N2VRUucCptbzWGj5rHok224Q9XO8zH85RzHyPMJwMuxXsV1psjagCGAAdw7mBrUa/exec';
   var loginMode = 'email';
 
   function el(id){ return document.getElementById(id); }
@@ -6962,7 +6997,7 @@ body:not(.ctp-app-open) #ctp-view-toggle{display:none!important;}
   function emailVal(){ return String((el('ctp-email')||{}).value||'').trim().toLowerCase(); }
   function passVal(){ return String((el('ctp-pass')||{}).value||''); }
   function licenseVal(){ return String((el('ctp-license')||{}).value||'').trim(); }
-  function licenseKey(){ return localStorage.getItem('ct_cloud_license_key') || ''; }
+  function licenseKey(){ return '1234'; }
 
   function ctpJsonp(params){
     return new Promise(function(resolve,reject){
@@ -9667,7 +9702,7 @@ try{ if(typeof DB!=='undefined' && !window.DB){ window.DB=DB; } }catch(e){}
     var m=E('ctp-email-msg');
     if(m){ m.textContent=text||''; m.className='cloud-license-msg '+(ok?'cloud-ok':'cloud-err'); }
   }
-  function cloudLicenseKey(){ return localStorage.getItem('ct_cloud_license_key') || ''; }
+  function cloudLicenseKey(){ return '1234'; }
   function hasCloudLicense(){ return !!cloudLicenseKey(); }
   function looksLikeEmail(v){ return /@/.test(String(v||'')); }
 
@@ -11196,7 +11231,7 @@ body{background:radial-gradient(circle at top left,#eefbf3 0,#f7faf8 38%,#f4f7f5
     try{ var inp=E('cloud-api-url') || E('gs-url') || E('api'); if(inp && inp.value) return String(inp.value).trim(); }catch(e){}
     var keys=['ct_cloud_api_url','CLOUD_API_URL','apiUrl','gs_url','ctp_api_url'];
     for(var i=0;i<keys.length;i++){ try{ var v=localStorage.getItem(keys[i]); if(v) return String(v).trim(); }catch(e){} }
-    return 'https://script.google.com/macros/s/AKfycbx2XBJ6FP5oXCPg8r_NNdYErWxa6g4QphQfJLBWq9-qMhAKkBz0ndGVLBnPr9u6UvLR/exec';
+    return 'https://script.google.com/macros/s/AKfycbz-N2VRUucCptbzWGj5rHok224Q9XO8zH85RzHyPMJwMuxXsV1psjagCGAAdw7mBrUa/exec';
   }
   function licenseKey(){
     try{ if(typeof window.cloudLicenseKey === 'function' && window.cloudLicenseKey()) return String(window.cloudLicenseKey()).trim(); }catch(e){}
@@ -11328,6 +11363,4733 @@ body{background:radial-gradient(circle at top left,#eefbf3 0,#f7faf8 38%,#f4f7f5
 })();
 </script>
 <!-- CTP_CHATGPT_JSON_RESTORE_FORCE_CLOUD_SAVE_V25_END -->
+
+
+<!-- CTP_CHATGPT_NO_LOGIN_PATCH_START -->
+<style>
+/* ChatGPT patch: kullanıcı/e-posta/lisans giriş ekranları devre dışı */
+#login-screen,
+#cloud-license-screen{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+#app{
+  display:block!important;
+  visibility:visible!important;
+}
+.sb-footer .btn[onclick*="logout"],
+.sb-footer button[onclick*="logout"]{
+  display:none!important;
+}
+</style>
+<script>
+/* ChatGPT patch: uygulama direkt Admin yetkisiyle açılsın, giriş/çıkış ekranı hiç gelmesin. */
+(function(){
+  'use strict';
+
+  function E(id){ return document.getElementById(id); }
+  function hide(id){
+    var x=E(id);
+    if(x){
+      x.style.setProperty('display','none','important');
+      x.style.setProperty('visibility','hidden','important');
+      x.style.setProperty('pointer-events','none','important');
+    }
+  }
+  function showApp(){
+    var app=E('app');
+    if(app){
+      app.style.setProperty('display','block','important');
+      app.style.setProperty('visibility','visible','important');
+    }
+  }
+  function safeCall(fn){
+    try{ if(typeof fn === 'function') return fn(); }catch(e){ console.warn('[NO_LOGIN_PATCH]', e); }
+  }
+  function makeAdmin(){
+    var admin = {id:1, username:'admin', role:'admin', active:true, lastLogin:'Giriş kaldırıldı'};
+    try{
+      if(typeof DB !== 'undefined' && DB){
+        if(!Array.isArray(DB.users)) DB.users=[];
+        var found = DB.users.find(function(u){
+          return String(u && u.username || '').toLowerCase() === 'admin';
+        });
+        if(found){
+          found.username = 'admin';
+          found.role = 'admin';
+          found.active = true;
+          if(!found.pass && typeof passHash === 'function') found.pass = passHash('1234');
+          found.lastLogin = 'Giriş kaldırıldı';
+          admin = found;
+        }else{
+          if(typeof passHash === 'function') admin.pass = passHash('1234');
+          DB.users.unshift(admin);
+        }
+      }
+    }catch(e){}
+    try{ currentUser = admin; }catch(e){ window.currentUser = admin; }
+    return admin;
+  }
+
+  function directOpen(){
+    hide('cloud-license-screen');
+    hide('login-screen');
+    showApp();
+
+    var admin = makeAdmin();
+
+    try{ localStorage.setItem('ctp_oturum_v4_user','admin'); localStorage.setItem('ctp_oturum_v4_last',String(Date.now())); }catch(e){}
+    try{ if(E('sb-av')) E('sb-av').textContent = 'A'; }catch(e){}
+    try{ if(E('sb-name')) E('sb-name').textContent = 'Admin — Giriş Yok'; }catch(e){}
+
+    safeCall(typeof ensureUsers === 'function' ? ensureUsers : null);
+    safeCall(typeof initApp === 'function' ? initApp : null);
+    safeCall(typeof applyRoleUI === 'function' ? applyRoleUI : null);
+    safeCall(typeof renderDashboard === 'function' ? renderDashboard : null);
+    safeCall(typeof ctRenderAll === 'function' ? ctRenderAll : null);
+
+    return true;
+  }
+
+  try{ login = directOpen; }catch(e){}
+  try{ logout = directOpen; }catch(e){}
+  try{ ctpOturumGecerliMi = function(){ return true; }; }catch(e){}
+  try{ ctpOturumKontrol = function(){ return true; }; }catch(e){}
+  try{ ctpOturumYenilemedenGiris = directOpen; }catch(e){}
+
+  window.login = directOpen;
+  window.logout = directOpen;
+  window.ctpOturumGecerliMi = function(){ return true; };
+  window.ctpOturumKontrol = function(){ return true; };
+  window.ctpOturumYenilemedenGiris = directOpen;
+  window.cloudShowLicenseIfNeeded = function(){ directOpen(); return false; };
+  window.cloudShowLicense = function(){ directOpen(); return false; };
+  window.cloudClearLicense = function(){ directOpen(); return false; };
+
+  function install(){
+    directOpen();
+
+    try{
+      document.querySelectorAll('#login-screen input,#cloud-license-screen input').forEach(function(x){
+        x.disabled = true;
+      });
+    }catch(e){}
+
+    try{
+      document.querySelectorAll('button[onclick*="logout"]').forEach(function(b){
+        b.style.setProperty('display','none','important');
+        b.onclick = directOpen;
+      });
+    }catch(e){}
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', install);
+  }else{
+    install();
+  }
+  window.addEventListener('load', function(){
+    install();
+    setTimeout(install, 200);
+    setTimeout(install, 900);
+    setTimeout(install, 1600);
+  });
+  setTimeout(install, 50);
+  setTimeout(install, 500);
+  setTimeout(install, 1200);
+})();
+</script>
+<!-- CTP_CHATGPT_NO_LOGIN_PATCH_END -->
+
+
+<!-- CTP_CHATGPT_SIDEBAR_MENU_ORDER_V2_START -->
+<style id="ctp-sidebar-menu-order-v2-css">
+#ctp-fav-section,#ctp-fav-modal{display:none!important;visibility:hidden!important;pointer-events:none!important}
+.ctp-sidebar-order-card .card-head{align-items:flex-start!important}
+.ctp-sidebar-order-help{font-size:11px;color:#64748b;line-height:1.45;margin-top:4px}
+.ctp-menu-order-list{display:flex;flex-direction:column;gap:7px;margin-top:10px}
+.ctp-menu-order-row{display:grid;grid-template-columns:28px 24px 1fr auto;gap:8px;align-items:center;border:1px solid #e5e7eb;background:#fff;border-radius:13px;padding:8px 9px;min-height:44px;cursor:grab;user-select:none}
+.ctp-menu-order-row:active{cursor:grabbing}.ctp-menu-order-row.dragging{opacity:.45;border-color:#1d6f42;background:#f0fdf4}
+.ctp-menu-order-row i{font-size:18px;color:#1d6f42}.ctp-menu-order-name{font-size:12px;font-weight:800;color:#374151;line-height:1.15}
+.ctp-menu-order-name small{display:block;font-size:10px;color:#94a3b8;font-weight:700;margin-top:2px}.ctp-menu-handle{width:26px;height:26px;border-radius:9px;background:#f3f4f6;color:#64748b;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px}
+.ctp-menu-order-actions{display:flex;gap:5px;align-items:center}.ctp-menu-order-actions .btn{padding:5px 8px!important;min-height:30px!important}.ctp-menu-main-label{display:block!important}.ctp-sidebar-order-msg{font-size:12px;font-weight:800;min-height:18px;margin-top:8px;color:#166534}
+@media(max-width:780px){.ctp-menu-order-row{grid-template-columns:26px 22px 1fr;gap:7px}.ctp-menu-order-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}.ctp-menu-order-actions .btn{width:100%}.ctp-sidebar-order-card .btn-row{display:grid!important;grid-template-columns:1fr!important}}
+</style>
+<script id="ctp-sidebar-menu-order-v2-js">
+(function(){
+  'use strict';
+  var ORDER_KEY='ctp_sidebar_menu_order_v2', OLD_KEYS=['ctp_sidebar_menu_order_v1'];
+  var FAV_KEYS=['ctp_fav_menu_v77','ctp_fav_menu_v78','ctp_fav_menu_v8'];
+  var BASE=[
+    ['dashboard','Dashboard','ti-dashboard'],['iskonto-hesap','İskonto Hesaplayıcı','ti-calculator'],['firmalar','Firmalar','ti-building'],['urunler','Ürün Kataloğu','ti-package'],['stok','Stok Takip','ti-box-seam'],['kategoriler','Kategoriler','ti-tag'],['hareket','Hareket Gir','ti-plus'],['siparis','Sipariş Ekle','ti-shopping-cart'],['teklifler','Teklif / Proforma','ti-file-invoice'],['numune','Numune Girişi','ti-gift'],['siparis-durum','Sipariş Durumları','ti-truck-delivery'],['gorevler','Görevler','ti-list-check'],['cari','Cari Hesap','ti-list-details'],['odeme','Ödeme Takip','ti-clock'],['kasa','Kasa','ti-wallet'],['mizan','Cari Mizan','ti-scale'],['kullanicilar','Kullanıcılar','ti-users'],['yedek','Excel & Yedek','ti-file-spreadsheet'],['ayarlar','Ayarlar','ti-settings']
+  ];
+  var busy=false;
+  function E(id){return document.getElementById(id)}
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function db(){try{return (typeof DB!=='undefined'&&DB)?DB:null}catch(e){return null}}
+  function pageExists(id){return id==='ayarlar'||id==='dashboard'||!!E('page-'+id)}
+  function baseMap(){var m={};BASE.forEach(function(b){m[b[0]]={id:b[0],label:b[1],icon:b[2]}});return m}
+  function menuIds(){return BASE.map(function(b){return b[0]}).filter(pageExists)}
+  function cleanFav(){try{FAV_KEYS.forEach(function(k){localStorage.removeItem(k)})}catch(e){} Array.prototype.forEach.call(document.querySelectorAll('#ctp-fav-section,#ctp-fav-modal'),function(x){x.remove()});}
+  window.ctpFavMenuDuzenle=window.ctpFavMenuKaydet=window.ctpFavMenuVarsayilan=window.ctpFavMenuAfterGoV78=function(){cleanFav();return false};
+  function ensureAyarlar(){
+    var main=document.querySelector('.main');
+    if(main&&!E('page-ayarlar')) main.insertAdjacentHTML('beforeend','<div id="page-ayarlar" class="page"><div class="page-title">Ayarlar</div><div class="g2" style="align-items:start"></div></div>');
+  }
+  function normalize(ids){
+    var allowed=menuIds(), out=[];
+    (ids||[]).forEach(function(id){id=String(id||''); if(allowed.indexOf(id)>=0&&out.indexOf(id)<0)out.push(id)});
+    allowed.forEach(function(id){if(out.indexOf(id)<0)out.push(id)});
+    return out;
+  }
+  function readOrder(){
+    try{var d=db(); if(d&&d.ayarlar&&Array.isArray(d.ayarlar.solMenuSirasi)&&d.ayarlar.solMenuSirasi.length)return normalize(d.ayarlar.solMenuSirasi)}catch(e){}
+    try{var x=JSON.parse(localStorage.getItem(ORDER_KEY)||'[]'); if(Array.isArray(x)&&x.length)return normalize(x)}catch(e){}
+    for(var i=0;i<OLD_KEYS.length;i++){try{var y=JSON.parse(localStorage.getItem(OLD_KEYS[i])||'[]'); if(Array.isArray(y)&&y.length)return normalize(y)}catch(e){}}
+    return normalize([]);
+  }
+  function saveOrder(ids){
+    ids=normalize(ids); try{localStorage.setItem(ORDER_KEY,JSON.stringify(ids)); localStorage.removeItem('ctp_sidebar_menu_order_v1')}catch(e){}
+    try{var d=db(); if(d){if(!d.ayarlar)d.ayarlar={}; d.ayarlar.solMenuSirasi=ids.slice();}}catch(e){}
+    try{if(typeof ctSaveLocal==='function')ctSaveLocal(); else if(typeof dbSave==='function')dbSave(); else if(typeof saveLocal==='function')saveLocal()}catch(e){}
+    try{if(typeof bulutKaydetPlanla==='function')bulutKaydetPlanla()}catch(e){}
+    return ids;
+  }
+  function activePage(){var p=document.querySelector('.page.active');return p?String(p.id||'').replace(/^page-/,''):'dashboard'}
+  function manualGoPage(id,el){
+    Array.prototype.forEach.call(document.querySelectorAll('.page'),function(p){p.classList.remove('active')});
+    var p=E('page-'+id); if(p)p.classList.add('active');
+    Array.prototype.forEach.call(document.querySelectorAll('.sb-item'),function(x){x.classList.remove('active')});
+    if(el)el.classList.add('active');
+  }
+  function makeItem(info,active){
+    var el=document.createElement('div'); el.className='sb-item'+(active===info.id?' active':'')+((info.id==='kullanicilar'||info.id==='yedek'||info.id==='ayarlar')?' only-admin':'');
+    el.setAttribute('data-ctp-page',info.id);
+    el.innerHTML='<i class="ti '+esc(info.icon)+'"></i> '+esc(info.label);
+    el.onclick=function(){ if(typeof window.goPage==='function') window.goPage(info.id,this); else manualGoPage(info.id,this); setTimeout(syncActive,80); };
+    return el;
+  }
+  function buildSidebar(){
+    if(busy)return; busy=true;
+    try{
+      cleanFav(); ensureAyarlar();
+      var nav=document.querySelector('.sb-nav'); if(!nav)return;
+      var map=baseMap(), ids=readOrder(), active=activePage();
+      nav.innerHTML='';
+      var lab=document.createElement('div'); lab.className='sb-label ctp-menu-main-label'; lab.textContent='Menü'; nav.appendChild(lab);
+      ids.forEach(function(id){if(map[id]&&pageExists(id))nav.appendChild(makeItem(map[id],active));});
+    }finally{setTimeout(function(){busy=false},50)}
+  }
+  function syncActive(){var a=activePage();Array.prototype.forEach.call(document.querySelectorAll('.sb-item[data-ctp-page]'),function(x){x.classList.toggle('active',x.getAttribute('data-ctp-page')===a)});}
+  function cardHtml(){return '<div id="ctp-sidebar-order-settings" class="card ctp-sidebar-order-card"><div class="card-head"><div><div class="card-title"><i class="ti ti-menu-order"></i> Sol Menü Sıralama</div><div class="ctp-sidebar-order-help">Soldaki menü sırasını buradan değiştir. Sürükle-bırak yapınca veya ok tuşlarına basınca sıra otomatik kaydedilir.</div></div></div><div id="ctp-menu-order-list" class="ctp-menu-order-list"></div><div class="btn-row"><button class="btn btn-g" type="button" onclick="ctpSolMenuSirasiKaydet()"><i class="ti ti-device-floppy"></i> Menü Sırasını Kaydet</button><button class="btn" type="button" onclick="ctpSolMenuVarsayilan()"><i class="ti ti-refresh"></i> Varsayılana Dön</button></div><div id="ctp-sidebar-order-msg" class="ctp-sidebar-order-msg"></div></div>'}
+  function renderSettings(){
+    ensureAyarlar(); var page=E('page-ayarlar'); if(!page)return;
+    if(!E('ctp-sidebar-order-settings')){var grid=page.querySelector(':scope > .g2'); if(grid)grid.insertAdjacentHTML('beforeend',cardHtml()); else page.insertAdjacentHTML('beforeend',cardHtml());}
+    var list=E('ctp-menu-order-list'); if(!list)return;
+    var map=baseMap(), ids=readOrder();
+    list.innerHTML=ids.map(function(id){var m=map[id]; if(!m)return ''; return '<div class="ctp-menu-order-row" draggable="true" data-menu-id="'+esc(id)+'"><span class="ctp-menu-handle">☰</span><i class="ti '+esc(m.icon)+'"></i><div class="ctp-menu-order-name">'+esc(m.label)+'<small>'+esc(id)+'</small></div><div class="ctp-menu-order-actions"><button class="btn btn-sm" type="button" onclick="ctpSolMenuMove(\''+esc(id)+'\',-1)"><i class="ti ti-arrow-up"></i></button><button class="btn btn-sm" type="button" onclick="ctpSolMenuMove(\''+esc(id)+'\',1)"><i class="ti ti-arrow-down"></i></button></div></div>'}).join('');
+    bindDrag();
+  }
+  function rowIds(){return Array.prototype.map.call(document.querySelectorAll('#ctp-menu-order-list [data-menu-id]'),function(r){return r.getAttribute('data-menu-id')}).filter(Boolean)}
+  function saveApply(ids,msg){ids=saveOrder(ids||rowIds()); buildSidebar(); renderSettings(); var m=E('ctp-sidebar-order-msg'); if(m)m.textContent=msg||'Sol menü sırası kaydedildi.';}
+  function bindDrag(){
+    var list=E('ctp-menu-order-list'); if(!list||list.getAttribute('data-drag-ready')==='1')return; list.setAttribute('data-drag-ready','1');
+    list.addEventListener('dragstart',function(e){var r=e.target.closest('[data-menu-id]'); if(!r)return; r.classList.add('dragging'); try{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',r.getAttribute('data-menu-id'))}catch(x){}});
+    list.addEventListener('dragover',function(e){e.preventDefault(); var over=e.target.closest('[data-menu-id]'), drag=list.querySelector('.dragging'); if(!over||!drag||over===drag)return; var rect=over.getBoundingClientRect(), after=(e.clientY-rect.top)>rect.height/2; list.insertBefore(drag,after?over.nextSibling:over);});
+    list.addEventListener('dragend',function(){Array.prototype.forEach.call(list.querySelectorAll('.dragging'),function(r){r.classList.remove('dragging')}); saveApply(rowIds(),'Sol menü sırası kaydedildi.');});
+  }
+  window.ctpSolMenuMove=function(id,dir){var list=E('ctp-menu-order-list'); if(!list)return; var r=list.querySelector('[data-menu-id="'+String(id).replace(/"/g,'\\"')+'"]'); if(!r)return; if(dir<0&&r.previousElementSibling)list.insertBefore(r,r.previousElementSibling); if(dir>0&&r.nextElementSibling)list.insertBefore(r.nextElementSibling,r); saveApply(rowIds(),'Sol menü sırası kaydedildi.');};
+  window.ctpSolMenuSirasiKaydet=function(){saveApply(rowIds(),'Sol menü sırası kaydedildi.');};
+  window.ctpSolMenuVarsayilan=function(){try{localStorage.removeItem(ORDER_KEY); localStorage.removeItem('ctp_sidebar_menu_order_v1')}catch(e){} try{var d=db(); if(d&&d.ayarlar)delete d.ayarlar.solMenuSirasi}catch(e){} saveApply(normalize([]),'Sol menü varsayılan sıraya döndü.');};
+  function boot(){cleanFav(); ensureAyarlar(); buildSidebar(); renderSettings(); syncActive();}
+  var oldGo=window.goPage; if(typeof oldGo==='function'&&!oldGo.__ctpSidebarOrderV2){var ng=function(id,el){var r=oldGo.apply(this,arguments); setTimeout(syncActive,20); setTimeout(function(){renderSettings();syncActive()},200); return r}; ng.__ctpSidebarOrderV2=true; window.goPage=ng;}
+  var oldInit=window.initApp; if(typeof oldInit==='function'&&!oldInit.__ctpSidebarOrderV2){var ni=function(){var r=oldInit.apply(this,arguments); setTimeout(boot,200); setTimeout(boot,900); return r}; ni.__ctpSidebarOrderV2=true; window.initApp=ni;}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(boot,120);setTimeout(boot,700);setTimeout(boot,1600)}); else {setTimeout(boot,120);setTimeout(boot,700);setTimeout(boot,1600)}
+  window.addEventListener('load',function(){setTimeout(boot,300);setTimeout(boot,1200);setTimeout(boot,2500)});
+})();
+</script>
+<!-- CTP_CHATGPT_SIDEBAR_MENU_ORDER_V2_END -->
+
+
+<!-- CTP_CHATGPT_SHEETS_TOKEN_CLEAN_FIX_START -->
+<script>
+/*
+  Temiz Google Sheets bağlantı fix:
+  - Çalışan dosyanın menü/buton kodlarına dokunmaz.
+  - Eski lisans zorunluluğunu devre dışı bırakır.
+  - Ayrı sayfalar Google Sheets API'ye token=1234 ile kayıt gönderir.
+*/
+(function(){
+  'use strict';
+
+  var CTP_API_URL = 'https://script.google.com/macros/s/AKfycbz-N2VRUucCptbzWGj5rHok224Q9XO8zH85RzHyPMJwMuxXsV1psjagCGAAdw7mBrUa/exec';
+  var CTP_TOKEN = '1234';
+
+  function log(){
+    try{ console.log.apply(console, ['[CTP SHEETS CLEAN FIX]'].concat([].slice.call(arguments))); }catch(e){}
+  }
+
+  function setCloudDefaults(){
+    try{
+      localStorage.setItem('ct_cloud_api_url', CTP_API_URL);
+      localStorage.setItem('ct_cloud_license_key', CTP_TOKEN);
+      localStorage.setItem('ct_cloud_activated', '1');
+      localStorage.setItem('ct_cloud_last_ok', new Date().toISOString());
+    }catch(e){}
+    try{ window.MASTER_API_URL = CTP_API_URL; }catch(e){}
+  }
+
+  function getDB(){
+    try{ if(typeof DB !== 'undefined' && DB) return DB; }catch(e){}
+    try{ if(window.DB) return window.DB; }catch(e){}
+    return null;
+  }
+
+  function normalizeData(d){
+    d = d || {};
+    var arrs = ['firmalar','hareketler','urunler','kategoriler','stokHareketler','users','logs','numuneler','numuneUrunler','numuneFavoriUrunler','teklifler','gorevler','randevular'];
+    arrs.forEach(function(k){ if(!Array.isArray(d[k])) d[k] = []; });
+    if(!d.ayarlar || typeof d.ayarlar !== 'object') d.ayarlar = {};
+    if(!d.katRenkler || typeof d.katRenkler !== 'object') d.katRenkler = {};
+    d.ts = new Date().toISOString();
+    return d;
+  }
+
+  function saveLocal(){
+    try{ if(typeof ctSaveLocal === 'function') return ctSaveLocal(); }catch(e){}
+    try{ if(typeof dbSave === 'function') return dbSave(); }catch(e){}
+    try{ if(typeof saveLocal === 'function') return saveLocal(); }catch(e){}
+  }
+
+  async function postToSheets(showMessage){
+    setCloudDefaults();
+    var d = normalizeData(getDB());
+    if(!d) throw new Error('Uygulama verisi bulunamadı.');
+    try{ saveLocal(); }catch(e){}
+
+    var payload = {
+      action: 'save',
+      token: CTP_TOKEN,
+      licenseKey: CTP_TOKEN,
+      deviceId: 'GIRISSIZ',
+      data: d
+    };
+
+    await fetch(CTP_API_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+
+    try{ if(typeof markSaved === 'function') markSaved(); }catch(e){}
+    try{ window.hasUnsaved = false; }catch(e){}
+
+    if(showMessage !== false){
+      try{ alert('Buluta gönderildi. Google Sheet sayfalarını kontrol et.'); }catch(e){}
+    }
+    log('Buluta kayıt gönderildi', {
+      firmalar: d.firmalar.length,
+      urunler: d.urunler.length,
+      hareketler: d.hareketler.length
+    });
+    return true;
+  }
+
+  async function loadFromSheets(){
+    setCloudDefaults();
+    return new Promise(function(resolve, reject){
+      var cb = 'ctpLoadCb_' + Date.now() + '_' + Math.floor(Math.random()*99999);
+      var s = document.createElement('script');
+      var done = false;
+      window[cb] = function(res){
+        done = true;
+        try{ delete window[cb]; }catch(e){ window[cb] = null; }
+        try{ s.remove(); }catch(e){}
+        if(!res || !res.ok){ reject(new Error((res && res.error) || 'Bulut veri çekme hatası')); return; }
+        var data = normalizeData(res.data || {});
+        var db = getDB();
+        if(db){
+          Object.keys(db).forEach(function(k){ delete db[k]; });
+          Object.assign(db, data);
+        }else{
+          window.DB = data;
+        }
+        try{ saveLocal(); }catch(e){}
+        try{ if(typeof renderDashboard === 'function') renderDashboard(); }catch(e){}
+        try{ if(typeof renderF === 'function') renderF(); }catch(e){}
+        try{ if(typeof renderU === 'function') renderU(); }catch(e){}
+        try{ if(typeof renderStok === 'function') renderStok(); }catch(e){}
+        resolve(data);
+      };
+      s.onerror = function(){
+        if(done) return;
+        try{ delete window[cb]; }catch(e){}
+        reject(new Error('Bulut bağlantısı kurulamadı.'));
+      };
+      s.src = CTP_API_URL + '?action=load&token=' + encodeURIComponent(CTP_TOKEN) + '&callback=' + encodeURIComponent(cb) + '&_=' + Date.now();
+      document.head.appendChild(s);
+      setTimeout(function(){
+        if(!done){
+          try{ delete window[cb]; }catch(e){}
+          try{ s.remove(); }catch(e){}
+          reject(new Error('Bulut cevap süresi doldu.'));
+        }
+      }, 30000);
+    });
+  }
+
+  // Lisans fonksiyonlarını girişsiz token mantığına çevir.
+  window.cloudLicenseKey = function(){ return CTP_TOKEN; };
+  window.hasCloudLicense = function(){ return true; };
+
+  // Eski bulut kayıt fonksiyon isimlerini tek temiz kayıt fonksiyonuna bağla.
+  window.cloudSaveToCustomerSheet = function(showMessage){ return postToSheets(showMessage); };
+  window.ctpForceCloudSave = function(showMessage){ return postToSheets(showMessage); };
+  window.bulutKaydet = function(showMessage){ return postToSheets(showMessage); };
+  window.cloudLoadFromCustomerSheet = function(){ return loadFromSheets(); };
+  window.bulutCek = function(){ return loadFromSheets(); };
+
+  // Bazı eski kodlar API URL'yi fonksiyonla okuyorsa.
+  window.ctpCloudApiUrl = function(){ return CTP_API_URL; };
+  window.cloudApiUrl = function(){ return CTP_API_URL; };
+
+  function boot(){
+    setCloudDefaults();
+    var apiInp = document.getElementById('cloud-api-url');
+    if(apiInp) apiInp.value = CTP_API_URL;
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+  window.addEventListener('load', function(){ boot(); setTimeout(boot,500); setTimeout(boot,1500); });
+
+  log('Aktif. API:', CTP_API_URL);
+})();
+</script>
+<!-- CTP_CHATGPT_SHEETS_TOKEN_CLEAN_FIX_END -->
+
+
+<!-- CTP_CHATGPT_MANUEL_BULUT_KAYIT_FIX_START -->
+<script>
+(function(){
+  'use strict';
+
+  var CTP_API_URL = 'https://script.google.com/macros/s/AKfycbz-N2VRUucCptbzWGj5rHok224Q9XO8zH85RzHyPMJwMuxXsV1psjagCGAAdw7mBrUa/exec';
+  var CTP_TOKEN = '1234';
+
+  function log(){
+    try{ console.log.apply(console, ['[CTP MANUEL BULUT FIX]'].concat([].slice.call(arguments))); }catch(e){}
+  }
+
+  function getDB(){
+    try{ if(typeof DB !== 'undefined' && DB) return DB; }catch(e){}
+    try{ if(window.DB) return window.DB; }catch(e){}
+    return null;
+  }
+
+  function normalizeData(d){
+    d = d || {};
+    ['firmalar','hareketler','urunler','kategoriler','stokHareketler','users','logs','numuneler','numuneUrunler','numuneFavoriUrunler','teklifler','gorevler','randevular'].forEach(function(k){
+      if(!Array.isArray(d[k])) d[k] = [];
+    });
+    if(!d.ayarlar || typeof d.ayarlar !== 'object') d.ayarlar = {};
+    if(!d.katRenkler || typeof d.katRenkler !== 'object') d.katRenkler = {};
+    d.ts = new Date().toISOString();
+    return d;
+  }
+
+  function markCloudReady(){
+    try{ localStorage.setItem('ct_cloud_loaded_once','1'); }catch(e){}
+    try{ localStorage.setItem('ct_cloud_last_load','MANUEL_OK'); }catch(e){}
+    try{ localStorage.setItem('ct_cloud_api_url', CTP_API_URL); }catch(e){}
+    try{ localStorage.setItem('ct_cloud_license_key', CTP_TOKEN); }catch(e){}
+    try{ window.ctpCloudLoadedOnce = true; }catch(e){}
+    try{ window.cloudLoadedOnce = true; }catch(e){}
+    try{ window.hasCloudLoaded = true; }catch(e){}
+  }
+
+  async function postToSheets(showAlert){
+    markCloudReady();
+
+    var d = normalizeData(getDB());
+    if(!d) throw new Error('Uygulama verisi bulunamadı.');
+
+    var count =
+      (d.firmalar ? d.firmalar.length : 0) +
+      (d.urunler ? d.urunler.length : 0) +
+      (d.hareketler ? d.hareketler.length : 0) +
+      (d.kategoriler ? d.kategoriler.length : 0) +
+      (d.numuneler ? d.numuneler.length : 0);
+
+    // Eski koruma boş DB diye engelliyordu. Burada gerçekten bomboş değilse kaydediyoruz.
+    // Bomboşsa da kullanıcı manuel ekleme yaptıktan sonra zaten count artacak.
+    if(count === 0){
+      log('Veri sayısı 0; yine de ayarlar ile kayıt isteği gönderiliyor.');
+    }
+
+    try{ if(typeof ctSaveLocal === 'function') ctSaveLocal(); }catch(e){}
+    try{ if(typeof dbSave === 'function') dbSave(); }catch(e){}
+    try{ if(typeof saveLocal === 'function') saveLocal(); }catch(e){}
+
+    var payload = {
+      action: 'save',
+      token: CTP_TOKEN,
+      licenseKey: CTP_TOKEN,
+      deviceId: 'GIRISSIZ',
+      data: d
+    };
+
+    await fetch(CTP_API_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+
+    try{ if(typeof markSaved === 'function') markSaved(); }catch(e){}
+    try{ window.hasUnsaved = false; }catch(e){}
+    try{ localStorage.setItem('ct_cloud_last_save', new Date().toISOString()); }catch(e){}
+
+    log('Buluta kayıt gönderildi', {
+      firmalar: d.firmalar.length,
+      urunler: d.urunler.length,
+      hareketler: d.hareketler.length,
+      kategoriler: d.kategoriler.length,
+      numuneler: d.numuneler.length || 0
+    });
+
+    if(showAlert) alert('Buluta kayıt gönderildi. Sheet sayfalarını kontrol et.');
+    return true;
+  }
+
+  // Eski fonksiyon adlarının hepsini bu temiz kayda bağla.
+  window.ctpForceCloudSave = function(showAlert){ return postToSheets(showAlert); };
+  window.cloudSaveToCustomerSheet = function(showAlert){ return postToSheets(showAlert); };
+  window.bulutKaydet = function(showAlert){ return postToSheets(showAlert); };
+  window.forceCloudSave = function(showAlert){ return postToSheets(showAlert); };
+  window.directPostSave = function(showAlert){ return postToSheets(showAlert); };
+
+  // Kaydet butonları eski fonksiyonu çağırıyorsa diye click yakalama:
+  document.addEventListener('click', function(ev){
+    var el = ev.target;
+    if(!el) return;
+    var btn = el.closest ? el.closest('button') : null;
+    if(!btn) return;
+    var txt = (btn.innerText || btn.textContent || '').toLowerCase();
+    var oc = String(btn.getAttribute('onclick') || '').toLowerCase();
+    if(txt.indexOf('buluta kaydet') >= 0 || txt.indexOf('buluta kayıt') >= 0 || oc.indexOf('cloudsave') >= 0 || oc.indexOf('bulutkaydet') >= 0){
+      ev.preventDefault();
+      ev.stopPropagation();
+      postToSheets(true).catch(function(e){
+        console.error('[CTP MANUEL BULUT FIX] kayıt hata', e);
+        alert('Buluta kayıt hatası: ' + (e && e.message ? e.message : e));
+      });
+    }
+  }, true);
+
+  // Manuel veri girişinden sonra "kaydedilmemiş" durumunda otomatik bulut kayıt:
+  var timer = null;
+  function scheduleAutoSave(){
+    clearTimeout(timer);
+    timer = setTimeout(function(){
+      postToSheets(false).catch(function(e){ console.error('[CTP MANUEL BULUT FIX] otomatik kayıt hata', e); });
+    }, 1200);
+  }
+
+  // Formlarda değişiklik olunca otomatik kayıt planla.
+  document.addEventListener('change', function(ev){
+    var t = ev.target;
+    if(t && (t.matches('input') || t.matches('select') || t.matches('textarea'))) scheduleAutoSave();
+  }, true);
+
+  // Sayfa açılışında kilidi kaldır.
+  markCloudReady();
+  window.cloudLicenseKey = function(){ return CTP_TOKEN; };
+  window.hasCloudLicense = function(){ return true; };
+
+  log('Aktif: manuel kayıt engeli kaldırıldı.');
+})();
+</script>
+<!-- CTP_CHATGPT_MANUEL_BULUT_KAYIT_FIX_END -->
+
+
+<!-- CTP_CHATGPT_LISANS_YUKLEME_FIX_START -->
+<script>
+(function(){
+  'use strict';
+
+  var CTP_API_URL = 'https://script.google.com/macros/s/AKfycbz-N2VRUucCptbzWGj5rHok224Q9XO8zH85RzHyPMJwMuxXsV1psjagCGAAdw7mBrUa/exec';
+  var CTP_TOKEN = '1234';
+
+  function log(){
+    try{ console.log.apply(console, ['[CTP LİSANS YÜKLEME FIX]'].concat([].slice.call(arguments))); }catch(e){}
+  }
+
+  function ready(){
+    try{ localStorage.setItem('ct_cloud_api_url', CTP_API_URL); }catch(e){}
+    try{ localStorage.setItem('ct_cloud_license_key', CTP_TOKEN); }catch(e){}
+    try{ localStorage.setItem('ct_cloud_activated', '1'); }catch(e){}
+    try{ localStorage.setItem('ct_cloud_loaded_once', '1'); }catch(e){}
+    try{ localStorage.setItem('ct_license_key', CTP_TOKEN); }catch(e){}
+    try{ localStorage.setItem('licenseKey', CTP_TOKEN); }catch(e){}
+    try{ window.cloudLicenseKey = function(){ return CTP_TOKEN; }; }catch(e){}
+    try{ window.hasCloudLicense = function(){ return true; }; }catch(e){}
+    try{ window.ctpCloudApiUrl = function(){ return CTP_API_URL; }; }catch(e){}
+    try{ window.cloudApiUrl = function(){ return CTP_API_URL; }; }catch(e){}
+    try{ window.ctpCloudLoadedOnce = true; }catch(e){}
+    try{ window.cloudLoadedOnce = true; }catch(e){}
+    try{ window.hasCloudLoaded = true; }catch(e){}
+    try{ window.licenseKey = function(){ return CTP_TOKEN; }; }catch(e){}
+  }
+
+  function getDB(){
+    try{ if(typeof DB !== 'undefined' && DB) return DB; }catch(e){}
+    try{ if(window.DB) return window.DB; }catch(e){}
+    return null;
+  }
+
+  function normalizeData(d){
+    d = d || {};
+    ['firmalar','hareketler','urunler','kategoriler','stokHareketler','users','logs','numuneler','numuneUrunler','numuneFavoriUrunler','teklifler','gorevler','randevular'].forEach(function(k){
+      if(!Array.isArray(d[k])) d[k] = [];
+    });
+    if(!d.ayarlar || typeof d.ayarlar !== 'object') d.ayarlar = {};
+    if(!d.katRenkler || typeof d.katRenkler !== 'object') d.katRenkler = {};
+    d.ts = d.ts || new Date().toISOString();
+    return d;
+  }
+
+  function applyData(data){
+    data = normalizeData(data);
+    var db = getDB();
+    if(db){
+      Object.keys(db).forEach(function(k){ delete db[k]; });
+      Object.assign(db, data);
+    }else{
+      window.DB = data;
+    }
+    try{ if(typeof ctSaveLocal === 'function') ctSaveLocal(); }catch(e){}
+    try{ if(typeof dbSave === 'function') dbSave(); }catch(e){}
+    try{ if(typeof saveLocal === 'function') saveLocal(); }catch(e){}
+    ['renderDashboard','renderF','renderU','renderStok','renderHF','renderSF','renderCF','renderKategoriler','renderKat'].forEach(function(fn){
+      try{ if(typeof window[fn] === 'function') window[fn](); }catch(e){}
+      try{ if(typeof eval(fn) === 'function') eval(fn)(); }catch(e){}
+    });
+    return data;
+  }
+
+  function loadFromSheets(showAlert){
+    ready();
+    return new Promise(function(resolve, reject){
+      var cb = 'ctpSheetsLoad_' + Date.now() + '_' + Math.floor(Math.random()*99999);
+      var s = document.createElement('script');
+      var done = false;
+
+      window[cb] = function(res){
+        done = true;
+        try{ delete window[cb]; }catch(e){ window[cb] = null; }
+        try{ s.remove(); }catch(e){}
+
+        if(!res || !res.ok){
+          var msg = (res && (res.error || res.message)) || 'Bulut yükleme hatası';
+          reject(new Error(msg));
+          return;
+        }
+
+        var data = applyData(res.data || {});
+        ready();
+
+        log('Buluttan veri çekildi', {
+          firmalar: data.firmalar.length,
+          urunler: data.urunler.length,
+          hareketler: data.hareketler.length
+        });
+        if(showAlert) alert('Buluttan veri yüklendi.');
+        resolve(data);
+      };
+
+      s.onerror = function(){
+        if(done) return;
+        try{ delete window[cb]; }catch(e){}
+        try{ s.remove(); }catch(e){}
+        reject(new Error('Bulut bağlantısı kurulamadı.'));
+      };
+
+      s.src = CTP_API_URL + '?action=load&token=' + encodeURIComponent(CTP_TOKEN) + '&licenseKey=' + encodeURIComponent(CTP_TOKEN) + '&deviceId=GIRISSIZ&callback=' + encodeURIComponent(cb) + '&_=' + Date.now();
+      document.head.appendChild(s);
+
+      setTimeout(function(){
+        if(!done){
+          try{ delete window[cb]; }catch(e){}
+          try{ s.remove(); }catch(e){}
+          reject(new Error('Bulut cevap süresi doldu.'));
+        }
+      }, 30000);
+    }).catch(function(e){
+      console.error('[CTP LİSANS YÜKLEME FIX] yükleme hata', e);
+      if(showAlert) alert('Bulut yükleme hatası: ' + (e && e.message ? e.message : e));
+      throw e;
+    });
+  }
+
+  async function saveToSheets(showAlert){
+    ready();
+
+    var d = normalizeData(getDB());
+    var payload = {
+      action: 'save',
+      token: CTP_TOKEN,
+      licenseKey: CTP_TOKEN,
+      deviceId: 'GIRISSIZ',
+      data: d
+    };
+
+    await fetch(CTP_API_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+
+    try{ if(typeof markSaved === 'function') markSaved(); }catch(e){}
+    try{ window.hasUnsaved = false; }catch(e){}
+    try{ localStorage.setItem('ct_cloud_last_save', new Date().toISOString()); }catch(e){}
+    if(showAlert) alert('Buluta kayıt gönderildi.');
+    return true;
+  }
+
+  // Tüm eski isimleri ez: yükleme artık lisans aramayacak.
+  window.cloudLoadFromCustomerSheet = function(showAlert){ return loadFromSheets(showAlert); };
+  window.bulutCek = function(showAlert){ return loadFromSheets(showAlert); };
+  window.buluttanYukle = function(showAlert){ return loadFromSheets(showAlert); };
+  window.loadCloudData = function(showAlert){ return loadFromSheets(showAlert); };
+  window.ctpLoadCloudData = function(showAlert){ return loadFromSheets(showAlert); };
+
+  // Kayıt isimlerini de garantiye al.
+  window.cloudSaveToCustomerSheet = function(showAlert){ return saveToSheets(showAlert); };
+  window.bulutKaydet = function(showAlert){ return saveToSheets(showAlert); };
+  window.ctpForceCloudSave = function(showAlert){ return saveToSheets(showAlert); };
+  window.forceCloudSave = function(showAlert){ return saveToSheets(showAlert); };
+  window.directPostSave = function(showAlert){ return saveToSheets(showAlert); };
+
+  // Buton tıklamalarını yakala: eski onclick lisans hatası vermeden önce bu çalışır.
+  document.addEventListener('click', function(ev){
+    var btn = ev.target && ev.target.closest ? ev.target.closest('button') : null;
+    if(!btn) return;
+    var txt = (btn.innerText || btn.textContent || '').toLowerCase();
+    var oc = String(btn.getAttribute('onclick') || '').toLowerCase();
+
+    var wantsLoad = txt.indexOf('buluttan') >= 0 || txt.indexOf('bulut yükle') >= 0 || txt.indexOf('bulut verileri çek') >= 0 || oc.indexOf('cloudload') >= 0 || oc.indexOf('bulutcek') >= 0 || oc.indexOf('buluttanyukle') >= 0;
+    var wantsSave = txt.indexOf('buluta kaydet') >= 0 || txt.indexOf('buluta kayıt') >= 0 || oc.indexOf('cloudsave') >= 0 || oc.indexOf('bulutkaydet') >= 0;
+
+    if(wantsLoad){
+      ev.preventDefault();
+      ev.stopPropagation();
+      loadFromSheets(true).catch(function(){});
+      return false;
+    }
+    if(wantsSave){
+      ev.preventDefault();
+      ev.stopPropagation();
+      saveToSheets(true).catch(function(e){
+        console.error('[CTP LİSANS YÜKLEME FIX] kayıt hata', e);
+        alert('Buluta kayıt hatası: ' + (e && e.message ? e.message : e));
+      });
+      return false;
+    }
+  }, true);
+
+  ready();
+  window.addEventListener('load', function(){ ready(); setTimeout(ready, 500); setTimeout(ready, 1500); });
+  log('Aktif: lisanssız yükleme/kayıt token sistemine bağlandı.');
+})();
+</script>
+<!-- CTP_CHATGPT_LISANS_YUKLEME_FIX_END -->
+
+
+<!-- CTP_CHATGPT_KESIN_TOKEN_API_FIX_START -->
+<script>
+(function(){
+  'use strict';
+  var API = 'https://script.google.com/macros/s/AKfycbz-N2VRUucCptbzWGj5rHok224Q9XO8zH85RzHyPMJwMuxXsV1psjagCGAAdw7mBrUa/exec';
+  var TOKEN = '1234';
+
+  function setReady(){
+    try{ localStorage.setItem('ct_cloud_api_url', API); }catch(e){}
+    try{ localStorage.setItem('ct_cloud_license_key', TOKEN); }catch(e){}
+    try{ localStorage.setItem('ct_cloud_activated', '1'); }catch(e){}
+    try{ localStorage.setItem('ct_cloud_loaded_once', '1'); }catch(e){}
+    try{ window.MASTER_API_URL = API; }catch(e){}
+    window.cloudLicenseKey = function(){ return TOKEN; };
+    window.hasCloudLicense = function(){ return true; };
+    window.gsToken = function(){ return TOKEN; };
+    window.gsUrl = function(){ return API; };
+    window.cloudApiUrl = function(){ return API; };
+  }
+
+  function getDB(){
+    try{ if(typeof DB !== 'undefined' && DB) return DB; }catch(e){}
+    try{ if(window.DB) return window.DB; }catch(e){}
+    return {};
+  }
+
+  function normalize(d){
+    d = d || {};
+    ['firmalar','hareketler','urunler','kategoriler','stokHareketler','users','logs','numuneler','numuneUrunler','numuneFavoriUrunler','teklifler','gorevler','randevular'].forEach(function(k){
+      if(!Array.isArray(d[k])) d[k] = [];
+    });
+    if(!d.ayarlar || typeof d.ayarlar !== 'object') d.ayarlar = {};
+    if(!d.katRenkler || typeof d.katRenkler !== 'object') d.katRenkler = {};
+    d.ts = new Date().toISOString();
+    return d;
+  }
+
+  function applyData(data){
+    data = normalize(data);
+    var db = getDB();
+    if(db){
+      Object.keys(db).forEach(function(k){ delete db[k]; });
+      Object.assign(db, data);
+    } else {
+      window.DB = data;
+    }
+    try{ if(typeof ctSaveLocal === 'function') ctSaveLocal(); }catch(e){}
+    try{ if(typeof dbSave === 'function') dbSave(); }catch(e){}
+    try{ if(typeof saveLocal === 'function') saveLocal(); }catch(e){}
+    ['ctRenderAll','renderAll','renderDashboard','renderF','renderU','renderStok','renderHF','renderSF','renderCF','renderKatAll','renderKat'].forEach(function(fn){
+      try{ if(typeof window[fn] === 'function') window[fn](); }catch(e){}
+    });
+    return data;
+  }
+
+  function jsonpLoad(){
+    setReady();
+    return new Promise(function(resolve, reject){
+      var cb = 'ctpSafeLoad_' + Date.now() + '_' + Math.floor(Math.random()*99999);
+      var s = document.createElement('script');
+      var done = false;
+      window[cb] = function(res){
+        done = true;
+        try{ delete window[cb]; }catch(e){ window[cb] = null; }
+        try{ s.remove(); }catch(e){}
+        if(!res || !res.ok){
+          reject(new Error((res && (res.error || res.message)) || 'Buluttan yüklenemedi'));
+          return;
+        }
+        resolve(applyData(res.data || {}));
+      };
+      s.onerror = function(){
+        if(done) return;
+        try{ delete window[cb]; }catch(e){}
+        try{ s.remove(); }catch(e){}
+        reject(new Error('Bulut bağlantısı kurulamadı'));
+      };
+      s.src = API + '?action=load&token=' + encodeURIComponent(TOKEN) + '&licenseKey=' + encodeURIComponent(TOKEN) + '&deviceId=GIRISSIZ&callback=' + encodeURIComponent(cb) + '&_=' + Date.now();
+      document.head.appendChild(s);
+      setTimeout(function(){
+        if(!done){
+          try{ delete window[cb]; }catch(e){}
+          try{ s.remove(); }catch(e){}
+          reject(new Error('Bulut cevap süresi doldu'));
+        }
+      }, 30000);
+    });
+  }
+
+  async function safeSave(showAlert){
+    setReady();
+    var data = normalize(getDB());
+    try{ if(typeof ctSaveLocal === 'function') ctSaveLocal(); }catch(e){}
+    try{ if(typeof saveLocal === 'function') saveLocal(); }catch(e){}
+    await fetch(API, {
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({
+        action:'save',
+        token:TOKEN,
+        licenseKey:TOKEN,
+        deviceId:'GIRISSIZ',
+        data:data
+      })
+    });
+    try{ if(typeof markSaved === 'function') markSaved(); }catch(e){}
+    try{ window.hasUnsaved = false; }catch(e){}
+    if(showAlert) alert('Buluta kayıt gönderildi.');
+    return true;
+  }
+
+  async function safeLoad(showAlert){
+    try{
+      var d = await jsonpLoad();
+      if(showAlert) alert('Buluttan veri yüklendi.');
+      return d;
+    }catch(e){
+      console.error('[CTP KESIN FIX] Bulut yükleme hata:', e);
+      if(showAlert) alert('Bulut yükleme hatası: ' + (e && e.message ? e.message : e));
+      return false;
+    }
+  }
+
+  window.ctpSafeCloudSave = safeSave;
+  window.ctpSafeCloudLoad = safeLoad;
+
+  // Eski isimleri sürekli ez; bazı eski scriptler sonradan tekrar değiştiriyor.
+  function overrideAll(){
+    setReady();
+    window.manuelYedekle = function(showAlert){ return safeSave(showAlert !== false); };
+    window.bulutYukle = function(showAlert){ return safeLoad(showAlert !== false); };
+    window.bulutCek = function(showAlert){ return safeLoad(showAlert !== false); };
+    window.buluttanYukle = function(showAlert){ return safeLoad(showAlert !== false); };
+    window.cloudLoadFromCustomerSheet = function(showAlert){ return safeLoad(showAlert !== false); };
+    window.cloudSaveToCustomerSheet = function(showAlert){ return safeSave(showAlert !== false); };
+    window.ctpForceCloudSave = function(showAlert){ return safeSave(showAlert !== false); };
+    window.forceCloudSave = function(showAlert){ return safeSave(showAlert !== false); };
+    window.directPostSave = function(showAlert){ return safeSave(showAlert !== false); };
+    window.gsBaglantiKaydet = function(){
+      var u = document.getElementById('gs-url'); if(u) u.value = API;
+      var t = document.getElementById('gs-token'); if(t) t.value = TOKEN;
+      alert('Google Sheets bağlantısı hazır.');
+      return true;
+    };
+  }
+
+  overrideAll();
+  document.addEventListener('DOMContentLoaded', function(){ overrideAll(); setTimeout(overrideAll,300); setTimeout(overrideAll,1200); });
+  window.addEventListener('load', function(){ overrideAll(); setTimeout(overrideAll,500); setTimeout(overrideAll,1500); setTimeout(overrideAll,3000); });
+  setInterval(overrideAll, 2000);
+
+  document.addEventListener('click', function(ev){
+    var btn = ev.target && ev.target.closest ? ev.target.closest('button') : null;
+    if(!btn) return;
+    var txt = (btn.innerText || btn.textContent || '').toLowerCase();
+    var oc = String(btn.getAttribute('onclick') || '').toLowerCase();
+    var isLoad = txt.indexOf('buluttan yükle') >= 0 || txt.indexOf('bulut yükle') >= 0 || oc.indexOf('bulutyukle') >= 0 || oc.indexOf('cloudload') >= 0;
+    var isSave = txt.indexOf('buluta kaydet') >= 0 || txt.indexOf('buluta kayıt') >= 0 || oc.indexOf('manuelyedekle') >= 0 || oc.indexOf('cloudsave') >= 0;
+    if(isLoad){
+      ev.preventDefault();
+      ev.stopImmediatePropagation();
+      safeLoad(true);
+      return false;
+    }
+    if(isSave){
+      ev.preventDefault();
+      ev.stopImmediatePropagation();
+      safeSave(true).catch(function(e){ alert('Buluta kayıt hatası: ' + (e && e.message ? e.message : e)); });
+      return false;
+    }
+  }, true);
+
+  console.log('[CTP KESIN FIX] Aktif - API token sistemi bağlı.');
+})();
+</script>
+<!-- CTP_CHATGPT_KESIN_TOKEN_API_FIX_END -->
+
+
+<!-- CTP_CHATGPT_FIRMA_KOD_FIX_START -->
+<script>
+(function(){
+  'use strict';
+
+  function getDB(){
+    try{ if(typeof DB !== 'undefined' && DB) return DB; }catch(e){}
+    try{ if(window.DB) return window.DB; }catch(e){}
+    return null;
+  }
+
+  function getFirmalar(){
+    var db = getDB();
+    if(db && Array.isArray(db.firmalar)) return db.firmalar;
+    try{ if(Array.isArray(window.firmalar)) return window.firmalar; }catch(e){}
+    return [];
+  }
+
+  function nextFirmaKod(){
+    var max = 0;
+    getFirmalar().forEach(function(f){
+      var kod = String((f && (f.kod || f.fKod || f.firmaKod)) || '').trim().toUpperCase();
+      var m = kod.match(/^F\s*0*(\d+)$/i);
+      if(m){
+        var n = parseInt(m[1], 10);
+        if(!isNaN(n) && n > max) max = n;
+      }
+    });
+    return 'F' + String(max + 1).padStart(3, '0');
+  }
+
+  function setNextFirmaKod(force){
+    var inp = document.getElementById('f-kod');
+    if(!inp) return;
+    var current = String(inp.value || '').trim();
+    if(force || !current || /^F0*1$/i.test(current)){
+      inp.value = nextFirmaKod();
+    }
+  }
+
+  // Eski firmaTemizle fonksiyonunu sar: yeni firma açınca kodu max+1 yap.
+  function wrapFirmaTemizle(){
+    if(window.__ctpFirmaKodFixWrapped) return;
+    var old = window.firmaTemizle;
+    window.firmaTemizle = function(){
+      var r;
+      try{
+        if(typeof old === 'function') r = old.apply(this, arguments);
+      }catch(e){
+        console.error('[CTP FİRMA KOD FIX] eski firmaTemizle hata', e);
+      }
+      setTimeout(function(){ setNextFirmaKod(true); }, 30);
+      setTimeout(function(){ setNextFirmaKod(true); }, 250);
+      return r;
+    };
+    window.__ctpFirmaKodFixWrapped = true;
+  }
+
+  // Eski firmaKaydet fonksiyonunu sar: kayıttan sonra sıradaki kodu yeniden hesapla.
+  function wrapFirmaKaydet(){
+    if(window.__ctpFirmaKaydetKodFixWrapped) return;
+    var old = window.firmaKaydet;
+    window.firmaKaydet = function(){
+      var inp = document.getElementById('f-kod');
+      if(inp && (!inp.value || /^F0*1$/i.test(String(inp.value).trim()))){
+        inp.value = nextFirmaKod();
+      }
+      var r;
+      try{
+        if(typeof old === 'function') r = old.apply(this, arguments);
+      }catch(e){
+        console.error('[CTP FİRMA KOD FIX] eski firmaKaydet hata', e);
+        throw e;
+      }
+      setTimeout(function(){ setNextFirmaKod(true); }, 300);
+      setTimeout(function(){ setNextFirmaKod(true); }, 900);
+      return r;
+    };
+    window.__ctpFirmaKaydetKodFixWrapped = true;
+  }
+
+  // Firma ekranına girince / veri yüklenince kodu düzelt.
+  function boot(){
+    wrapFirmaTemizle();
+    wrapFirmaKaydet();
+    setNextFirmaKod(false);
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+  window.addEventListener('load', function(){
+    boot();
+    setTimeout(boot, 300);
+    setTimeout(boot, 1200);
+    setTimeout(boot, 2500);
+  });
+
+  // Sayfada firma listesi değişirse otomatik yeni kodu güncelle.
+  var timer = null;
+  function schedule(){
+    clearTimeout(timer);
+    timer = setTimeout(function(){ setNextFirmaKod(false); }, 150);
+  }
+
+  document.addEventListener('click', function(ev){
+    var btn = ev.target && ev.target.closest ? ev.target.closest('button') : null;
+    if(!btn) return;
+    var txt = (btn.innerText || btn.textContent || '').toLowerCase();
+    if(txt.indexOf('yeni') >= 0 || txt.indexOf('temizle') >= 0){
+      setTimeout(function(){ setNextFirmaKod(true); }, 80);
+    }
+  }, true);
+
+  try{
+    var tb = document.getElementById('f-tb');
+    if(tb){
+      new MutationObserver(schedule).observe(tb, {childList:true, subtree:true});
+    }
+  }catch(e){}
+
+  window.ctpNextFirmaKod = nextFirmaKod;
+  console.log('[CTP FİRMA KOD FIX] Aktif. Sıradaki kod:', nextFirmaKod());
+})();
+</script>
+<!-- CTP_CHATGPT_FIRMA_KOD_FIX_END -->
+
+
+<!-- CTP_CHATGPT_UNSAVED_EXCEL_WARNING_FIX_START -->
+<style>
+/* Google Sheets aktifken eski Excel yedeği uyarısını kapat */
+.unsaved,
+#unsaved,
+#unsaved-warning,
+.unsaved-warning,
+[id*="unsaved"],
+[class*="unsaved"]{
+  display:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+</style>
+<script>
+(function(){
+  'use strict';
+
+  function hideUnsavedWarnings(){
+    try{ window.hasUnsaved = false; }catch(e){}
+    try{ window.unsavedChanges = false; }catch(e){}
+    try{ window.isDirty = false; }catch(e){}
+    try{ localStorage.setItem('ct_unsaved','0'); }catch(e){}
+    try{ localStorage.setItem('unsaved','0'); }catch(e){}
+    try{ localStorage.setItem('hasUnsaved','0'); }catch(e){}
+
+    var selectors = [
+      '.unsaved',
+      '#unsaved',
+      '#unsaved-warning',
+      '.unsaved-warning',
+      '[id*="unsaved"]',
+      '[class*="unsaved"]'
+    ];
+
+    selectors.forEach(function(sel){
+      try{
+        document.querySelectorAll(sel).forEach(function(el){
+          el.classList.remove('show','active','open');
+          el.style.setProperty('display','none','important');
+          el.style.setProperty('visibility','hidden','important');
+          el.style.setProperty('opacity','0','important');
+        });
+      }catch(e){}
+    });
+
+    // Yazı olarak ekrana basılmışsa da gizle
+    try{
+      document.querySelectorAll('div,span,p').forEach(function(el){
+        var t = (el.innerText || el.textContent || '').trim();
+        if(t.indexOf('Kaydedilmemiş değişiklikler var') >= 0 || t.indexOf('Excel yedeği alın') >= 0){
+          el.style.setProperty('display','none','important');
+          el.classList.remove('show','active','open');
+        }
+      });
+    }catch(e){}
+  }
+
+  // Eski markDirty / showUnsaved tarzı fonksiyonlar uyarıyı açıyorsa pasifleştir
+  function overrideDirtyFunctions(){
+    try{ window.markDirty = function(){ hideUnsavedWarnings(); }; }catch(e){}
+    try{ window.showUnsaved = function(){ hideUnsavedWarnings(); }; }catch(e){}
+    try{ window.showUnsavedWarning = function(){ hideUnsavedWarnings(); }; }catch(e){}
+    try{ window.unsavedShow = function(){ hideUnsavedWarnings(); }; }catch(e){}
+    try{ window.markSaved = function(){ hideUnsavedWarnings(); }; }catch(e){}
+  }
+
+  // Buluta kayıt fonksiyonlarını sar: kayıt sonrası uyarıyı kapat
+  function wrapSaveFunctions(){
+    ['ctpSafeCloudSave','cloudSaveToCustomerSheet','bulutKaydet','ctpForceCloudSave','forceCloudSave','directPostSave','manuelYedekle'].forEach(function(fn){
+      try{
+        var old = window[fn];
+        if(typeof old === 'function' && !old.__ctpUnsavedWrapped){
+          var wrapped = function(){
+            var r = old.apply(this, arguments);
+            try{
+              if(r && typeof r.then === 'function'){
+                r.then(hideUnsavedWarnings).catch(function(){ setTimeout(hideUnsavedWarnings, 300); });
+              }
+            }catch(e){}
+            setTimeout(hideUnsavedWarnings, 100);
+            setTimeout(hideUnsavedWarnings, 1000);
+            return r;
+          };
+          wrapped.__ctpUnsavedWrapped = true;
+          window[fn] = wrapped;
+        }
+      }catch(e){}
+    });
+  }
+
+  function boot(){
+    overrideDirtyFunctions();
+    wrapSaveFunctions();
+    hideUnsavedWarnings();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+  window.addEventListener('load', function(){
+    boot();
+    setTimeout(boot,300);
+    setTimeout(boot,1200);
+    setTimeout(boot,2500);
+  });
+
+  // Eski kod uyarıyı tekrar açarsa anında kapat
+  setInterval(function(){
+    overrideDirtyFunctions();
+    wrapSaveFunctions();
+    hideUnsavedWarnings();
+  }, 1000);
+
+  document.addEventListener('change', function(){
+    setTimeout(hideUnsavedWarnings, 50);
+    setTimeout(hideUnsavedWarnings, 500);
+  }, true);
+
+  document.addEventListener('input', function(){
+    setTimeout(hideUnsavedWarnings, 50);
+    setTimeout(hideUnsavedWarnings, 500);
+  }, true);
+
+  console.log('[CTP UNSAVED FIX] Excel yedeği uyarısı kapatıldı.');
+})();
+</script>
+<!-- CTP_CHATGPT_UNSAVED_EXCEL_WARNING_FIX_END -->
+
+
+
+
+
+
+
+
+<!-- CTP_CHATGPT_MENU_ORDER_SHEETS_FIX_START -->
+<script>
+(function(){
+  'use strict';
+
+  var API = 'https://script.google.com/macros/s/AKfycbz-N2VRUucCptbzWGj5rHok224Q9XO8zH85RzHyPMJwMuxXsV1psjagCGAAdw7mBrUa/exec';
+  var TOKEN = '1234';
+  var applying = false;
+  var loadedFromSheets = false;
+
+  function log(){
+    try{ console.log.apply(console, ['[CTP MENU SHEETS FIX]'].concat([].slice.call(arguments))); }catch(e){}
+  }
+
+  function nav(){ return document.querySelector('.sb-nav'); }
+
+  function getDB(){
+    try{ if(typeof DB !== 'undefined' && DB) return DB; }catch(e){}
+    try{ if(window.DB) return window.DB; }catch(e){}
+    return null;
+  }
+
+  function settings(){
+    var db = getDB();
+    if(!db) return {};
+    if(!db.ayarlar || typeof db.ayarlar !== 'object') db.ayarlar = {};
+    return db.ayarlar;
+  }
+
+  function pageOf(el){
+    if(!el) return '';
+    var p = el.getAttribute('data-ctp-page') || el.getAttribute('data-page') || '';
+    if(p) return p;
+    var oc = String(el.getAttribute('onclick') || '');
+    var m = oc.match(/goPage\(['"]([^'"]+)['"]/);
+    return m ? m[1] : '';
+  }
+
+  function items(){
+    var n = nav();
+    if(!n) return [];
+    return Array.prototype.slice.call(n.querySelectorAll('.sb-item')).filter(function(el){
+      return !!pageOf(el);
+    });
+  }
+
+  function clean(arr){
+    var seen = {};
+    return (Array.isArray(arr) ? arr : []).map(function(x){ return String(x || '').trim(); }).filter(function(x){
+      if(!x || seen[x]) return false;
+      seen[x] = true;
+      return true;
+    });
+  }
+
+  function currentOrder(){
+    return clean(items().map(pageOf));
+  }
+
+  function defaultOrder(){
+    var arr = currentOrder();
+    if(arr.length) return arr;
+    return [
+      'dashboard','iskonto-hesap','firmalar','urunler','stok','kategoriler',
+      'hareket','siparis','numune','cari','odeme','kasa','mizan',
+      'kullanicilar','yedek','ayarlar','teklifler','siparis-durum','gorevler'
+    ];
+  }
+
+  function getSavedOrder(){
+    var ay = settings();
+    var v = ay.menuOrder || ay.solMenuSirasi || ay.sidebarMenuOrder || ay.userMenuOrder || ay.menuOrderFinal;
+    if(typeof v === 'string'){
+      try{ v = JSON.parse(v); }catch(e){}
+    }
+    if(Array.isArray(v) && v.length) return clean(v);
+    return [];
+  }
+
+  function putOrderIntoDB(order){
+    order = clean(order);
+    var ay = settings();
+    ay.menuOrder = order.slice();
+    ay.solMenuSirasi = order.slice();
+    ay.sidebarMenuOrder = order.slice();
+    ay.userMenuOrder = order.slice();
+    ay.menuOrderFinal = order.slice();
+
+    try{
+      if(typeof ctSaveLocal === 'function') ctSaveLocal();
+      else if(typeof dbSave === 'function') dbSave();
+      else if(typeof saveLocal === 'function') saveLocal();
+    }catch(e){}
+
+    return order;
+  }
+
+  function applyOrder(order){
+    if(applying) return;
+    var n = nav();
+    if(!n) return;
+
+    order = clean(order || getSavedOrder());
+    if(!order.length) return;
+
+    var map = {};
+    items().forEach(function(it){
+      var p = pageOf(it);
+      if(p) map[p] = it;
+    });
+
+    Object.keys(map).forEach(function(p){
+      if(order.indexOf(p) === -1) order.push(p);
+    });
+
+    applying = true;
+
+    var activePage = '';
+    var active = n.querySelector('.sb-item.active');
+    if(active) activePage = pageOf(active);
+
+    n.innerHTML = '';
+    var label = document.createElement('div');
+    label.className = 'sb-label';
+    label.textContent = 'Menü';
+    n.appendChild(label);
+
+    order.forEach(function(p){
+      var it = map[p];
+      if(!it) return;
+      it.classList.remove('ctp-dragging');
+      if(activePage){
+        if(p === activePage) it.classList.add('active');
+        else it.classList.remove('active');
+      }
+      n.appendChild(it);
+    });
+
+    if(!n.querySelector('.sb-item.active')){
+      var first = n.querySelector('.sb-item');
+      if(first) first.classList.add('active');
+    }
+
+    applying = false;
+    makeDraggable();
+  }
+
+  function saveMenuToSheets(order, alertUser){
+    order = putOrderIntoDB(order || currentOrder());
+
+    var payload = {
+      action: 'saveMenuSettings',
+      token: TOKEN,
+      settings: settings()
+    };
+
+    return fetch(API, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).then(function(){
+      log('MENU_AYARLARI kaydı gönderildi', order);
+      if(alertUser) alert('Menü sıralaması Google Sheets MENU_AYARLARI sekmesine kaydedildi.');
+      return true;
+    }).catch(function(e){
+      console.error('[CTP MENU SHEETS FIX] Menü ayarı kaydedilemedi', e);
+      if(alertUser) alert('Menü ayarı kaydedilemedi: ' + (e && e.message ? e.message : e));
+      throw e;
+    });
+  }
+
+  function loadMenuFromSheets(){
+    return new Promise(function(resolve){
+      var cb = 'ctpMenuSettingsCb_' + Date.now() + '_' + Math.floor(Math.random()*99999);
+      var s = document.createElement('script');
+      var done = false;
+
+      window[cb] = function(res){
+        done = true;
+        try{ delete window[cb]; }catch(e){ window[cb] = null; }
+        try{ s.remove(); }catch(e){}
+
+        if(res && res.ok && res.settings){
+          var ay = settings();
+          Object.assign(ay, res.settings);
+          var ord = getSavedOrder();
+          if(ord.length){
+            loadedFromSheets = true;
+            applyOrder(ord);
+            renderSettingsBox();
+            log('MENU_AYARLARI yüklendi', ord);
+          }
+          resolve(ord);
+        }else{
+          resolve([]);
+        }
+      };
+
+      s.onerror = function(){
+        if(done) return;
+        try{ delete window[cb]; }catch(e){}
+        try{ s.remove(); }catch(e){}
+        resolve([]);
+      };
+
+      s.src = API + '?action=loadMenuSettings&token=' + encodeURIComponent(TOKEN) + '&callback=' + encodeURIComponent(cb) + '&_=' + Date.now();
+      document.head.appendChild(s);
+
+      setTimeout(function(){
+        if(!done){
+          try{ delete window[cb]; }catch(e){}
+          try{ s.remove(); }catch(e){}
+          resolve([]);
+        }
+      }, 15000);
+    });
+  }
+
+  function makeDraggable(){
+    var n = nav();
+    if(!n) return;
+
+    items().forEach(function(it){
+      if(it.__ctpSheetsMenuDrag) return;
+      it.__ctpSheetsMenuDrag = true;
+      it.setAttribute('draggable','true');
+      it.style.cursor = 'grab';
+
+      it.addEventListener('dragstart', function(e){
+        it.classList.add('ctp-dragging');
+        try{ e.dataTransfer.effectAllowed = 'move'; }catch(err){}
+      });
+
+      it.addEventListener('dragend', function(){
+        it.classList.remove('ctp-dragging');
+        var ord = currentOrder();
+        putOrderIntoDB(ord);
+        saveMenuToSheets(ord, false);
+        setTimeout(function(){ applyOrder(ord); renderSettingsBox(); }, 100);
+      });
+    });
+
+    if(!n.__ctpSheetsMenuDrop){
+      n.__ctpSheetsMenuDrop = true;
+
+      n.addEventListener('dragover', function(e){
+        e.preventDefault();
+        var dragging = n.querySelector('.ctp-dragging');
+        if(!dragging) return;
+        var after = afterElement(n, e.clientY);
+        if(after == null) n.appendChild(dragging);
+        else n.insertBefore(dragging, after);
+      });
+
+      n.addEventListener('drop', function(e){
+        e.preventDefault();
+        var ord = currentOrder();
+        putOrderIntoDB(ord);
+        saveMenuToSheets(ord, false);
+        setTimeout(function(){ applyOrder(ord); renderSettingsBox(); }, 100);
+      });
+    }
+  }
+
+  function afterElement(container, y){
+    var els = Array.prototype.slice.call(container.querySelectorAll('.sb-item:not(.ctp-dragging)'));
+    return els.reduce(function(closest, child){
+      var box = child.getBoundingClientRect();
+      var offset = y - box.top - box.height / 2;
+      if(offset < 0 && offset > closest.offset) return {offset:offset, element:child};
+      return closest;
+    }, {offset:Number.NEGATIVE_INFINITY}).element;
+  }
+
+  function itemTitle(page){
+    var found = null;
+    items().forEach(function(it){ if(pageOf(it) === page) found = it; });
+    return found ? (found.textContent || '').trim().replace(/\s+/g,' ') : page;
+  }
+
+  function settingsPage(){
+    return document.getElementById('page-ayarlar') || document.getElementById('page-yedek');
+  }
+
+  function renderSettingsBox(){
+    var page = settingsPage();
+    if(!page) return;
+
+    // Eski local kalıcı kutuları karışmasın.
+    ['ctp-menu-order-box','ctp-final-menu-order-box'].forEach(function(id){
+      var old = document.getElementById(id);
+      if(old) old.style.display = 'none';
+    });
+
+    var box = document.getElementById('ctp-menu-order-sheets-box');
+    if(!box){
+      box = document.createElement('div');
+      box.className = 'card';
+      box.id = 'ctp-menu-order-sheets-box';
+      box.innerHTML =
+        '<div class="card-head"><div class="card-title"><i class="ti ti-menu-order"></i> Sol Menü Sıralama - Google Sheets</div></div>' +
+        '<div style="font-size:11px;color:#6b7280;margin-bottom:10px">Sıralama MENU_AYARLARI sekmesine kaydedilir ve program açılışında oradan çekilir.</div>' +
+        '<div id="ctp-menu-order-sheets-list" style="display:flex;flex-direction:column;gap:6px"></div>' +
+        '<div class="btn-row">' +
+        '<button class="btn btn-g" id="ctp-menu-sheets-save"><i class="ti ti-device-floppy"></i> Google Sheets’e Kaydet</button>' +
+        '<button class="btn" id="ctp-menu-sheets-load"><i class="ti ti-cloud-download"></i> Sheets’ten Çek</button>' +
+        '<button class="btn" id="ctp-menu-sheets-reset"><i class="ti ti-refresh"></i> Varsayılan</button>' +
+        '</div>';
+      page.appendChild(box);
+    }
+
+    var list = document.getElementById('ctp-menu-order-sheets-list');
+    if(!list) return;
+
+    var order = getSavedOrder();
+    if(!order.length) order = currentOrder();
+    if(!order.length) order = defaultOrder();
+
+    list.innerHTML = '';
+
+    order.forEach(function(p){
+      var row = document.createElement('div');
+      row.className = 'kat-edit-row';
+      row.dataset.page = p;
+      row.setAttribute('draggable','true');
+      row.innerHTML =
+        '<div style="font-weight:700;font-size:12px">' + itemTitle(p) + '</div>' +
+        '<div class="btn-row" style="margin:0;display:flex!important;gap:5px">' +
+        '<button class="btn btn-sm" data-act="up">↑</button>' +
+        '<button class="btn btn-sm" data-act="down">↓</button>' +
+        '</div>';
+      list.appendChild(row);
+    });
+
+    list.querySelectorAll('button[data-act]').forEach(function(btn){
+      btn.onclick = function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        var arr = Array.prototype.slice.call(list.querySelectorAll('[data-page]')).map(function(r){ return r.dataset.page; });
+        var p = btn.closest('[data-page]').dataset.page;
+        var i = arr.indexOf(p);
+        if(btn.dataset.act === 'up' && i > 0){
+          var a = arr[i-1]; arr[i-1] = arr[i]; arr[i] = a;
+        }
+        if(btn.dataset.act === 'down' && i < arr.length - 1){
+          var b = arr[i+1]; arr[i+1] = arr[i]; arr[i] = b;
+        }
+        putOrderIntoDB(arr);
+        applyOrder(arr);
+        renderSettingsBox();
+      };
+    });
+
+    if(!list.__ctpSheetsSettingsDrag){
+      list.__ctpSheetsSettingsDrag = true;
+
+      list.addEventListener('dragstart', function(e){
+        var row = e.target.closest('[data-page]');
+        if(row) row.classList.add('ctp-sheets-settings-dragging');
+      });
+
+      list.addEventListener('dragend', function(e){
+        var row = e.target.closest('[data-page]');
+        if(row) row.classList.remove('ctp-sheets-settings-dragging');
+        var arr = Array.prototype.slice.call(list.querySelectorAll('[data-page]')).map(function(r){ return r.dataset.page; });
+        putOrderIntoDB(arr);
+        applyOrder(arr);
+        renderSettingsBox();
+      });
+
+      list.addEventListener('dragover', function(e){
+        e.preventDefault();
+        var dragging = list.querySelector('.ctp-sheets-settings-dragging');
+        if(!dragging) return;
+        var rows = Array.prototype.slice.call(list.querySelectorAll('[data-page]:not(.ctp-sheets-settings-dragging)'));
+        var after = rows.reduce(function(closest, child){
+          var box = child.getBoundingClientRect();
+          var offset = e.clientY - box.top - box.height / 2;
+          if(offset < 0 && offset > closest.offset) return {offset:offset, element:child};
+          return closest;
+        }, {offset:Number.NEGATIVE_INFINITY}).element;
+        if(after == null) list.appendChild(dragging);
+        else list.insertBefore(dragging, after);
+      });
+    }
+
+    var saveBtn = document.getElementById('ctp-menu-sheets-save');
+    if(saveBtn){
+      saveBtn.onclick = function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        var arr = Array.prototype.slice.call(list.querySelectorAll('[data-page]')).map(function(r){ return r.dataset.page; });
+        putOrderIntoDB(arr);
+        applyOrder(arr);
+        saveMenuToSheets(arr, true);
+      };
+    }
+
+    var loadBtn = document.getElementById('ctp-menu-sheets-load');
+    if(loadBtn){
+      loadBtn.onclick = function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        loadMenuFromSheets().then(function(arr){
+          if(arr && arr.length) alert('Menü sıralaması MENU_AYARLARI sekmesinden çekildi.');
+          else alert('MENU_AYARLARI sekmesinde kayıtlı menü sırası bulunamadı.');
+        });
+      };
+    }
+
+    var resetBtn = document.getElementById('ctp-menu-sheets-reset');
+    if(resetBtn){
+      resetBtn.onclick = function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        var arr = defaultOrder();
+        putOrderIntoDB(arr);
+        applyOrder(arr);
+        renderSettingsBox();
+        saveMenuToSheets(arr, true);
+      };
+    }
+  }
+
+  function wrapGoPage(){
+    if(window.__ctpSheetsMenuGoPageWrapped) return;
+    var old = window.goPage;
+    if(typeof old === 'function'){
+      window.goPage = function(){
+        var r = old.apply(this, arguments);
+        setTimeout(function(){
+          applyOrder(getSavedOrder());
+          renderSettingsBox();
+          makeDraggable();
+        }, 120);
+        return r;
+      };
+      window.__ctpSheetsMenuGoPageWrapped = true;
+    }
+  }
+
+  function boot(){
+    makeDraggable();
+    wrapGoPage();
+    renderSettingsBox();
+
+    var saved = getSavedOrder();
+    if(saved.length) applyOrder(saved);
+
+    if(!loadedFromSheets){
+      loadMenuFromSheets().then(function(arr){
+        if(!arr || !arr.length){
+          var cur = currentOrder();
+          if(cur.length){
+            putOrderIntoDB(cur);
+          }
+        }
+      });
+    }
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+  window.addEventListener('load', function(){
+    boot();
+    setTimeout(boot, 400);
+    setTimeout(boot, 1500);
+    setTimeout(boot, 3000);
+  });
+
+  setInterval(function(){
+    makeDraggable();
+    var saved = getSavedOrder();
+    if(saved.length) applyOrder(saved);
+  }, 3000);
+
+  window.ctpMenuSheetsSave = saveMenuToSheets;
+  window.ctpMenuSheetsLoad = loadMenuFromSheets;
+
+  log('Aktif. Menü sırası Google Sheets MENU_AYARLARI sekmesine bağlandı.');
+})();
+</script>
+<!-- CTP_CHATGPT_MENU_ORDER_SHEETS_FIX_END -->
+
+
+<!-- CTP_CHATGPT_MENU_GOSTER_GIZLE_FIX_START -->
+<style>
+.ctp-menu-visible-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+}
+.ctp-menu-visible-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid #e5e7eb;
+  background:#fff;
+  border-radius:10px;
+  padding:9px 10px;
+  font-size:12px;
+  font-weight:700;
+  color:#374151;
+}
+.ctp-menu-visible-item input{
+  width:auto!important;
+  min-height:auto!important;
+}
+.ctp-menu-visible-item small{
+  color:#9ca3af;
+  font-weight:600;
+  margin-left:auto;
+}
+@media(max-width:780px){
+  .ctp-menu-visible-grid{grid-template-columns:1fr}
+}
+</style>
+<script>
+(function(){
+  'use strict';
+
+  var SETTINGS_KEY = 'ctpMenuVisiblePages';
+
+  function log(){
+    try{ console.log.apply(console, ['[CTP MENU GÖSTER/GİZLE]'].concat([].slice.call(arguments))); }catch(e){}
+  }
+
+  function getDB(){
+    try{ if(typeof DB !== 'undefined' && DB) return DB; }catch(e){}
+    try{ if(window.DB) return window.DB; }catch(e){}
+    return null;
+  }
+
+  function ayarlar(){
+    var db = getDB();
+    if(!db) return {};
+    if(!db.ayarlar || typeof db.ayarlar !== 'object') db.ayarlar = {};
+    return db.ayarlar;
+  }
+
+  function pageOf(el){
+    if(!el) return '';
+    var p = el.getAttribute('data-ctp-page') || el.getAttribute('data-page') || '';
+    if(p) return p;
+    var oc = String(el.getAttribute('onclick') || '');
+    var m = oc.match(/goPage\(['"]([^'"]+)['"]/);
+    return m ? m[1] : '';
+  }
+
+  function menuText(el){
+    return (el.textContent || '').trim().replace(/\s+/g,' ');
+  }
+
+  function nav(){
+    return document.querySelector('.sb-nav');
+  }
+
+  function items(){
+    var n = nav();
+    if(!n) return [];
+    return Array.prototype.slice.call(n.querySelectorAll('.sb-item')).filter(function(el){
+      return !!pageOf(el);
+    });
+  }
+
+  function allPages(){
+    return items().map(function(el){
+      return {
+        page: pageOf(el),
+        title: menuText(el),
+        el: el
+      };
+    }).filter(function(x, idx, arr){
+      return x.page && arr.findIndex(function(y){ return y.page === x.page; }) === idx;
+    });
+  }
+
+  function defaultVisible(){
+    var out = {};
+    allPages().forEach(function(x){ out[x.page] = true; });
+    return out;
+  }
+
+  function readVisible(){
+    var ay = ayarlar();
+    var val = ay[SETTINGS_KEY] || ay.menuVisiblePages || ay.visibleMenuPages;
+
+    if(typeof val === 'string'){
+      try{ val = JSON.parse(val); }catch(e){}
+    }
+
+    var def = defaultVisible();
+
+    // Eski/boş kayıt yoksa her menü görünür.
+    if(!val || typeof val !== 'object' || Array.isArray(val)){
+      return def;
+    }
+
+    Object.keys(def).forEach(function(p){
+      if(val[p] === undefined) val[p] = true;
+    });
+
+    // Dashboard tamamen gizlenirse kullanıcı kilitlenmesin.
+    val.dashboard = true;
+
+    return val;
+  }
+
+  function saveVisible(map){
+    map = map || readVisible();
+    map.dashboard = true;
+
+    var ay = ayarlar();
+    ay[SETTINGS_KEY] = Object.assign({}, map);
+    ay.menuVisiblePages = Object.assign({}, map);
+    ay.visibleMenuPages = Object.assign({}, map);
+
+    try{
+      if(typeof ctSaveLocal === 'function') ctSaveLocal();
+      else if(typeof dbSave === 'function') dbSave();
+      else if(typeof saveLocal === 'function') saveLocal();
+    }catch(e){}
+
+    // Google Sheets'e ayarları gönderebilen fonksiyon varsa gönder.
+    try{
+      if(typeof ctpMenuSheetsSave === 'function'){
+        ctpMenuSheetsSave(ay.menuOrder || ay.solMenuSirasi || null, false);
+      }else if(typeof ctpSafeCloudSave === 'function'){
+        ctpSafeCloudSave(false);
+      }
+    }catch(e){}
+
+    return map;
+  }
+
+  function applyVisible(){
+    var visible = readVisible();
+
+    items().forEach(function(el){
+      var p = pageOf(el);
+      var show = visible[p] !== false;
+
+      // Dashboard hep görünür.
+      if(p === 'dashboard') show = true;
+
+      el.style.setProperty('display', show ? 'flex' : 'none', 'important');
+
+      // Eğer aktif sayfa gizlendiyse dashboard'a dön.
+      if(!show && el.classList.contains('active')){
+        var dash = items().find(function(x){ return pageOf(x) === 'dashboard'; });
+        if(dash && typeof goPage === 'function') goPage('dashboard', dash);
+      }
+    });
+
+    // Boş kalan başlıkları gizle/göster.
+    var n = nav();
+    if(n){
+      var children = Array.prototype.slice.call(n.children);
+      children.forEach(function(ch, i){
+        if(!(ch.classList && ch.classList.contains('sb-label'))) return;
+        var hasVisibleItem = false;
+        for(var j = i + 1; j < children.length; j++){
+          var next = children[j];
+          if(next.classList && next.classList.contains('sb-label')) break;
+          if(next.classList && next.classList.contains('sb-item') && next.style.display !== 'none'){
+            hasVisibleItem = true;
+            break;
+          }
+        }
+        ch.style.display = hasVisibleItem ? '' : 'none';
+      });
+    }
+  }
+
+  function settingsPage(){
+    return document.getElementById('page-ayarlar') || document.getElementById('page-yedek');
+  }
+
+  function renderSettingsBox(){
+    var page = settingsPage();
+    if(!page) return;
+
+    var box = document.getElementById('ctp-menu-visible-box');
+    if(!box){
+      box = document.createElement('div');
+      box.className = 'card';
+      box.id = 'ctp-menu-visible-box';
+      box.innerHTML =
+        '<div class="card-head"><div class="card-title"><i class="ti ti-eye-cog"></i> Sol Menü Göster / Gizle</div></div>' +
+        '<div style="font-size:11px;color:#6b7280;margin-bottom:10px">Sol tarafta görmek istediğin menüleri seç. Dashboard güvenlik için her zaman açık kalır.</div>' +
+        '<div id="ctp-menu-visible-list" class="ctp-menu-visible-grid"></div>' +
+        '<div class="btn-row">' +
+        '<button class="btn btn-g" id="ctp-menu-visible-save"><i class="ti ti-device-floppy"></i> Kaydet</button>' +
+        '<button class="btn" id="ctp-menu-visible-all"><i class="ti ti-eye"></i> Tümünü Aç</button>' +
+        '</div>';
+      page.appendChild(box);
+    }
+
+    var list = document.getElementById('ctp-menu-visible-list');
+    if(!list) return;
+
+    var visible = readVisible();
+    var pages = allPages();
+
+    list.innerHTML = '';
+
+    pages.forEach(function(x){
+      var row = document.createElement('label');
+      row.className = 'ctp-menu-visible-item';
+      var disabled = x.page === 'dashboard' ? 'disabled' : '';
+      var checked = visible[x.page] !== false ? 'checked' : '';
+      row.innerHTML =
+        '<input type="checkbox" data-menu-page="' + x.page + '" ' + checked + ' ' + disabled + '>' +
+        '<span>' + x.title + '</span>' +
+        (x.page === 'dashboard' ? '<small>Sabit</small>' : '');
+      list.appendChild(row);
+    });
+
+    list.querySelectorAll('input[data-menu-page]').forEach(function(inp){
+      inp.onchange = function(){
+        var map = readVisible();
+        map[inp.dataset.menuPage] = inp.checked;
+        map.dashboard = true;
+        saveVisible(map);
+        applyVisible();
+      };
+    });
+
+    var saveBtn = document.getElementById('ctp-menu-visible-save');
+    if(saveBtn){
+      saveBtn.onclick = function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        var map = readVisible();
+        list.querySelectorAll('input[data-menu-page]').forEach(function(inp){
+          map[inp.dataset.menuPage] = inp.checked;
+        });
+        map.dashboard = true;
+        saveVisible(map);
+        applyVisible();
+
+        alert('Sol menü görünürlük ayarları kaydedildi.');
+      };
+    }
+
+    var allBtn = document.getElementById('ctp-menu-visible-all');
+    if(allBtn){
+      allBtn.onclick = function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        var map = {};
+        allPages().forEach(function(x){ map[x.page] = true; });
+        saveVisible(map);
+        applyVisible();
+        renderSettingsBox();
+      };
+    }
+  }
+
+  function wrapGoPage(){
+    if(window.__ctpMenuVisibleGoPageWrapped) return;
+    var old = window.goPage;
+    if(typeof old === 'function'){
+      window.goPage = function(){
+        var r = old.apply(this, arguments);
+        setTimeout(function(){
+          renderSettingsBox();
+          applyVisible();
+        }, 120);
+        return r;
+      };
+      window.__ctpMenuVisibleGoPageWrapped = true;
+    }
+  }
+
+  function boot(){
+    wrapGoPage();
+    renderSettingsBox();
+    applyVisible();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+  window.addEventListener('load', function(){
+    boot();
+    setTimeout(boot, 400);
+    setTimeout(boot, 1500);
+    setTimeout(boot, 3000);
+  });
+
+  setInterval(function(){
+    renderSettingsBox();
+    applyVisible();
+  }, 3000);
+
+  window.ctpApplyMenuVisible = applyVisible;
+  window.ctpSaveMenuVisible = saveVisible;
+  window.ctpReadMenuVisible = readVisible;
+
+  log('Aktif. Sol menü aç/kapa ayarı eklendi.');
+})();
+</script>
+<!-- CTP_CHATGPT_MENU_GOSTER_GIZLE_FIX_END -->
+
+
+<!-- CTP_CHATGPT_GOREV_SHEETS_KAYIT_FIX_START -->
+<script>
+(function(){
+  'use strict';
+
+  var API = 'https://script.google.com/macros/s/AKfycbz-N2VRUucCptbzWGj5rHok224Q9XO8zH85RzHyPMJwMuxXsV1psjagCGAAdw7mBrUa/exec';
+  var TOKEN = '1234';
+  var busy = false;
+
+  function log(){
+    try{ console.log.apply(console, ['[CTP GÖREV SHEETS FIX]'].concat([].slice.call(arguments))); }catch(e){}
+  }
+
+  function getDB(){
+    try{ if(typeof DB !== 'undefined' && DB) return DB; }catch(e){}
+    try{ if(window.DB) return window.DB; }catch(e){}
+    return null;
+  }
+
+  function ensureGorevler(){
+    var db = getDB();
+    if(!db) return null;
+
+    if(!Array.isArray(db.gorevler)) db.gorevler = [];
+
+    var maxId = db.gorevler.reduce(function(m, g){
+      return Math.max(m, Number(g && g.id) || 0);
+    }, 0);
+
+    if(!Number(db.nextGorevId) || Number(db.nextGorevId) <= maxId){
+      db.nextGorevId = maxId + 1;
+    }
+
+    db.gorevler = db.gorevler.map(function(g, i){
+      g = g || {};
+      return {
+        id: g.id || (i + 1),
+        baslik: g.baslik || g.title || '',
+        tarih: g.tarih || g.date || '',
+        oncelik: g.oncelik || g.priority || 'NORMAL',
+        firma: g.firma || g.firmaAd || '',
+        sorumlu: g.sorumlu || g.user || '',
+        not: g.not || g.aciklama || '',
+        durum: g.durum || g.status || 'ACIK',
+        createdAt: g.createdAt || '',
+        updatedAt: g.updatedAt || '',
+        completedAt: g.completedAt || ''
+      };
+    });
+
+    try{
+      if(typeof ctSaveLocal === 'function') ctSaveLocal();
+      else if(typeof dbSave === 'function') dbSave();
+      else if(typeof saveLocal === 'function') saveLocal();
+    }catch(e){}
+
+    return db;
+  }
+
+  function postAllToSheets(showAlert){
+    var db = ensureGorevler();
+    if(!db) return Promise.reject(new Error('DB bulunamadı.'));
+
+    if(busy) return Promise.resolve(true);
+    busy = true;
+
+    var payload = {
+      action: 'save',
+      token: TOKEN,
+      licenseKey: TOKEN,
+      deviceId: 'GIRISSIZ',
+      data: db
+    };
+
+    return fetch(API, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).then(function(){
+      try{ if(typeof markSaved === 'function') markSaved(); }catch(e){}
+      try{ window.hasUnsaved = false; }catch(e){}
+      log('Görevler dahil tüm veri Sheets’e gönderildi. Görev sayısı:', db.gorevler.length);
+      if(showAlert) alert('Görevler Google Sheets’e kaydedildi.');
+      return true;
+    }).catch(function(e){
+      console.error('[CTP GÖREV SHEETS FIX] Kayıt hatası', e);
+      if(showAlert) alert('Görev kayıt hatası: ' + (e && e.message ? e.message : e));
+      throw e;
+    }).finally(function(){
+      setTimeout(function(){ busy = false; }, 500);
+    });
+  }
+
+  function wrapFunction(fnName){
+    try{
+      var old = window[fnName];
+      if(typeof old === 'function' && !old.__ctpGorevSheetsWrapped){
+        var wrapped = function(){
+          var r = old.apply(this, arguments);
+          setTimeout(function(){
+            ensureGorevler();
+            postAllToSheets(false).catch(function(e){ console.error('[CTP GÖREV SHEETS FIX]', e); });
+          }, 700);
+          return r;
+        };
+        wrapped.__ctpGorevSheetsWrapped = true;
+        window[fnName] = wrapped;
+      }
+    }catch(e){}
+  }
+
+  function wrapAll(){
+    [
+      'ctpGorevKaydet',
+      'ctpGorevTamam',
+      'ctpGorevSil',
+      'gorevKaydet',
+      'gorevEkle',
+      'gorevSil',
+      'gorevTamam'
+    ].forEach(wrapFunction);
+
+    // Buluta Kaydet basılırsa görevleri de dahil etsin.
+    [
+      'ctpSafeCloudSave',
+      'cloudSaveToCustomerSheet',
+      'bulutKaydet',
+      'ctpForceCloudSave',
+      'forceCloudSave',
+      'directPostSave',
+      'manuelYedekle'
+    ].forEach(function(fn){
+      try{
+        var old = window[fn];
+        if(typeof old === 'function' && !old.__ctpGorevCloudWrapped){
+          var wrapped = function(){
+            ensureGorevler();
+            return postAllToSheets(arguments[0] !== false);
+          };
+          wrapped.__ctpGorevCloudWrapped = true;
+          window[fn] = wrapped;
+        }
+      }catch(e){}
+    });
+  }
+
+  document.addEventListener('click', function(ev){
+    var btn = ev.target && ev.target.closest ? ev.target.closest('button') : null;
+    if(!btn) return;
+
+    var txt = (btn.innerText || btn.textContent || '').toLowerCase();
+    var oc = String(btn.getAttribute('onclick') || '').toLowerCase();
+
+    var isGorev =
+      txt.indexOf('görev') >= 0 ||
+      txt.indexOf('gorev') >= 0 ||
+      oc.indexOf('gorev') >= 0;
+
+    var isSaveAction =
+      txt.indexOf('kaydet') >= 0 ||
+      txt.indexOf('tamam') >= 0 ||
+      txt.indexOf('sil') >= 0 ||
+      oc.indexOf('kaydet') >= 0 ||
+      oc.indexOf('tamam') >= 0 ||
+      oc.indexOf('sil') >= 0;
+
+    var isCloudSave =
+      txt.indexOf('buluta kaydet') >= 0 ||
+      txt.indexOf('buluta kayıt') >= 0 ||
+      oc.indexOf('cloudsave') >= 0 ||
+      oc.indexOf('bulutkaydet') >= 0 ||
+      oc.indexOf('manuelyedekle') >= 0;
+
+    if(isCloudSave){
+      ev.preventDefault();
+      ev.stopImmediatePropagation();
+      postAllToSheets(true).catch(function(e){ console.error(e); });
+      return false;
+    }
+
+    if(isGorev && isSaveAction){
+      setTimeout(function(){
+        ensureGorevler();
+        postAllToSheets(false).catch(function(e){ console.error('[CTP GÖREV SHEETS FIX]', e); });
+      }, 1000);
+    }
+  }, true);
+
+  function boot(){
+    ensureGorevler();
+    wrapAll();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+  window.addEventListener('load', function(){
+    boot();
+    setTimeout(boot, 500);
+    setTimeout(boot, 1500);
+  });
+
+  setInterval(wrapAll, 2000);
+
+  window.ctpSaveGorevlerToSheets = postAllToSheets;
+  window.ctpEnsureGorevler = ensureGorevler;
+
+  log('Aktif. GÖREVLER sekmesi kayıt sistemi bağlandı.');
+})();
+</script>
+<!-- CTP_CHATGPT_GOREV_SHEETS_KAYIT_FIX_END -->
+
+
+<!-- CTP_CHATGPT_MENU_GIZLE_KULLANICILAR_FIX_START -->
+<style>
+/* Gizlenen menü itemleri tıklama/aktiflik üretmesin */
+.sb-item.ctp-menu-hidden{
+  display:none!important;
+  pointer-events:none!important;
+}
+</style>
+<script>
+(function(){
+  'use strict';
+
+  function getDB(){
+    try{ if(typeof DB !== 'undefined' && DB) return DB; }catch(e){}
+    try{ if(window.DB) return window.DB; }catch(e){}
+    return null;
+  }
+
+  function ayarlar(){
+    var db = getDB();
+    if(!db) return {};
+    if(!db.ayarlar || typeof db.ayarlar !== 'object') db.ayarlar = {};
+    return db.ayarlar;
+  }
+
+  function pageOf(el){
+    if(!el) return '';
+    var p = el.getAttribute('data-ctp-page') || el.getAttribute('data-page') || '';
+    if(p) return p;
+    var oc = String(el.getAttribute('onclick') || '');
+    var m = oc.match(/goPage\(['"]([^'"]+)['"]/);
+    return m ? m[1] : '';
+  }
+
+  function nav(){
+    return document.querySelector('.sb-nav');
+  }
+
+  function menuItems(){
+    var n = nav();
+    if(!n) return [];
+    return Array.prototype.slice.call(n.querySelectorAll('.sb-item')).filter(function(el){
+      return !!pageOf(el);
+    });
+  }
+
+  function readVisibleMap(){
+    var ay = ayarlar();
+    var val = ay.ctpMenuVisiblePages || ay.menuVisiblePages || ay.visibleMenuPages || {};
+
+    if(typeof val === 'string'){
+      try{ val = JSON.parse(val); }catch(e){ val = {}; }
+    }
+
+    if(!val || typeof val !== 'object' || Array.isArray(val)) val = {};
+
+    // Dashboard ve Ayarlar hep açık kalsın; kullanıcı kilitlenmesin.
+    val.dashboard = true;
+    val.ayarlar = true;
+
+    return val;
+  }
+
+  function saveVisibleMap(map){
+    map = map || {};
+    map.dashboard = true;
+    map.ayarlar = true;
+
+    var ay = ayarlar();
+    ay.ctpMenuVisiblePages = Object.assign({}, map);
+    ay.menuVisiblePages = Object.assign({}, map);
+    ay.visibleMenuPages = Object.assign({}, map);
+
+    try{
+      if(typeof ctSaveLocal === 'function') ctSaveLocal();
+      else if(typeof dbSave === 'function') dbSave();
+      else if(typeof saveLocal === 'function') saveLocal();
+    }catch(e){}
+
+    return map;
+  }
+
+  function activePage(){
+    var active = document.querySelector('.sb-item.active');
+    return pageOf(active);
+  }
+
+  function safeGoDashboard(){
+    try{
+      var dash = menuItems().find(function(x){ return pageOf(x) === 'dashboard'; });
+      if(typeof goPage === 'function') goPage('dashboard', dash || null);
+    }catch(e){}
+  }
+
+  function applyVisibleSafe(){
+    var map = readVisibleMap();
+    var current = activePage();
+
+    menuItems().forEach(function(el){
+      var p = pageOf(el);
+      var show = map[p] !== false;
+
+      if(p === 'dashboard' || p === 'ayarlar') show = true;
+
+      el.classList.toggle('ctp-menu-hidden', !show);
+      el.style.setProperty('display', show ? 'flex' : 'none', 'important');
+      el.style.setProperty('pointer-events', show ? 'auto' : 'none', 'important');
+
+      // Gizli item aktif kalmasın.
+      if(!show && el.classList.contains('active')){
+        el.classList.remove('active');
+      }
+    });
+
+    // Gizlenen aktif sayfadaysa dashboard'a dön; ama kullanıcılar sayfasını gereksiz aç/kapa yapma.
+    if(current){
+      var currentEl = menuItems().find(function(x){ return pageOf(x) === current; });
+      if(currentEl && currentEl.classList.contains('ctp-menu-hidden')){
+        safeGoDashboard();
+      }
+    }
+
+    // Boş başlıkları gizle
+    var n = nav();
+    if(n){
+      var children = Array.prototype.slice.call(n.children);
+      children.forEach(function(ch, i){
+        if(!(ch.classList && ch.classList.contains('sb-label'))) return;
+        var hasVisible = false;
+        for(var j=i+1;j<children.length;j++){
+          var nx = children[j];
+          if(nx.classList && nx.classList.contains('sb-label')) break;
+          if(nx.classList && nx.classList.contains('sb-item') && !nx.classList.contains('ctp-menu-hidden')){
+            hasVisible = true;
+            break;
+          }
+        }
+        ch.style.display = hasVisible ? '' : 'none';
+      });
+    }
+  }
+
+  function getTitle(el){
+    return (el.textContent || '').trim().replace(/\s+/g,' ');
+  }
+
+  function settingsPage(){
+    return document.getElementById('page-ayarlar') || document.getElementById('page-yedek');
+  }
+
+  function renderBox(){
+    var page = settingsPage();
+    if(!page) return;
+
+    // Eski sorunlu kutu varsa gizle, yerine güvenli kutu koy.
+    var old = document.getElementById('ctp-menu-visible-box');
+    if(old) old.style.display = 'none';
+
+    var box = document.getElementById('ctp-menu-visible-box-safe');
+    if(!box){
+      box = document.createElement('div');
+      box.className = 'card';
+      box.id = 'ctp-menu-visible-box-safe';
+      box.innerHTML =
+        '<div class="card-head"><div class="card-title"><i class="ti ti-eye-cog"></i> Sol Menü Göster / Gizle</div></div>' +
+        '<div style="font-size:11px;color:#6b7280;margin-bottom:10px">Görmek istediğin menüleri seç. Dashboard ve Ayarlar sabit açık kalır.</div>' +
+        '<div id="ctp-menu-visible-list-safe" class="ctp-menu-visible-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px"></div>' +
+        '<div class="btn-row">' +
+        '<button class="btn btn-g" id="ctp-menu-visible-save-safe"><i class="ti ti-device-floppy"></i> Kaydet</button>' +
+        '<button class="btn" id="ctp-menu-visible-all-safe"><i class="ti ti-eye"></i> Tümünü Aç</button>' +
+        '</div>';
+      page.appendChild(box);
+    }
+
+    var list = document.getElementById('ctp-menu-visible-list-safe');
+    if(!list) return;
+
+    var map = readVisibleMap();
+    var items = menuItems();
+
+    list.innerHTML = '';
+    items.forEach(function(el){
+      var p = pageOf(el);
+      var fixed = (p === 'dashboard' || p === 'ayarlar');
+      var checked = map[p] !== false || fixed;
+
+      var row = document.createElement('label');
+      row.style.cssText = 'display:flex;align-items:center;gap:8px;border:1px solid #e5e7eb;background:#fff;border-radius:10px;padding:9px 10px;font-size:12px;font-weight:700;color:#374151;';
+      row.innerHTML =
+        '<input type="checkbox" data-page="' + p + '" ' + (checked?'checked':'') + ' ' + (fixed?'disabled':'') + '>' +
+        '<span>' + getTitle(el) + '</span>' +
+        (fixed ? '<small style="margin-left:auto;color:#9ca3af">Sabit</small>' : '');
+      list.appendChild(row);
+    });
+
+    list.querySelectorAll('input[data-page]').forEach(function(inp){
+      inp.onchange = function(){
+        var map = readVisibleMap();
+        map[inp.dataset.page] = inp.checked;
+        saveVisibleMap(map);
+        applyVisibleSafe();
+      };
+    });
+
+    var save = document.getElementById('ctp-menu-visible-save-safe');
+    if(save){
+      save.onclick = function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        var map = readVisibleMap();
+        list.querySelectorAll('input[data-page]').forEach(function(inp){
+          map[inp.dataset.page] = inp.checked;
+        });
+        saveVisibleMap(map);
+        applyVisibleSafe();
+        alert('Sol menü görünürlük ayarları kaydedildi.');
+      };
+    }
+
+    var all = document.getElementById('ctp-menu-visible-all-safe');
+    if(all){
+      all.onclick = function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        var map = {};
+        menuItems().forEach(function(el){ map[pageOf(el)] = true; });
+        saveVisibleMap(map);
+        applyVisibleSafe();
+        renderBox();
+      };
+    }
+  }
+
+  // goPage sarımı: sadece görünürlüğü uygula; kullanıcılar sayfasını tetikleme.
+  function wrapGoPage(){
+    if(window.__ctpMenuKullaniciFixGoPage) return;
+    var old = window.goPage;
+    if(typeof old === 'function'){
+      window.goPage = function(page, el){
+        var r = old.apply(this, arguments);
+        setTimeout(function(){
+          applyVisibleSafe();
+          renderBox();
+        }, 100);
+        return r;
+      };
+      window.__ctpMenuKullaniciFixGoPage = true;
+    }
+  }
+
+  function boot(){
+    wrapGoPage();
+    applyVisibleSafe();
+    renderBox();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+  window.addEventListener('load', function(){
+    boot();
+    setTimeout(boot, 300);
+    setTimeout(boot, 1200);
+  });
+
+  setInterval(function(){
+    applyVisibleSafe();
+    renderBox();
+  }, 3000);
+
+  window.ctpApplyMenuVisibleSafe = applyVisibleSafe;
+  window.ctpSaveMenuVisibleSafe = saveVisibleMap;
+  window.ctpReadMenuVisibleSafe = readVisibleMap;
+
+  console.log('[CTP MENU FIX] Kullanıcılar açılıp kapanma hatası için güvenli görünürlük fix aktif.');
+})();
+</script>
+<!-- CTP_CHATGPT_MENU_GIZLE_KULLANICILAR_FIX_END -->
+
+
+<!-- CTP_CHATGPT_NUMUNE_CHECKBOX_SISTEM_START -->
+<style>
+#ctp-numune-checkbox-ui{
+  margin-top:12px;
+}
+.ctp-numune-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:12px;
+}
+.ctp-numune-panel{
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  background:#fff;
+  padding:12px;
+}
+.ctp-numune-panel-title{
+  font-size:13px;
+  font-weight:900;
+  color:#111827;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-bottom:10px;
+}
+.ctp-numune-filter-row{
+  display:grid;
+  grid-template-columns:1fr 150px;
+  gap:8px;
+  margin-bottom:10px;
+}
+#ctp-numune-product-list{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  max-height:420px;
+  overflow:auto;
+  padding-right:4px;
+}
+.ctp-numune-product-row{
+  display:grid;
+  grid-template-columns: 26px 1fr 86px;
+  gap:8px;
+  align-items:center;
+  border:1px solid #edf0f5;
+  border-radius:10px;
+  padding:8px;
+  background:#f9fafb;
+}
+.ctp-numune-product-row:hover{background:#fff}
+.ctp-numune-product-name{
+  font-size:12px;
+  font-weight:900;
+  color:#111827;
+  line-height:1.25;
+}
+.ctp-numune-product-meta{
+  font-size:10px;
+  color:#6b7280;
+  margin-top:2px;
+}
+.ctp-numune-product-row input[type="checkbox"]{
+  width:18px!important;
+  height:18px!important;
+  min-height:18px!important;
+}
+.ctp-numune-adet{
+  width:100%!important;
+  min-height:34px!important;
+  text-align:center;
+  font-weight:900;
+}
+#ctp-numune-selected-list{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  min-height:120px;
+}
+.ctp-numune-selected-row{
+  display:grid;
+  grid-template-columns: 1fr 72px 34px;
+  gap:8px;
+  align-items:center;
+  border:1px solid #e5e7eb;
+  border-radius:10px;
+  padding:8px;
+  background:#fff;
+}
+.ctp-numune-selected-name{
+  font-size:12px;
+  font-weight:900;
+  color:#111827;
+}
+.ctp-numune-selected-meta{
+  font-size:10px;
+  color:#6b7280;
+}
+.ctp-numune-remove{
+  height:32px!important;
+  min-height:32px!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.ctp-numune-empty{
+  font-size:12px;
+  color:#6b7280;
+  background:#f9fafb;
+  border:1px dashed #d1d5db;
+  border-radius:10px;
+  padding:12px;
+  text-align:center;
+}
+.ctp-numune-action-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+#ctp-numune-old-hidden-note{
+  display:none!important;
+}
+@media(max-width:900px){
+  .ctp-numune-grid{grid-template-columns:1fr}
+  .ctp-numune-filter-row{grid-template-columns:1fr}
+}
+</style>
+<script>
+(function(){
+  'use strict';
+
+  var state = {
+    selected: []
+  };
+
+  function log(){
+    try{ console.log.apply(console, ['[CTP NUMUNE CHECKBOX]'].concat([].slice.call(arguments))); }catch(e){}
+  }
+
+  function getDB(){
+    try{ if(typeof DB !== 'undefined' && DB) return DB; }catch(e){}
+    try{ if(window.DB) return window.DB; }catch(e){}
+    return null;
+  }
+
+  function arr(v){ return Array.isArray(v) ? v : []; }
+
+  function pick(o, keys, def){
+    o = o || {};
+    for(var i=0;i<keys.length;i++){
+      var k = keys[i];
+      if(o[k] !== undefined && o[k] !== null && o[k] !== '') return o[k];
+    }
+    return def;
+  }
+
+  function products(){
+    var db = getDB();
+    if(!db) return [];
+    var list = arr(db.urunler);
+    return list.map(function(u, idx){
+      var id = pick(u, ['id','urunId','kod'], idx + 1);
+      return {
+        raw: u,
+        id: String(id),
+        kod: String(pick(u, ['kod','urunKod','code'], id)),
+        ad: String(pick(u, ['ad','urunAd','name'], 'Ürün')),
+        kategori: String(pick(u, ['kategori','kat','category'], '')),
+        birim: String(pick(u, ['birim','unit'], 'ADET')),
+        sira: Number(pick(u, ['sira','order'], idx + 1)) || idx + 1
+      };
+    }).sort(function(a,b){
+      if(a.sira !== b.sira) return a.sira - b.sira;
+      return a.ad.localeCompare(b.ad, 'tr');
+    });
+  }
+
+  function firms(){
+    var db = getDB();
+    if(!db) return [];
+    return arr(db.firmalar);
+  }
+
+  function nextId(list){
+    list = arr(list);
+    var max = 0;
+    list.forEach(function(x){
+      var n = Number(x && x.id);
+      if(!isNaN(n)) max = Math.max(max, n);
+    });
+    return max + 1;
+  }
+
+  function page(){
+    return document.getElementById('page-numune');
+  }
+
+  function hideOldNumuneArea(){
+    var p = page();
+    if(!p) return;
+
+    // Eski numune alanlarını komple yok etmiyoruz; sadece kullanıcıya karışan ürün seçme/favori bölümlerini gizliyoruz.
+    // Bizim yeni UI kalacak.
+    Array.prototype.slice.call(p.children).forEach(function(ch){
+      if(ch.id === 'ctp-numune-checkbox-ui') return;
+      var txt = (ch.innerText || ch.textContent || '').toLowerCase();
+      if(
+        txt.indexOf('sık kullanılan numune ürünleri') >= 0 ||
+        txt.indexOf('favorilere ekle') >= 0 ||
+        txt.indexOf('numune ürünü') >= 0 ||
+        txt.indexOf('ürün seç') >= 0
+      ){
+        // Üstteki firma/tarih kartlarını silmemek için sadece ürün/favori metni geçen büyük blokları kapat.
+        if(txt.indexOf('firma') < 0 || txt.indexOf('ürün seç') >= 0 || txt.indexOf('sık kullanılan') >= 0){
+          ch.style.setProperty('display','none','important');
+        }
+      }
+    });
+
+    // Eski favori kalıntıları
+    Array.prototype.slice.call(p.querySelectorAll('.fav-box,.fav-products,.fav-chip,.fav-star,.fav-unit-row')).forEach(function(el){
+      if(!el.closest('#ctp-numune-checkbox-ui')) el.style.setProperty('display','none','important');
+    });
+  }
+
+  function ensureUI(){
+    var p = page();
+    if(!p) return;
+
+    hideOldNumuneArea();
+
+    var ui = document.getElementById('ctp-numune-checkbox-ui');
+    if(ui) return;
+
+    ui = document.createElement('div');
+    ui.id = 'ctp-numune-checkbox-ui';
+    ui.className = 'card';
+    ui.innerHTML =
+      '<div class="card-head">' +
+        '<div class="card-title"><i class="ti ti-checkbox"></i> Numune Girişi - Checkbox Ürün Seçimi</div>' +
+      '</div>' +
+      '<div style="font-size:11px;color:#6b7280;margin-bottom:10px">Ürünleri işaretle, adet gir, seçilenleri numuneye ekle.</div>' +
+      '<div class="ctp-numune-grid">' +
+        '<div class="ctp-numune-panel">' +
+          '<div class="ctp-numune-panel-title"><i class="ti ti-package"></i> Ürün Listesi</div>' +
+          '<div class="ctp-numune-filter-row">' +
+            '<input id="ctp-numune-search" placeholder="Ürün ara..." autocomplete="off">' +
+            '<select id="ctp-numune-category"><option value="">Tüm Kategoriler</option></select>' +
+          '</div>' +
+          '<div class="ctp-numune-action-row" style="margin-top:0;margin-bottom:10px">' +
+            '<button class="btn btn-sm" id="ctp-numune-check-all">Tümünü Seç</button>' +
+            '<button class="btn btn-sm" id="ctp-numune-uncheck-all">Seçimi Temizle</button>' +
+          '</div>' +
+          '<div id="ctp-numune-product-list"></div>' +
+        '</div>' +
+        '<div class="ctp-numune-panel">' +
+          '<div class="ctp-numune-panel-title"><i class="ti ti-list-check"></i> Seçilen Numune Ürünleri</div>' +
+          '<div id="ctp-numune-selected-list"></div>' +
+          '<div class="ctp-numune-action-row">' +
+            '<button class="btn btn-g" id="ctp-numune-add-selected"><i class="ti ti-plus"></i> Seçilenleri Numuneye Ekle</button>' +
+            '<button class="btn" id="ctp-numune-clear-selected"><i class="ti ti-trash"></i> Listeyi Temizle</button>' +
+          '</div>' +
+          '<div style="font-size:11px;color:#9ca3af;margin-top:10px">Not: Her ürün adet olarak eklenir. Birim otomatik ADET kabul edilir.</div>' +
+        '</div>' +
+      '</div>';
+
+    // Numune sayfasının başına değil, içerikte uygun yere koy
+    p.appendChild(ui);
+
+    bindUI();
+    renderCategories();
+    renderProducts();
+    renderSelected();
+  }
+
+  function renderCategories(){
+    var sel = document.getElementById('ctp-numune-category');
+    if(!sel) return;
+
+    var current = sel.value || '';
+    var cats = {};
+    products().forEach(function(u){
+      if(u.kategori) cats[u.kategori] = true;
+    });
+
+    sel.innerHTML = '<option value="">Tüm Kategoriler</option>' +
+      Object.keys(cats).sort(function(a,b){ return a.localeCompare(b,'tr'); }).map(function(c){
+        return '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
+      }).join('');
+
+    sel.value = current;
+  }
+
+  function escapeHtml(s){
+    return String(s || '').replace(/[&<>"']/g, function(ch){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
+    });
+  }
+
+  function isSelected(id){
+    return state.selected.some(function(x){ return String(x.id) === String(id); });
+  }
+
+  function getSelected(id){
+    return state.selected.find(function(x){ return String(x.id) === String(id); });
+  }
+
+  function setSelected(prod, checked, qty){
+    var id = String(prod.id);
+    state.selected = state.selected.filter(function(x){ return String(x.id) !== id; });
+    if(checked){
+      state.selected.push({
+        id: id,
+        kod: prod.kod,
+        ad: prod.ad,
+        kategori: prod.kategori,
+        birim: 'ADET',
+        miktar: Math.max(1, Number(qty) || 1)
+      });
+    }
+    renderSelected();
+  }
+
+  function renderProducts(){
+    var list = document.getElementById('ctp-numune-product-list');
+    if(!list) return;
+
+    var q = (document.getElementById('ctp-numune-search') || {}).value || '';
+    var cat = (document.getElementById('ctp-numune-category') || {}).value || '';
+    q = q.toLowerCase();
+
+    var filtered = products().filter(function(u){
+      var text = (u.ad + ' ' + u.kod + ' ' + u.kategori).toLowerCase();
+      if(q && text.indexOf(q) === -1) return false;
+      if(cat && u.kategori !== cat) return false;
+      return true;
+    });
+
+    if(!filtered.length){
+      list.innerHTML = '<div class="ctp-numune-empty">Ürün bulunamadı. Ürün Kataloğu’na ürün eklemen gerekiyor.</div>';
+      return;
+    }
+
+    list.innerHTML = filtered.map(function(u){
+      var selected = getSelected(u.id);
+      return '' +
+        '<div class="ctp-numune-product-row" data-id="' + escapeHtml(u.id) + '">' +
+          '<input type="checkbox" class="ctp-numune-prod-check" data-id="' + escapeHtml(u.id) + '" ' + (selected ? 'checked' : '') + '>' +
+          '<div>' +
+            '<div class="ctp-numune-product-name">' + escapeHtml(u.ad) + '</div>' +
+            '<div class="ctp-numune-product-meta">' + escapeHtml(u.kod) + (u.kategori ? ' • ' + escapeHtml(u.kategori) : '') + ' • ADET</div>' +
+          '</div>' +
+          '<input type="number" class="ctp-numune-adet" data-id="' + escapeHtml(u.id) + '" min="1" step="1" value="' + escapeHtml(selected ? selected.miktar : 1) + '">' +
+        '</div>';
+    }).join('');
+
+    list.querySelectorAll('.ctp-numune-prod-check').forEach(function(ch){
+      ch.onchange = function(){
+        var prod = products().find(function(u){ return String(u.id) === String(ch.dataset.id); });
+        if(!prod) return;
+        var qtyInp = list.querySelector('.ctp-numune-adet[data-id="' + cssEscape(ch.dataset.id) + '"]');
+        setSelected(prod, ch.checked, qtyInp ? qtyInp.value : 1);
+      };
+    });
+
+    list.querySelectorAll('.ctp-numune-adet').forEach(function(inp){
+      inp.oninput = function(){
+        var prod = products().find(function(u){ return String(u.id) === String(inp.dataset.id); });
+        if(!prod) return;
+        var ch = list.querySelector('.ctp-numune-prod-check[data-id="' + cssEscape(inp.dataset.id) + '"]');
+        if(ch && ch.checked) setSelected(prod, true, inp.value);
+      };
+    });
+  }
+
+  function cssEscape(s){
+    if(window.CSS && CSS.escape) return CSS.escape(String(s));
+    return String(s).replace(/"/g,'\\"');
+  }
+
+  function renderSelected(){
+    var list = document.getElementById('ctp-numune-selected-list');
+    if(!list) return;
+
+    if(!state.selected.length){
+      list.innerHTML = '<div class="ctp-numune-empty">Henüz ürün seçilmedi.</div>';
+      return;
+    }
+
+    list.innerHTML = state.selected.map(function(x){
+      return '' +
+        '<div class="ctp-numune-selected-row" data-id="' + escapeHtml(x.id) + '">' +
+          '<div>' +
+            '<div class="ctp-numune-selected-name">' + escapeHtml(x.ad) + '</div>' +
+            '<div class="ctp-numune-selected-meta">' + escapeHtml(x.kod) + ' • ADET</div>' +
+          '</div>' +
+          '<input type="number" class="ctp-numune-selected-adet" data-id="' + escapeHtml(x.id) + '" min="1" step="1" value="' + escapeHtml(x.miktar) + '">' +
+          '<button class="btn btn-sm ctp-numune-remove" data-id="' + escapeHtml(x.id) + '">×</button>' +
+        '</div>';
+    }).join('');
+
+    list.querySelectorAll('.ctp-numune-selected-adet').forEach(function(inp){
+      inp.oninput = function(){
+        var x = getSelected(inp.dataset.id);
+        if(x) x.miktar = Math.max(1, Number(inp.value) || 1);
+        var productQty = document.querySelector('.ctp-numune-adet[data-id="' + cssEscape(inp.dataset.id) + '"]');
+        if(productQty) productQty.value = x ? x.miktar : 1;
+      };
+    });
+
+    list.querySelectorAll('.ctp-numune-remove').forEach(function(btn){
+      btn.onclick = function(ev){
+        ev.preventDefault();
+        state.selected = state.selected.filter(function(x){ return String(x.id) !== String(btn.dataset.id); });
+        renderProducts();
+        renderSelected();
+      };
+    });
+  }
+
+  function findSelectedFirm(){
+    var db = getDB();
+    var fs = firms();
+
+    // Numune sayfasında seçili firma input/select varsa yakala
+    var p = page();
+    var val = '';
+    if(p){
+      var candidates = Array.prototype.slice.call(p.querySelectorAll('select,input')).filter(function(el){
+        var idn = String(el.id || el.name || el.placeholder || '').toLowerCase();
+        return idn.indexOf('firma') >= 0 || idn.indexOf('cari') >= 0;
+      });
+      for(var i=0;i<candidates.length;i++){
+        if(candidates[i].value){
+          val = candidates[i].value;
+          break;
+        }
+      }
+    }
+
+    var found = null;
+    if(val){
+      found = fs.find(function(f){
+        var kod = String(pick(f,['kod','firmaKod','id'],''));
+        var ad = String(pick(f,['ad','firmaAd','name'],''));
+        return val === kod || val === ad || val.indexOf(kod) >= 0 || val.indexOf(ad) >= 0;
+      });
+    }
+
+    return {
+      kod: found ? String(pick(found,['kod','firmaKod','id'],'')) : '',
+      ad: found ? String(pick(found,['ad','firmaAd','name'], val || '')) : (val || '')
+    };
+  }
+
+  function today(){
+    try{ return new Date().toISOString().slice(0,10); }catch(e){ return ''; }
+  }
+
+  function addSelectedToNumune(){
+    var db = getDB();
+    if(!db){
+      alert('DB bulunamadı.');
+      return;
+    }
+
+    if(!state.selected.length){
+      alert('Önce ürün seç.');
+      return;
+    }
+
+    if(!Array.isArray(db.numuneler)) db.numuneler = [];
+    if(!Array.isArray(db.numuneUrunler)) db.numuneUrunler = [];
+
+    var f = findSelectedFirm();
+    var nid = nextId(db.numuneler);
+    var now = new Date().toISOString();
+
+    var numune = {
+      id: nid,
+      firmaKod: f.kod,
+      firmaAd: f.ad,
+      tarih: today(),
+      aciklama: 'Checkbox ile eklenen numune',
+      durum: 'AKTIF',
+      createdAt: now
+    };
+
+    db.numuneler.push(numune);
+
+    state.selected.forEach(function(x, idx){
+      db.numuneUrunler.push({
+        id: nextId(db.numuneUrunler),
+        numuneId: nid,
+        urunId: x.id,
+        urunAd: x.ad,
+        birim: 'ADET',
+        miktar: Math.max(1, Number(x.miktar) || 1),
+        not: ''
+      });
+    });
+
+    try{
+      if(typeof ctSaveLocal === 'function') ctSaveLocal();
+      else if(typeof dbSave === 'function') dbSave();
+      else if(typeof saveLocal === 'function') saveLocal();
+    }catch(e){}
+
+    // Eski numune render fonksiyonları varsa listeyi yenile.
+    ['renderNumuneler','numuneListele','renderNumuneList','numuneRender'].forEach(function(fn){
+      try{ if(typeof window[fn] === 'function') window[fn](); }catch(e){}
+    });
+
+    alert(state.selected.length + ' ürün adet olarak numuneye eklendi.');
+
+    state.selected = [];
+    renderProducts();
+    renderSelected();
+  }
+
+  function bindUI(){
+    var search = document.getElementById('ctp-numune-search');
+    var cat = document.getElementById('ctp-numune-category');
+    var add = document.getElementById('ctp-numune-add-selected');
+    var clear = document.getElementById('ctp-numune-clear-selected');
+    var checkAll = document.getElementById('ctp-numune-check-all');
+    var uncheckAll = document.getElementById('ctp-numune-uncheck-all');
+
+    if(search && !search.__bound){
+      search.__bound = true;
+      search.oninput = renderProducts;
+    }
+
+    if(cat && !cat.__bound){
+      cat.__bound = true;
+      cat.onchange = renderProducts;
+    }
+
+    if(add && !add.__bound){
+      add.__bound = true;
+      add.onclick = function(ev){
+        ev.preventDefault();
+        addSelectedToNumune();
+      };
+    }
+
+    if(clear && !clear.__bound){
+      clear.__bound = true;
+      clear.onclick = function(ev){
+        ev.preventDefault();
+        state.selected = [];
+        renderProducts();
+        renderSelected();
+      };
+    }
+
+    if(checkAll && !checkAll.__bound){
+      checkAll.__bound = true;
+      checkAll.onclick = function(ev){
+        ev.preventDefault();
+        products().forEach(function(p){
+          if(!isSelected(p.id)){
+            state.selected.push({
+              id:p.id, kod:p.kod, ad:p.ad, kategori:p.kategori, birim:'ADET', miktar:1
+            });
+          }
+        });
+        renderProducts();
+        renderSelected();
+      };
+    }
+
+    if(uncheckAll && !uncheckAll.__bound){
+      uncheckAll.__bound = true;
+      uncheckAll.onclick = function(ev){
+        ev.preventDefault();
+        state.selected = [];
+        renderProducts();
+        renderSelected();
+      };
+    }
+  }
+
+  function wrapGoPage(){
+    if(window.__ctpNumuneCheckboxGoPage) return;
+    var old = window.goPage;
+    if(typeof old === 'function'){
+      window.goPage = function(){
+        var r = old.apply(this, arguments);
+        setTimeout(boot, 150);
+        setTimeout(boot, 600);
+        return r;
+      };
+      window.__ctpNumuneCheckboxGoPage = true;
+    }
+  }
+
+  function boot(){
+    wrapGoPage();
+    ensureUI();
+    renderCategories();
+    renderProducts();
+    renderSelected();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+  window.addEventListener('load', function(){
+    boot();
+    setTimeout(boot, 500);
+    setTimeout(boot, 1500);
+  });
+
+  setInterval(function(){
+    if(page()){
+      ensureUI();
+    }
+  }, 3000);
+
+  window.ctpNumuneCheckboxBoot = boot;
+  window.ctpNumuneCheckboxSelected = state.selected;
+
+  log('Aktif. Numune girişi checkbox/adet sistemi eklendi.');
+})();
+</script>
+<!-- CTP_CHATGPT_NUMUNE_CHECKBOX_SISTEM_END -->
+
+
+<!-- CTP_CHATGPT_NUMUNE_LISTE_ALTA_GRUPLU_FIX_START -->
+<style>
+.ctp-numune-group-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  background:#eef2ff;
+  border:1px solid #c7d2fe;
+  color:#1e3a8a;
+  border-radius:10px;
+  padding:8px 10px;
+  font-size:12px;
+  font-weight:900;
+  margin-top:8px;
+}
+.ctp-numune-group-title:first-child{margin-top:0}
+.ctp-numune-group-title small{
+  font-size:10px;
+  color:#475569;
+  font-weight:800;
+}
+.ctp-numune-group-wrap{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  border-left:3px solid #c7d2fe;
+  margin-left:6px;
+  padding-left:8px;
+}
+</style>
+<script>
+(function(){
+  'use strict';
+
+  function numunePage(){
+    return document.getElementById('page-numune');
+  }
+
+  function checkboxUi(){
+    return document.getElementById('ctp-numune-checkbox-ui');
+  }
+
+  function norm(s){
+    return String(s || '').toLowerCase()
+      .replace(/ı/g,'i')
+      .replace(/ğ/g,'g')
+      .replace(/ü/g,'u')
+      .replace(/ş/g,'s')
+      .replace(/ö/g,'o')
+      .replace(/ç/g,'c');
+  }
+
+  function isAyriListeBlock(el){
+    if(!el || el.id === 'ctp-numune-checkbox-ui') return false;
+    var t = norm(el.innerText || el.textContent || '');
+    return t.indexOf('numune urunleri ayri liste') >= 0 ||
+           t.indexOf('numune ürünleri ayrı liste') >= 0;
+  }
+
+  function moveAyriListeDown(){
+    var p = numunePage();
+    var ui = checkboxUi();
+    if(!p || !ui) return;
+
+    var target = null;
+
+    Array.prototype.slice.call(p.children).forEach(function(ch){
+      if(!target && isAyriListeBlock(ch)) target = ch;
+    });
+
+    if(!target){
+      Array.prototype.slice.call(p.querySelectorAll('div,section,article')).forEach(function(el){
+        if(target || !isAyriListeBlock(el)) return;
+
+        var t = el;
+        for(var i=0;i<6;i++){
+          if(!t.parentElement || t.parentElement === p) break;
+          if(t.classList && t.classList.contains('card')) break;
+          t = t.parentElement;
+        }
+        target = t;
+      });
+    }
+
+    if(!target || target === ui) return;
+
+    target.style.setProperty('display', '', 'important');
+    target.style.setProperty('visibility', '', 'important');
+    target.style.setProperty('opacity', '1', 'important');
+
+    if(ui.nextElementSibling !== target){
+      ui.insertAdjacentElement('afterend', target);
+    }
+  }
+
+  function groupNameFromRow(row){
+    var meta = row.querySelector('.ctp-numune-product-meta');
+    var text = meta ? (meta.textContent || '') : '';
+    var parts = text.split('•').map(function(x){ return x.trim(); }).filter(Boolean);
+
+    // Format: kod • kategori • ADET
+    if(parts.length >= 3) return parts[1] || 'Diğer';
+    if(parts.length == 2 && parts[1].toUpperCase() !== 'ADET') return parts[1];
+    return 'Diğer';
+  }
+
+  function groupProductList(){
+    var list = document.getElementById('ctp-numune-product-list');
+    if(!list || list.__ctpGroupingNow) return;
+
+    var rows = Array.prototype.slice.call(list.children).filter(function(ch){
+      return ch.classList && ch.classList.contains('ctp-numune-product-row');
+    });
+
+    if(!rows.length) return;
+
+    // Zaten gruplanmışsa tekrar elleme.
+    if(list.querySelector('.ctp-numune-group-title')) return;
+
+    list.__ctpGroupingNow = true;
+
+    var groups = {};
+    var order = [];
+
+    rows.forEach(function(row){
+      var g = groupNameFromRow(row);
+      if(!groups[g]){
+        groups[g] = [];
+        order.push(g);
+      }
+      groups[g].push(row);
+    });
+
+    list.innerHTML = '';
+
+    order.forEach(function(g){
+      var title = document.createElement('div');
+      title.className = 'ctp-numune-group-title';
+      title.innerHTML = '<span>' + escapeHtml(g) + '</span><small>' + groups[g].length + ' ürün</small>';
+      list.appendChild(title);
+
+      var wrap = document.createElement('div');
+      wrap.className = 'ctp-numune-group-wrap';
+      groups[g].forEach(function(row){
+        wrap.appendChild(row);
+      });
+      list.appendChild(wrap);
+    });
+
+    list.__ctpGroupingNow = false;
+  }
+
+  function escapeHtml(s){
+    return String(s || '').replace(/[&<>"']/g, function(ch){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
+    });
+  }
+
+  function boot(){
+    moveAyriListeDown();
+    setTimeout(moveAyriListeDown, 200);
+    setTimeout(groupProductList, 250);
+    setTimeout(function(){
+      moveAyriListeDown();
+      groupProductList();
+    }, 700);
+  }
+
+  // Ürün listesi her render olunca tekrar grupla.
+  function observeProductList(){
+    var list = document.getElementById('ctp-numune-product-list');
+    if(!list || list.__ctpGroupObserver) return;
+    list.__ctpGroupObserver = true;
+
+    var mo = new MutationObserver(function(){
+      clearTimeout(window.__ctpNumuneGroupTimer);
+      window.__ctpNumuneGroupTimer = setTimeout(groupProductList, 80);
+    });
+    mo.observe(list, {childList:true});
+  }
+
+  function wrapGoPage(){
+    if(window.__ctpNumuneAltGrupGoPage) return;
+    var old = window.goPage;
+    if(typeof old === 'function'){
+      window.goPage = function(){
+        var r = old.apply(this, arguments);
+        setTimeout(boot, 200);
+        setTimeout(observeProductList, 400);
+        return r;
+      };
+      window.__ctpNumuneAltGrupGoPage = true;
+    }
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){
+      wrapGoPage();
+      boot();
+      observeProductList();
+    });
+  }else{
+    wrapGoPage();
+    boot();
+    observeProductList();
+  }
+
+  window.addEventListener('load', function(){
+    wrapGoPage();
+    boot();
+    observeProductList();
+    setTimeout(boot, 1000);
+    setTimeout(observeProductList, 1200);
+  });
+
+  setInterval(function(){
+    if(numunePage()){
+      moveAyriListeDown();
+      observeProductList();
+    }
+  }, 2500);
+
+  console.log('[CTP NUMUNE] Ayrı liste alta alındı, ürünler grup başlığıyla gösteriliyor.');
+})();
+</script>
+<!-- CTP_CHATGPT_NUMUNE_LISTE_ALTA_GRUPLU_FIX_END -->
+
+
+
+
+
+<!-- CTP_CHATGPT_SIPARIS_KATALOG_KOLI_ADET_FIX_START -->
+<style>
+#ctp-siparis-katalog-ui{margin-top:12px}
+#ctp-siparis-katalog-ui.ctp-hide{display:none!important}
+#ctp-siparis-cari-uyari{
+  border:1px dashed #f59e0b;
+  background:#fffbeb;
+  color:#92400e;
+  border-radius:14px;
+  padding:14px;
+  font-size:13px;
+  font-weight:900;
+  margin-top:12px;
+}
+.ctp-siparis-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ctp-siparis-panel{border:1px solid #e5e7eb;border-radius:14px;background:#fff;padding:12px}
+.ctp-siparis-panel-title{font-size:13px;font-weight:900;color:#111827;display:flex;align-items:center;gap:7px;margin-bottom:10px}
+.ctp-koli-badge{margin-left:auto;background:#dcfce7;color:#166534;border:1px solid #bbf7d0;border-radius:999px;padding:3px 8px;font-size:10px;font-weight:900}
+.ctp-siparis-filter-row{display:grid;grid-template-columns:1fr 150px;gap:8px;margin-bottom:10px}
+#ctp-siparis-katalog-list{display:flex;flex-direction:column;gap:7px;max-height:430px;overflow:auto;padding-right:4px}
+.ctp-siparis-group-title{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#ecfdf5;border:1px solid #bbf7d0;color:#065f46;border-radius:10px;padding:8px 10px;font-size:12px;font-weight:900;margin-top:8px}
+.ctp-siparis-group-title:first-child{margin-top:0}
+.ctp-siparis-group-title small{font-size:10px;color:#047857;font-weight:800}
+.ctp-siparis-group-wrap{display:flex;flex-direction:column;gap:7px;border-left:3px solid #bbf7d0;margin-left:6px;padding-left:8px}
+.ctp-siparis-row{display:grid;grid-template-columns:26px 1fr 72px 82px 92px;gap:8px;align-items:center;border:1px solid #edf0f5;border-radius:10px;padding:8px;background:#f9fafb}
+.ctp-siparis-row:hover{background:#fff}
+.ctp-siparis-row input[type="checkbox"]{width:18px!important;height:18px!important;min-height:18px!important}
+.ctp-siparis-name{font-size:12px;font-weight:900;color:#111827;line-height:1.25}
+.ctp-siparis-meta{font-size:10px;color:#6b7280;margin-top:2px}
+.ctp-birim-select,.ctp-miktar-inp,.ctp-fiyat-inp{width:100%!important;min-height:34px!important;text-align:center;font-weight:900}
+#ctp-siparis-secili-list{display:flex;flex-direction:column;gap:7px;min-height:120px}
+.ctp-secili-row{display:grid;grid-template-columns:1fr 70px 72px 88px 34px;gap:8px;align-items:center;border:1px solid #e5e7eb;border-radius:10px;padding:8px;background:#fff}
+.ctp-empty{font-size:12px;color:#6b7280;background:#f9fafb;border:1px dashed #d1d5db;border-radius:10px;padding:12px;text-align:center}
+.ctp-action-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+@media(max-width:1100px){
+  .ctp-siparis-grid{grid-template-columns:1fr}
+  .ctp-siparis-filter-row{grid-template-columns:1fr}
+  .ctp-siparis-row{grid-template-columns:26px 1fr 65px 74px 82px}
+  .ctp-secili-row{grid-template-columns:1fr 64px 64px 76px 34px}
+}
+</style>
+<script>
+(function(){
+  'use strict';
+
+  var state = { selected: [] };
+  var manualOpen = false;
+
+  function db(){
+    try{ if(typeof DB !== 'undefined' && DB) return DB; }catch(e){}
+    try{ if(window.DB) return window.DB; }catch(e){}
+    return null;
+  }
+  function arr(v){ return Array.isArray(v) ? v : []; }
+  function pick(o, keys, def){
+    o=o||{};
+    for(var i=0;i<keys.length;i++){
+      var k=keys[i];
+      if(o[k]!==undefined && o[k]!==null && o[k]!=='') return o[k];
+    }
+    return def;
+  }
+  function esc(s){
+    return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
+  }
+  function cssEsc(s){
+    if(window.CSS && CSS.escape) return CSS.escape(String(s));
+    return String(s).replace(/"/g,'\\"');
+  }
+
+  function page(){ return document.getElementById('page-siparis'); }
+
+  function tlLocal(n){
+    try{ if(typeof tl === 'function') return tl(n); }catch(e){}
+    return '₺' + (Number(n)||0).toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  }
+
+  function toNum(v){ var n=Number(v); return isNaN(n)?0:n; }
+
+  function koliIciAdet(u){
+    return toNum(
+      u.koliIci || u.koliAdet || u.koli_adet || u.koliadet ||
+      u.adetKoli || u.adet_koli || u.paketIci || u.paketici || u.icAdet
+    ) || 0;
+  }
+
+  function fiyatBul(u, birim){
+    birim = String(birim || 'Koli').toLowerCase();
+
+    if(birim === 'adet'){
+      var adet = toNum(u.fiyAdet || u.adetFiyat || u.fiyatAdet || u.adet || 0);
+      if(adet) return adet;
+
+      var koliF = fiyatBul(u, 'Koli');
+      var ic = koliIciAdet(u);
+      if(koliF && ic) return koliF / ic;
+
+      return toNum(u.fiy || u.fiyat || u.fiyKg || 0);
+    }
+
+    // Varsayılan KOLİ
+    var koli = toNum(u.fiyKoli || u.koliFiyat || u.fiyatKoli || 0);
+    if(koli) return koli;
+
+    var ana = toNum(u.fiy || u.fiyat || 0);
+    if(ana) return ana;
+
+    var adetF = toNum(u.fiyAdet || u.adetFiyat || u.fiyatAdet || 0);
+    var ic2 = koliIciAdet(u);
+    if(adetF && ic2) return adetF * ic2;
+
+    return toNum(u.fiyKg || 0);
+  }
+
+  function katalogUrunleri(){
+    var D=db(); if(!D) return [];
+    return arr(D.urunler).map(function(u,i){
+      var id = pick(u,['id','urunId','kod'],i+1);
+      return {
+        raw:u,
+        id:String(id),
+        uid:id,
+        kod:String(pick(u,['bkod','kod','urunKod','code'],id)),
+        ad:String(pick(u,['ad','urunAd','name'],'Ürün')),
+        grup:String(pick(u,['kat','kategori','category'],'Diğer')),
+        koliFiyat:fiyatBul(u,'Koli'),
+        adetFiyat:fiyatBul(u,'Adet'),
+        koliIci:koliIciAdet(u),
+        kdv:Number(pick(u,['kdv'],1)) || 1,
+        noIskonto:!!(u.noIskonto || u.iskontoHaric),
+        sira:Number(pick(u,['sira','order'],i+1)) || i+1
+      };
+    }).sort(function(a,b){
+      if(a.grup !== b.grup) return a.grup.localeCompare(b.grup,'tr');
+      if(a.sira !== b.sira) return a.sira-b.sira;
+      return a.ad.localeCompare(b.ad,'tr');
+    });
+  }
+
+  function firmaSecili(){
+    try{ if(typeof selSiparisF !== 'undefined' && selSiparisF) return true; }catch(e){}
+    return manualOpen;
+  }
+
+  function hideOldProductCard(){
+    var p=page(); if(!p) return;
+    Array.prototype.slice.call(p.querySelectorAll('.card')).forEach(function(card){
+      if(card.id==='ctp-siparis-katalog-ui') return;
+      var t=(card.innerText||card.textContent||'').toLowerCase();
+      if(t.indexOf('ürün seç (katalogdan)')>=0 || t.indexOf('urun sec (katalogdan)')>=0){
+        card.style.setProperty('display','none','important');
+      }
+    });
+  }
+
+  function ensureUI(){
+    var p=page(); if(!p) return;
+    hideOldProductCard();
+
+    var warn=document.getElementById('ctp-siparis-cari-uyari');
+    if(!warn){
+      warn=document.createElement('div');
+      warn.id='ctp-siparis-cari-uyari';
+      warn.innerHTML='Önce cari / firma seç. Sonra katalogdan ürün seçimi açılacak. <button class="btn btn-g btn-sm" id="ctp-siparis-manual-open" style="margin-left:8px">Ürün Seçimini Aç</button>';
+      var firstCard=p.querySelector('.card');
+      if(firstCard && firstCard.parentElement) firstCard.parentElement.appendChild(warn);
+      else p.appendChild(warn);
+    }
+    var mb=document.getElementById('ctp-siparis-manual-open');
+    if(mb && !mb.__bound){
+      mb.__bound=true;
+      mb.onclick=function(e){e.preventDefault(); manualOpen=true; updateVisibility();};
+    }
+
+    var ui=document.getElementById('ctp-siparis-katalog-ui');
+    if(ui) return;
+
+    ui=document.createElement('div');
+    ui.id='ctp-siparis-katalog-ui';
+    ui.className='card';
+    ui.innerHTML =
+      '<div class="card-head"><div class="card-title"><i class="ti ti-shopping-cart-plus"></i> Sipariş Ürün Seçimi - Katalog <span class="ctp-koli-badge">Varsayılan KOLİ / Gerekirse ADET</span></div></div>'+
+      '<div style="font-size:11px;color:#6b7280;margin-bottom:10px">Ürünler direkt Ürün Kataloğu’ndan gelir. Varsayılan KOLİ’dir; ürün bazında ADET seçebilirsin.</div>'+
+      '<div class="ctp-siparis-grid">'+
+        '<div class="ctp-siparis-panel">'+
+          '<div class="ctp-siparis-panel-title"><i class="ti ti-package"></i> Katalog Ürünleri</div>'+
+          '<div class="ctp-siparis-filter-row"><input id="ctp-siparis-search" placeholder="Ürün ara..." autocomplete="off"><select id="ctp-siparis-grup"><option value="">Tüm Gruplar</option></select></div>'+
+          '<div class="ctp-action-row" style="margin-top:0;margin-bottom:10px"><button class="btn btn-sm" id="ctp-siparis-clear">Seçimi Temizle</button></div>'+
+          '<div id="ctp-siparis-katalog-list"></div>'+
+        '</div>'+
+        '<div class="ctp-siparis-panel">'+
+          '<div class="ctp-siparis-panel-title"><i class="ti ti-list-check"></i> Seçilen Ürünler</div>'+
+          '<div id="ctp-siparis-secili-list"></div>'+
+          '<div class="ctp-action-row"><button class="btn btn-g" id="ctp-siparis-sepete-ekle"><i class="ti ti-plus"></i> Seçilenleri Sepete Ekle</button></div>'+
+          '<div style="font-size:11px;color:#9ca3af;margin-top:10px">Bu buton mevcut sepet sistemine ekler. Toplamı program kendi hesaplar.</div>'+
+        '</div>'+
+      '</div>';
+
+    var leftCol=p.querySelector('.g2 > div');
+    if(leftCol) leftCol.appendChild(ui);
+    else p.appendChild(ui);
+
+    bindUI();
+    renderGroups();
+    renderProducts();
+    renderSelected();
+    updateVisibility();
+  }
+
+  function updateVisibility(){
+    var ui=document.getElementById('ctp-siparis-katalog-ui');
+    var warn=document.getElementById('ctp-siparis-cari-uyari');
+    if(!ui) return;
+    if(firmaSecili()){
+      ui.classList.remove('ctp-hide');
+      if(warn) warn.style.display='none';
+    }else{
+      ui.classList.add('ctp-hide');
+      if(warn) warn.style.display='';
+    }
+  }
+
+  function renderGroups(){
+    var sel=document.getElementById('ctp-siparis-grup'); if(!sel) return;
+    var cur=sel.value||'';
+    var groups={};
+    katalogUrunleri().forEach(function(u){groups[u.grup||'Diğer']=true;});
+    sel.innerHTML='<option value="">Tüm Gruplar</option>'+Object.keys(groups).sort(function(a,b){return a.localeCompare(b,'tr');}).map(function(g){return '<option value="'+esc(g)+'">'+esc(g)+'</option>';}).join('');
+    sel.value=cur;
+  }
+
+  function getSel(id){ return state.selected.find(function(x){return String(x.id)===String(id);}); }
+
+  function setSel(u,on,miktar,fiyat,birim){
+    birim = birim || 'Koli';
+    state.selected=state.selected.filter(function(x){return String(x.id)!==String(u.id);});
+    if(on){
+      state.selected.push({
+        id:u.id, uid:u.uid, kod:u.kod, ad:u.ad, grup:u.grup,
+        bir:birim,
+        miktar:Math.max(1,Number(miktar)||1),
+        fiyat:Number(fiyat)||0,
+        kdv:u.kdv,
+        noIskonto:u.noIskonto
+      });
+    }
+    renderSelected();
+  }
+
+  function renderProducts(){
+    var list=document.getElementById('ctp-siparis-katalog-list'); if(!list) return;
+    var q=((document.getElementById('ctp-siparis-search')||{}).value||'').toLowerCase();
+    var g=((document.getElementById('ctp-siparis-grup')||{}).value||'');
+
+    var filtered=katalogUrunleri().filter(function(u){
+      var text=(u.ad+' '+u.kod+' '+u.grup).toLowerCase();
+      if(q && text.indexOf(q)<0) return false;
+      if(g && u.grup!==g) return false;
+      return true;
+    });
+
+    if(!filtered.length){list.innerHTML='<div class="ctp-empty">Katalogda ürün bulunamadı.</div>';return;}
+
+    var groups={}, order=[];
+    filtered.forEach(function(u){var gr=u.grup||'Diğer'; if(!groups[gr]){groups[gr]=[];order.push(gr);} groups[gr].push(u);});
+
+    list.innerHTML=order.map(function(gr){
+      return '<div class="ctp-siparis-group-title"><span>'+esc(gr)+'</span><small>'+groups[gr].length+' ürün</small></div><div class="ctp-siparis-group-wrap">'+
+        groups[gr].map(function(u){
+          var s=getSel(u.id);
+          var bir=s?s.bir:'Koli';
+          var f=s?s.fiyat:(bir==='Adet'?u.adetFiyat:u.koliFiyat);
+          return '<div class="ctp-siparis-row" data-id="'+esc(u.id)+'">'+
+            '<input type="checkbox" class="ctp-prod-check" data-id="'+esc(u.id)+'" '+(s?'checked':'')+'>'+
+            '<div><div class="ctp-siparis-name">'+esc(u.ad)+'</div><div class="ctp-siparis-meta">'+esc(u.kod)+' • Koli: '+esc(tlLocal(u.koliFiyat))+' • Adet: '+esc(tlLocal(u.adetFiyat))+(u.koliIci?' • Koli İçi: '+esc(u.koliIci):'')+'</div></div>'+
+            '<select class="ctp-birim-select" data-id="'+esc(u.id)+'"><option value="Koli" '+(bir==='Koli'?'selected':'')+'>Koli</option><option value="Adet" '+(bir==='Adet'?'selected':'')+'>Adet</option></select>'+
+            '<input type="number" class="ctp-miktar-inp" data-id="'+esc(u.id)+'" min="1" step="1" value="'+esc(s?s.miktar:1)+'" placeholder="Miktar">'+
+            '<input type="number" class="ctp-fiyat-inp" data-id="'+esc(u.id)+'" min="0" step="0.01" value="'+esc(f)+'" placeholder="Fiyat">'+
+          '</div>';
+        }).join('')+'</div>';
+    }).join('');
+
+    list.querySelectorAll('.ctp-prod-check').forEach(function(ch){
+      ch.onchange=function(){
+        var u=katalogUrunleri().find(function(x){return String(x.id)===String(ch.dataset.id);});
+        if(!u) return;
+        var birEl=list.querySelector('.ctp-birim-select[data-id="'+cssEsc(ch.dataset.id)+'"]');
+        var miktar=list.querySelector('.ctp-miktar-inp[data-id="'+cssEsc(ch.dataset.id)+'"]');
+        var fiyat=list.querySelector('.ctp-fiyat-inp[data-id="'+cssEsc(ch.dataset.id)+'"]');
+        var bir=birEl?birEl.value:'Koli';
+        setSel(u,ch.checked,miktar?miktar.value:1,fiyat?fiyat.value:(bir==='Adet'?u.adetFiyat:u.koliFiyat),bir);
+      };
+    });
+
+    list.querySelectorAll('.ctp-birim-select').forEach(function(sel){
+      sel.onchange=function(){
+        var u=katalogUrunleri().find(function(x){return String(x.id)===String(sel.dataset.id);});
+        if(!u) return;
+        var fiyat=list.querySelector('.ctp-fiyat-inp[data-id="'+cssEsc(sel.dataset.id)+'"]');
+        var miktar=list.querySelector('.ctp-miktar-inp[data-id="'+cssEsc(sel.dataset.id)+'"]');
+        var ch=list.querySelector('.ctp-prod-check[data-id="'+cssEsc(sel.dataset.id)+'"]');
+        var newPrice = sel.value==='Adet' ? u.adetFiyat : u.koliFiyat;
+        if(fiyat) fiyat.value = newPrice;
+        if(ch && ch.checked) setSel(u,true,miktar?miktar.value:1,newPrice,sel.value);
+      };
+    });
+
+    list.querySelectorAll('.ctp-miktar-inp,.ctp-fiyat-inp').forEach(function(inp){
+      inp.oninput=function(){
+        var u=katalogUrunleri().find(function(x){return String(x.id)===String(inp.dataset.id);});
+        var ch=list.querySelector('.ctp-prod-check[data-id="'+cssEsc(inp.dataset.id)+'"]');
+        if(u && ch && ch.checked){
+          var bir=list.querySelector('.ctp-birim-select[data-id="'+cssEsc(inp.dataset.id)+'"]');
+          var miktar=list.querySelector('.ctp-miktar-inp[data-id="'+cssEsc(inp.dataset.id)+'"]');
+          var fiyat=list.querySelector('.ctp-fiyat-inp[data-id="'+cssEsc(inp.dataset.id)+'"]');
+          setSel(u,true,miktar?miktar.value:1,fiyat?fiyat.value:0,bir?bir.value:'Koli');
+        }
+      };
+    });
+  }
+
+  function selectedTotal(){
+    return state.selected.reduce(function(t,x){return t+(Number(x.miktar)||0)*(Number(x.fiyat)||0);},0);
+  }
+
+  function renderSelected(){
+    var list=document.getElementById('ctp-siparis-secili-list'); if(!list) return;
+    if(!state.selected.length){list.innerHTML='<div class="ctp-empty">Henüz ürün seçilmedi.</div>';return;}
+    list.innerHTML=state.selected.map(function(x){
+      return '<div class="ctp-secili-row" data-id="'+esc(x.id)+'">'+
+        '<div><div class="ctp-siparis-name">'+esc(x.ad)+'</div><div class="ctp-siparis-meta">'+esc(x.kod)+'</div></div>'+
+        '<select class="ctp-sec-birim" data-id="'+esc(x.id)+'"><option value="Koli" '+(x.bir==='Koli'?'selected':'')+'>Koli</option><option value="Adet" '+(x.bir==='Adet'?'selected':'')+'>Adet</option></select>'+
+        '<input type="number" class="ctp-sec-miktar" data-id="'+esc(x.id)+'" min="1" step="1" value="'+esc(x.miktar)+'">'+
+        '<input type="number" class="ctp-sec-fiyat" data-id="'+esc(x.id)+'" min="0" step="0.01" value="'+esc(x.fiyat)+'">'+
+        '<button class="btn btn-sm btn-r ctp-remove" data-id="'+esc(x.id)+'">×</button>'+
+      '</div>';
+    }).join('')+'<div style="margin-top:8px;font-size:13px;font-weight:900;text-align:right">Seçim Toplamı: '+selectedTotal().toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+'</div>';
+
+    list.querySelectorAll('.ctp-sec-birim').forEach(function(sel){
+      sel.onchange=function(){
+        var x=getSel(sel.dataset.id); if(!x) return;
+        var u=katalogUrunleri().find(function(u){return String(u.id)===String(x.id);});
+        x.bir=sel.value;
+        x.fiyat = u ? (sel.value==='Adet' ? u.adetFiyat : u.koliFiyat) : x.fiyat;
+        renderProducts(); renderSelected();
+      };
+    });
+    list.querySelectorAll('.ctp-sec-miktar,.ctp-sec-fiyat').forEach(function(inp){
+      inp.oninput=function(){
+        var x=getSel(inp.dataset.id); if(!x) return;
+        if(inp.classList.contains('ctp-sec-miktar')) x.miktar=Math.max(1,Number(inp.value)||1);
+        else x.fiyat=Number(inp.value)||0;
+        renderProducts(); renderSelected();
+      };
+    });
+    list.querySelectorAll('.ctp-remove').forEach(function(btn){
+      btn.onclick=function(e){
+        e.preventDefault();
+        state.selected=state.selected.filter(function(x){return String(x.id)!==String(btn.dataset.id);});
+        renderProducts(); renderSelected();
+      };
+    });
+  }
+
+  function addToRealSepet(){
+    if(!firmaSecili()){
+      alert('Önce cari / firma seç.');
+      return;
+    }
+    if(!state.selected.length){
+      alert('Önce katalogdan ürün seç.');
+      return;
+    }
+
+    try{ if(typeof sepet === 'undefined' || !Array.isArray(sepet)) window.sepet=[]; }catch(e){ window.sepet=[]; }
+
+    state.selected.forEach(function(x){
+      var existing=sepet.find(function(s){
+        return String(s.uid)===String(x.uid) &&
+               String(s.bir||s.birim)===String(x.bir) &&
+               Number(s.fiy||s.fiyat)===Number(x.fiyat);
+      });
+      if(existing){
+        existing.mik=Number(existing.mik||existing.miktar||0)+Number(x.miktar||1);
+        existing.miktar=existing.mik;
+        existing.fiy=Number(x.fiyat)||0;
+        existing.fiyat=existing.fiy;
+        existing.bir=x.bir;
+        existing.birim=x.bir;
+      }else{
+        sepet.push({
+          uid:x.uid,
+          ad:x.ad,
+          bir:x.bir,
+          birim:x.bir,
+          fiy:Number(x.fiyat)||0,
+          fiyat:Number(x.fiyat)||0,
+          kdv:x.kdv || 1,
+          mik:Number(x.miktar)||1,
+          miktar:Number(x.miktar)||1,
+          noIskonto:!!x.noIskonto
+        });
+      }
+    });
+
+    try{ if(typeof renderSepet === 'function') renderSepet(); }catch(e){ console.error(e); }
+    try{ if(typeof siparisKdvHesapla === 'function') siparisKdvHesapla(); }catch(e){ console.error(e); }
+    try{ if(typeof dbSave === 'function') dbSave(); else if(typeof ctSaveLocal === 'function') ctSaveLocal(); }catch(e){}
+
+    var count=state.selected.length;
+    state.selected=[];
+    renderProducts(); renderSelected();
+
+    alert(count+' ürün sepete eklendi. Sepet toplamını kontrol et.');
+  }
+
+  function bindUI(){
+    var search=document.getElementById('ctp-siparis-search');
+    var grup=document.getElementById('ctp-siparis-grup');
+    var add=document.getElementById('ctp-siparis-sepete-ekle');
+    var clear=document.getElementById('ctp-siparis-clear');
+
+    if(search && !search.__b){search.__b=true;search.oninput=renderProducts;}
+    if(grup && !grup.__b){grup.__b=true;grup.onchange=renderProducts;}
+    if(add && !add.__b){add.__b=true;add.onclick=function(e){e.preventDefault();addToRealSepet();};}
+    if(clear && !clear.__b){clear.__b=true;clear.onclick=function(e){e.preventDefault();state.selected=[];renderProducts();renderSelected();};}
+  }
+
+  function wrapSiparisFirmaSec(){
+    if(window.__ctpSipFirmaWrapKoliAdet) return;
+    if(typeof window.siparisFirmaSec === 'function'){
+      var old=window.siparisFirmaSec;
+      window.siparisFirmaSec=function(){
+        var r=old.apply(this,arguments);
+        setTimeout(function(){manualOpen=true; ensureUI(); updateVisibility();},100);
+        return r;
+      };
+      window.__ctpSipFirmaWrapKoliAdet=true;
+    }
+  }
+
+  function boot(){
+    wrapSiparisFirmaSec();
+    ensureUI();
+    renderGroups();
+    renderProducts();
+    renderSelected();
+    updateVisibility();
+  }
+
+  function wrapGoPage(){
+    if(window.__ctpSipKatalogKoliAdetGoPage) return;
+    if(typeof window.goPage === 'function'){
+      var old=window.goPage;
+      window.goPage=function(){
+        var r=old.apply(this,arguments);
+        setTimeout(boot,200);
+        setTimeout(boot,800);
+        return r;
+      };
+      window.__ctpSipKatalogKoliAdetGoPage=true;
+    }
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',function(){wrapGoPage();boot();});
+  }else{
+    wrapGoPage();boot();
+  }
+
+  window.addEventListener('load',function(){
+    wrapGoPage();boot();
+    setTimeout(boot,700);
+    setTimeout(boot,1600);
+  });
+
+  setInterval(function(){ if(page()) boot(); },3000);
+
+  window.ctpSiparisKatalogSepeteEkle=addToRealSepet;
+  console.log('[CTP SİPARİŞ KATALOG] Varsayılan KOLİ, gerekirse ADET seçimi aktif.');
+})();
+</script>
+<!-- CTP_CHATGPT_SIPARIS_KATALOG_KOLI_ADET_FIX_END -->
+
+
+<!-- CTP_CHATGPT_SIPARIS_SEPET_GOR_CIKAR_FIX_START -->
+<style>
+#ctp-siparis-gercek-sepet-box{
+  margin-top:12px;
+  border:1px solid #bbf7d0;
+  background:#f0fdf4;
+  border-radius:14px;
+  padding:12px;
+}
+.ctp-sepet-title{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-size:13px;
+  font-weight:900;
+  color:#14532d;
+  margin-bottom:10px;
+}
+#ctp-siparis-gercek-sepet-list{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+.ctp-gercek-sepet-row{
+  display:grid;
+  grid-template-columns:1fr 72px 72px 96px 34px;
+  gap:8px;
+  align-items:center;
+  border:1px solid #d1fae5;
+  background:#fff;
+  border-radius:10px;
+  padding:8px;
+}
+.ctp-gercek-sepet-name{
+  font-size:12px;
+  font-weight:900;
+  color:#111827;
+  line-height:1.25;
+}
+.ctp-gercek-sepet-meta{
+  font-size:10px;
+  color:#6b7280;
+  margin-top:2px;
+}
+.ctp-gercek-sepet-inp{
+  min-height:32px!important;
+  text-align:center;
+  font-weight:900;
+  width:100%!important;
+}
+.ctp-gercek-sepet-remove{
+  height:32px!important;
+  min-height:32px!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.ctp-gercek-sepet-total{
+  margin-top:8px;
+  text-align:right;
+  font-size:13px;
+  font-weight:900;
+  color:#14532d;
+}
+.ctp-gercek-sepet-empty{
+  font-size:12px;
+  color:#6b7280;
+  background:#fff;
+  border:1px dashed #86efac;
+  border-radius:10px;
+  padding:12px;
+  text-align:center;
+}
+@media(max-width:900px){
+  .ctp-gercek-sepet-row{
+    grid-template-columns:1fr 58px 58px 78px 34px;
+  }
+}
+</style>
+<script>
+(function(){
+  'use strict';
+
+  function page(){
+    return document.getElementById('page-siparis');
+  }
+
+  function getSepet(){
+    try{
+      if(typeof sepet !== 'undefined' && Array.isArray(sepet)) return sepet;
+    }catch(e){}
+    if(Array.isArray(window.sepet)) return window.sepet;
+    window.sepet = [];
+    return window.sepet;
+  }
+
+  function tlLocal(n){
+    try{ if(typeof tl === 'function') return tl(n); }catch(e){}
+    return '₺' + (Number(n)||0).toLocaleString('tr-TR',{minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  function num(v){
+    var n = Number(v);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function itemName(x){
+    return String(x.ad || x.urunAd || x.name || 'Ürün');
+  }
+
+  function itemBirim(x){
+    return String(x.bir || x.birim || 'Koli');
+  }
+
+  function itemMiktar(x){
+    return num(x.mik || x.miktar || 0);
+  }
+
+  function itemFiyat(x){
+    return num(x.fiy || x.fiyat || 0);
+  }
+
+  function itemTutar(x){
+    return itemMiktar(x) * itemFiyat(x);
+  }
+
+  function saveAndRecalc(){
+    try{ if(typeof renderSepet === 'function') renderSepet(); }catch(e){ console.error(e); }
+    try{ if(typeof siparisKdvHesapla === 'function') siparisKdvHesapla(); }catch(e){ console.error(e); }
+    try{
+      if(typeof dbSave === 'function') dbSave();
+      else if(typeof ctSaveLocal === 'function') ctSaveLocal();
+      else if(typeof saveLocal === 'function') saveLocal();
+    }catch(e){}
+  }
+
+  function ensureBox(){
+    var p = page();
+    if(!p) return;
+
+    var ui = document.getElementById('ctp-siparis-katalog-ui');
+    if(!ui) return;
+
+    var box = document.getElementById('ctp-siparis-gercek-sepet-box');
+    if(box) return;
+
+    box = document.createElement('div');
+    box.id = 'ctp-siparis-gercek-sepet-box';
+    box.innerHTML =
+      '<div class="ctp-sepet-title"><i class="ti ti-shopping-cart"></i> Sepetteki Ürünler</div>' +
+      '<div id="ctp-siparis-gercek-sepet-list"></div>' +
+      '<div class="ctp-action-row" style="margin-top:10px">' +
+        '<button class="btn btn-r" id="ctp-siparis-sepet-temizle"><i class="ti ti-trash"></i> Sepeti Temizle</button>' +
+      '</div>';
+
+    // Sağdaki Seçilen Ürünler panelinin altına koy
+    var selectedList = document.getElementById('ctp-siparis-secili-list');
+    var panel = selectedList ? selectedList.closest('.ctp-siparis-panel') : null;
+    if(panel) panel.appendChild(box);
+    else ui.appendChild(box);
+
+    var clear = document.getElementById('ctp-siparis-sepet-temizle');
+    if(clear && !clear.__bound){
+      clear.__bound = true;
+      clear.onclick = function(ev){
+        ev.preventDefault();
+        if(!confirm('Sepetteki tüm ürünler silinsin mi?')) return;
+        var s = getSepet();
+        s.splice(0, s.length);
+        saveAndRecalc();
+        renderBasket();
+      };
+    }
+  }
+
+  function renderBasket(){
+    ensureBox();
+
+    var list = document.getElementById('ctp-siparis-gercek-sepet-list');
+    if(!list) return;
+
+    var s = getSepet();
+
+    if(!s.length){
+      list.innerHTML = '<div class="ctp-gercek-sepet-empty">Sepette ürün yok.</div>';
+      return;
+    }
+
+    var total = s.reduce(function(t,x){ return t + itemTutar(x); }, 0);
+
+    list.innerHTML = s.map(function(x, idx){
+      return '' +
+        '<div class="ctp-gercek-sepet-row" data-idx="' + idx + '">' +
+          '<div>' +
+            '<div class="ctp-gercek-sepet-name">' + escapeHtml(itemName(x)) + '</div>' +
+            '<div class="ctp-gercek-sepet-meta">' + escapeHtml(itemBirim(x)) + ' • ' + escapeHtml(tlLocal(itemFiyat(x))) + '</div>' +
+          '</div>' +
+          '<select class="ctp-gercek-sepet-birim ctp-gercek-sepet-inp" data-idx="' + idx + '">' +
+            '<option value="Koli" ' + (itemBirim(x) === 'Koli' ? 'selected' : '') + '>Koli</option>' +
+            '<option value="Adet" ' + (itemBirim(x) === 'Adet' ? 'selected' : '') + '>Adet</option>' +
+          '</select>' +
+          '<input type="number" class="ctp-gercek-sepet-mik ctp-gercek-sepet-inp" data-idx="' + idx + '" min="1" step="1" value="' + escapeHtml(itemMiktar(x)) + '">' +
+          '<input type="number" class="ctp-gercek-sepet-fiy ctp-gercek-sepet-inp" data-idx="' + idx + '" min="0" step="0.01" value="' + escapeHtml(itemFiyat(x)) + '">' +
+          '<button class="btn btn-sm btn-r ctp-gercek-sepet-remove" data-idx="' + idx + '">×</button>' +
+        '</div>';
+    }).join('') + '<div class="ctp-gercek-sepet-total">Sepet Toplamı: ' + total.toLocaleString('tr-TR',{minimumFractionDigits:2, maximumFractionDigits:2}) + '</div>';
+
+    list.querySelectorAll('.ctp-gercek-sepet-birim').forEach(function(sel){
+      sel.onchange = function(){
+        var i = Number(sel.dataset.idx);
+        var x = getSepet()[i];
+        if(!x) return;
+        x.bir = sel.value;
+        x.birim = sel.value;
+        saveAndRecalc();
+        renderBasket();
+      };
+    });
+
+    list.querySelectorAll('.ctp-gercek-sepet-mik').forEach(function(inp){
+      inp.oninput = function(){
+        var i = Number(inp.dataset.idx);
+        var x = getSepet()[i];
+        if(!x) return;
+        var v = Math.max(1, Number(inp.value) || 1);
+        x.mik = v;
+        x.miktar = v;
+        saveAndRecalc();
+        renderBasket();
+      };
+    });
+
+    list.querySelectorAll('.ctp-gercek-sepet-fiy').forEach(function(inp){
+      inp.oninput = function(){
+        var i = Number(inp.dataset.idx);
+        var x = getSepet()[i];
+        if(!x) return;
+        var v = Number(inp.value) || 0;
+        x.fiy = v;
+        x.fiyat = v;
+        saveAndRecalc();
+        renderBasket();
+      };
+    });
+
+    list.querySelectorAll('.ctp-gercek-sepet-remove').forEach(function(btn){
+      btn.onclick = function(ev){
+        ev.preventDefault();
+        var i = Number(btn.dataset.idx);
+        getSepet().splice(i, 1);
+        saveAndRecalc();
+        renderBasket();
+      };
+    });
+  }
+
+  function escapeHtml(s){
+    return String(s || '').replace(/[&<>"']/g, function(ch){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
+    });
+  }
+
+  function wrapAddButtons(){
+    // Bizim checkbox "Seçilenleri Sepete Ekle" butonundan sonra listeyi yenile.
+    var btn = document.getElementById('ctp-siparis-sepete-ekle');
+    if(btn && !btn.__ctpBasketRefresh){
+      btn.__ctpBasketRefresh = true;
+      btn.addEventListener('click', function(){
+        setTimeout(renderBasket, 100);
+        setTimeout(renderBasket, 500);
+        setTimeout(renderBasket, 1200);
+      }, true);
+    }
+
+    // Eski ürün ekle butonları varsa onlar da yenilesin.
+    Array.prototype.slice.call(document.querySelectorAll('button,.btn')).forEach(function(b){
+      if(b.__ctpBasketAnyRefresh) return;
+      var t = (b.innerText || b.textContent || '').toLowerCase();
+      if(t.indexOf('sepete ekle') >= 0 || t.indexOf('ürün ekle') >= 0 || t.indexOf('urun ekle') >= 0){
+        b.__ctpBasketAnyRefresh = true;
+        b.addEventListener('click', function(){
+          setTimeout(renderBasket, 100);
+          setTimeout(renderBasket, 600);
+        }, true);
+      }
+    });
+  }
+
+  function wrapRenderSepet(){
+    if(window.__ctpRenderSepetBasketWrapped) return;
+    if(typeof window.renderSepet === 'function'){
+      var old = window.renderSepet;
+      window.renderSepet = function(){
+        var r = old.apply(this, arguments);
+        setTimeout(renderBasket, 50);
+        return r;
+      };
+      window.__ctpRenderSepetBasketWrapped = true;
+    }
+  }
+
+  function boot(){
+    if(!page()) return;
+    ensureBox();
+    wrapAddButtons();
+    wrapRenderSepet();
+    renderBasket();
+  }
+
+  function wrapGoPage(){
+    if(window.__ctpSepetGorGoPage) return;
+    if(typeof window.goPage === 'function'){
+      var old = window.goPage;
+      window.goPage = function(){
+        var r = old.apply(this, arguments);
+        setTimeout(boot, 200);
+        setTimeout(boot, 800);
+        return r;
+      };
+      window.__ctpSepetGorGoPage = true;
+    }
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){
+      wrapGoPage();
+      boot();
+    });
+  }else{
+    wrapGoPage();
+    boot();
+  }
+
+  window.addEventListener('load', function(){
+    wrapGoPage();
+    boot();
+    setTimeout(boot, 500);
+    setTimeout(boot, 1500);
+  });
+
+  setInterval(function(){
+    if(page()) boot();
+  }, 2500);
+
+  window.ctpSiparisSepetGoster = renderBasket;
+
+  console.log('[CTP SİPARİŞ SEPET] Sepetteki ürünleri gösterme ve çıkarma fix aktif.');
+})();
+</script>
+<!-- CTP_CHATGPT_SIPARIS_SEPET_GOR_CIKAR_FIX_END -->
+
+
+<!-- CTP_CHATGPT_SAYFA_ATMA_FIX_START -->
+<script>
+(function(){
+  'use strict';
+
+  var lastUserPage = '';
+  var lastUserClickAt = 0;
+  var restoring = false;
+
+  function pageOfMenu(el){
+    if(!el) return '';
+    var p = el.getAttribute('data-ctp-page') || el.getAttribute('data-page') || '';
+    if(p) return p;
+    var oc = String(el.getAttribute('onclick') || '');
+    var m = oc.match(/goPage\(['"]([^'"]+)['"]/);
+    return m ? m[1] : '';
+  }
+
+  function currentPage(){
+    var active = document.querySelector('.sb-item.active');
+    var p = pageOfMenu(active);
+    if(p) return p;
+
+    var pages = Array.prototype.slice.call(document.querySelectorAll('[id^="page-"]'));
+    var visible = pages.find(function(x){
+      try{
+        var st = getComputedStyle(x);
+        return st.display !== 'none' && st.visibility !== 'hidden';
+      }catch(e){ return false; }
+    });
+    if(visible) return String(visible.id || '').replace(/^page-/, '');
+    return '';
+  }
+
+  function menuElFor(page){
+    var items = Array.prototype.slice.call(document.querySelectorAll('.sb-item'));
+    return items.find(function(el){ return pageOfMenu(el) === page; }) || null;
+  }
+
+  function rememberPage(p){
+    if(!p) p = currentPage();
+    if(!p) return;
+
+    // Dashboard'u otomatik hatırlama; kullanıcının gerçek çalışma sayfasını saklayalım.
+    if(p !== 'dashboard' && p !== 'ana-sayfa' && p !== 'anasayfa'){
+      lastUserPage = p;
+      try{ sessionStorage.setItem('ctp_last_user_page', p); }catch(e){}
+    }
+  }
+
+  function restorePage(){
+    if(restoring) return;
+
+    var target = lastUserPage;
+    try{ target = target || sessionStorage.getItem('ctp_last_user_page') || ''; }catch(e){}
+    if(!target || target === 'dashboard') return;
+
+    var cur = currentPage();
+
+    // Zaten doğru sayfadaysa dokunma.
+    if(cur === target) return;
+
+    // Kullanıcı son 1.5 saniyede dashboard'a gerçekten tıkladıysa engelleme.
+    if(Date.now() - lastUserClickAt < 1500 && cur === 'dashboard') return;
+
+    // Sadece otomatik dashboard'a atma durumunu geri al.
+    if(cur === 'dashboard' || cur === 'ana-sayfa' || cur === 'anasayfa' || !cur){
+      restoring = true;
+      try{
+        if(typeof goPage === 'function'){
+          goPage(target, menuElFor(target));
+        }
+      }catch(e){
+        console.error('[CTP SAYFA ATMA FIX] geri alma hata', e);
+      }
+      setTimeout(function(){ restoring = false; }, 300);
+    }
+  }
+
+  // Menü tıklamalarında kullanıcı sayfasını hatırla.
+  document.addEventListener('click', function(ev){
+    var item = ev.target && ev.target.closest ? ev.target.closest('.sb-item') : null;
+    if(item){
+      lastUserClickAt = Date.now();
+      var p = pageOfMenu(item);
+      if(p) rememberPage(p);
+    }
+  }, true);
+
+  function wrapGoPage(){
+    if(window.__ctpPageJumpFixGoPageWrapped) return;
+    if(typeof window.goPage !== 'function') return;
+
+    var old = window.goPage;
+    window.goPage = function(page, el){
+      page = String(page || '');
+
+      // Eski kod bulut yükleme sonrası dashboard'a atıyorsa ve kullanıcı başka sayfadaysa engelle.
+      var autoDashboard = (
+        page === 'dashboard' ||
+        page === 'ana-sayfa' ||
+        page === 'anasayfa'
+      );
+
+      var recentUserClick = Date.now() - lastUserClickAt < 1200;
+
+      if(autoDashboard && !recentUserClick && lastUserPage && lastUserPage !== 'dashboard' && !restoring){
+        console.warn('[CTP SAYFA ATMA FIX] Otomatik dashboard yönlendirmesi engellendi. Kalınan sayfa:', lastUserPage);
+        setTimeout(restorePage, 50);
+        return false;
+      }
+
+      var r = old.apply(this, arguments);
+
+      if(!autoDashboard || recentUserClick){
+        setTimeout(function(){ rememberPage(page); }, 50);
+      }
+
+      return r;
+    };
+
+    window.__ctpPageJumpFixGoPageWrapped = true;
+  }
+
+  // Veri çekme/yükleme fonksiyonlarını sar: işlem bitince sayfayı geri al.
+  function wrapLoader(fnName){
+    try{
+      var old = window[fnName];
+      if(typeof old === 'function' && !old.__ctpPageJumpFixWrapped){
+        var wrapped = function(){
+          rememberPage();
+          var before = lastUserPage;
+          var r = old.apply(this, arguments);
+
+          function after(){
+            if(before) lastUserPage = before;
+            setTimeout(restorePage, 300);
+            setTimeout(restorePage, 1200);
+            setTimeout(restorePage, 3000);
+          }
+
+          try{
+            if(r && typeof r.then === 'function') r.then(after).catch(after);
+            else after();
+          }catch(e){ after(); }
+
+          return r;
+        };
+        wrapped.__ctpPageJumpFixWrapped = true;
+        window[fnName] = wrapped;
+      }
+    }catch(e){}
+  }
+
+  function wrapLoaders(){
+    [
+      'bulutCek',
+      'buluttanYukle',
+      'bulutYukle',
+      'cloudLoadFromCustomerSheet',
+      'ctpSafeCloudLoad',
+      'loadCloud',
+      'loadData',
+      'veriYukle',
+      'googleSheetsLoad'
+    ].forEach(wrapLoader);
+  }
+
+  function boot(){
+    wrapGoPage();
+    wrapLoaders();
+    rememberPage();
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', boot);
+  }else{
+    boot();
+  }
+
+  window.addEventListener('load', function(){
+    boot();
+    setTimeout(boot, 500);
+    setTimeout(boot, 1500);
+  });
+
+  // 10 saniye sonra atan eski timer varsa yakalayıp geri çevir.
+  setInterval(function(){
+    wrapGoPage();
+    wrapLoaders();
+
+    var cur = currentPage();
+    if(cur && cur !== 'dashboard' && cur !== 'ana-sayfa' && cur !== 'anasayfa'){
+      rememberPage(cur);
+    }else{
+      restorePage();
+    }
+  }, 1000);
+
+  window.ctpRememberPage = rememberPage;
+  window.ctpRestorePage = restorePage;
+
+  console.log('[CTP SAYFA ATMA FIX] Aktif. Program otomatik ana sayfaya atarsa eski sayfaya döndürülecek.');
+})();
+</script>
+<!-- CTP_CHATGPT_SAYFA_ATMA_FIX_END -->
+
+
+<!-- CTP_CHATGPT_BULUT_HIZLI_YUKLEME_FIX_START -->
+<style>
+#ctp-fast-cloud-status{
+  position:fixed;
+  left:14px;
+  bottom:14px;
+  z-index:999999;
+  background:#111827;
+  color:#fff;
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:11px;
+  font-weight:900;
+  box-shadow:0 8px 25px rgba(0,0,0,.18);
+  display:none;
+}
+#ctp-fast-cloud-status.ok{background:#047857}
+#ctp-fast-cloud-status.wait{background:#92400e}
+#ctp-fast-cloud-status.err{background:#b91c1c}
+</style>
+<script>
+(function(){
+  'use strict';
+
+  var CACHE_KEY = 'CTP_FAST_CLOUD_CACHE_V1';
+  var CACHE_TS_KEY = 'CTP_FAST_CLOUD_CACHE_TS_V1';
+  var loading = false;
+  var lastLoadAt = 0;
+
+  function status(msg, cls){
+    try{
+      var el = document.getElementById('ctp-fast-cloud-status');
+      if(!el){
+        el = document.createElement('div');
+        el.id = 'ctp-fast-cloud-status';
+        document.body.appendChild(el);
+      }
+      el.textContent = msg;
+      el.className = cls || '';
+      el.style.display = 'block';
+      clearTimeout(window.__ctpFastCloudStatusTimer);
+      window.__ctpFastCloudStatusTimer = setTimeout(function(){
+        el.style.display = 'none';
+      }, cls === 'err' ? 4500 : 2200);
+    }catch(e){}
+  }
+
+  function getDB(){
+    try{ if(typeof DB !== 'undefined' && DB) return DB; }catch(e){}
+    try{ if(window.DB) return window.DB; }catch(e){}
+    return null;
+  }
+
+  function setDB(data){
+    if(!data || typeof data !== 'object') return false;
+
+    try{
+      var db = getDB();
+      if(db){
+        Object.keys(data).forEach(function(k){
+          if(k === 'ok' || k === 'message' || k === 'mode') return;
+          db[k] = data[k];
+        });
+      }else{
+        window.DB = data;
+      }
+      return true;
+    }catch(e){
+      console.error('[CTP HIZLI BULUT] DB yazma hatası', e);
+      return false;
+    }
+  }
+
+  function refreshAll(){
+    [
+      'renderAll',
+      'dashboardRender',
+      'renderDashboard',
+      'firmaListele',
+      'renderFirmalar',
+      'urunListele',
+      'renderUrunler',
+      'hareketListele',
+      'renderHareketler',
+      'renderSiparisler',
+      'renderSepet',
+      'renderNumuneler',
+      'renderGorevler',
+      'ctpApplyMenuVisibleSafe',
+      'ctpApplyMenuOrder'
+    ].forEach(function(fn){
+      try{
+        if(typeof window[fn] === 'function') window[fn]();
+      }catch(e){}
+    });
+
+    try{
+      if(typeof loadAll === 'function') loadAll();
+    }catch(e){}
+
+    try{
+      if(typeof goPage === 'function'){
+        var active = document.querySelector('.sb-item.active');
+        if(active){
+          var oc = String(active.getAttribute('onclick') || '');
+          var m = oc.match(/goPage\(['"]([^'"]+)['"]/);
+          if(m) goPage(m[1], active);
+        }
+      }
+    }catch(e){}
+  }
+
+  function cacheData(data){
+    try{
+      if(!data || typeof data !== 'object') return;
+      localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+      localStorage.setItem(CACHE_TS_KEY, new Date().toISOString());
+    }catch(e){
+      console.warn('[CTP HIZLI BULUT] Cache yazılamadı', e);
+    }
+  }
+
+  function readCache(){
+    try{
+      var raw = localStorage.getItem(CACHE_KEY);
+      if(!raw) return null;
+      return JSON.parse(raw);
+    }catch(e){
+      return null;
+    }
+  }
+
+  function applyCacheOnStart(){
+    var data = readCache();
+    if(!data) return false;
+
+    var ok = setDB(data);
+    if(ok){
+      refreshAll();
+      status('Önbellekten hızlı açıldı', 'ok');
+      console.log('[CTP HIZLI BULUT] Local cache yüklendi.');
+    }
+    return ok;
+  }
+
+  function extractLoadResult(res){
+    if(!res) return null;
+    if(res.ok && (res.firmalar || res.urunler || res.hareketler || res.gorevler)) return res;
+    if(res.data && typeof res.data === 'object') return res.data;
+    return res;
+  }
+
+  function wrapCloudLoad(fnName){
+    try{
+      var old = window[fnName];
+      if(typeof old !== 'function' || old.__ctpFastCloudWrapped) return;
+
+      var wrapped = function(){
+        if(loading){
+          status('Bulut yükleme zaten devam ediyor...', 'wait');
+          return false;
+        }
+
+        var now = Date.now();
+        if(now - lastLoadAt < 2500){
+          status('Kısa süre önce yüklendi', 'ok');
+          return false;
+        }
+
+        loading = true;
+        lastLoadAt = now;
+        status('Buluttan güncel veri çekiliyor...', 'wait');
+
+        var beforeCache = readCache();
+
+        try{
+          var r = old.apply(this, arguments);
+
+          function done(res){
+            loading = false;
+
+            // Mevcut DB'yi cachele; eski load fonksiyonları veriyi DB'ye kendisi basıyor.
+            setTimeout(function(){
+              try{
+                var db = getDB();
+                if(db){
+                  cacheData(db);
+                  status('Bulut verisi güncellendi', 'ok');
+                  console.log('[CTP HIZLI BULUT] Bulut sonrası DB cachelendi.');
+                }
+              }catch(e){}
+            }, 400);
+
+            return res;
+          }
+
+          function fail(err){
+            loading = false;
+            status('Bulut yavaş / hata. Önbellek duruyor', 'err');
+            if(beforeCache){
+              setDB(beforeCache);
+              refreshAll();
+            }
+            throw err;
+          }
+
+          if(r && typeof r.then === 'function'){
+            return r.then(done).catch(fail);
+          }else{
+            return done(r);
+          }
+        }catch(e){
+          loading = false;
+          status('Bulut yükleme hatası', 'err');
+          throw e;
+        }
+      };
+
+      wrapped.__ctpFastCloudWrapped = true;
+      window[fnName] = wrapped;
+    }catch(e){}
+  }
+
+  function wrapAllCloudLoads(){
+    [
+      'bulutCek',
+      'buluttanYukle',
+      'bulutYukle',
+      'cloudLoadFromCustomerSheet',
+      'ctpSafeCloudLoad',
+      'loadCloud',
+      'googleSheetsLoad',
+      'veriYukle'
+    ].forEach(wrapCloudLoad);
+  }
+
+  function wrapFetchJsonpCache(){
+    // JSONP/script ile gelen load sonucu eski fonksiyonda DB'ye yazılıyorsa yukarıdaki wrapper yeterli.
+    // Ek olarak fetch load kullanan sürümler için response klonunu cachelemeye çalış.
+    if(window.__ctpFastFetchWrapped || typeof fetch !== 'function') return;
+
+    var oldFetch = window.fetch;
+    window.fetch = function(input, init){
+      var url = String(input || '');
+      var method = String((init && init.method) || 'GET').toUpperCase();
+      var isLoad = url.indexOf('action=load') >= 0 || (init && String(init.body || '').indexOf('"action":"load"') >= 0);
+
+      var p = oldFetch.apply(this, arguments);
+
+      if(isLoad && method !== 'POST_SAVE_BLOCK'){
+        try{
+          p.then(function(resp){
+            try{
+              resp.clone().json().then(function(json){
+                var data = extractLoadResult(json);
+                if(data && typeof data === 'object'){
+                  cacheData(data);
+                }
+              }).catch(function(){});
+            }catch(e){}
+          }).catch(function(){});
+        }catch(e){}
+      }
+
+      return p;
+    };
+
+    window.__ctpFastFetchWrapped = true;
+  }
+
+  function addFastButton(){
+    try{
+      var header = document.querySelector('.topbar,.header,.app-head') || document.body;
+      if(document.getElementById('ctp-fast-load-btn')) return;
+
+      var btn = document.createElement('button');
+      btn.id = 'ctp-fast-load-btn';
+      btn.className = 'btn btn-sm';
+      btn.style.cssText = 'position:fixed;right:14px;bottom:54px;z-index:999999;border-radius:999px;font-size:11px;font-weight:900;';
+      btn.innerHTML = '⚡ Hızlı Yenile';
+      btn.onclick = function(ev){
+        ev.preventDefault();
+        var fn = window.bulutCek || window.buluttanYukle || window.bulutYukle || window.ctpSafeCloudLoad || window.cloudLoadFromCustomerSheet;
+        if(typeof fn === 'function') fn();
+        else status('Bulut çekme fonksiyonu bulunamadı', 'err');
+      };
+      document.body.appendChild(btn);
+    }catch(e){}
+  }
+
+  function boot(){
+    applyCacheOnStart();
+    wrapAllCloudLoads();
+    wrapFetchJsonpCache();
+    addFastButton();
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', boot);
+  }else{
+    boot();
+  }
+
+  window.addEventListener('load', function(){
+    boot();
+    setTimeout(boot, 500);
+    setTimeout(boot, 1500);
+  });
+
+  setInterval(function(){
+    wrapAllCloudLoads();
+  }, 2500);
+
+  window.ctpFastCloudApplyCache = applyCacheOnStart;
+  window.ctpFastCloudClearCache = function(){
+    try{
+      localStorage.removeItem(CACHE_KEY);
+      localStorage.removeItem(CACHE_TS_KEY);
+      status('Önbellek temizlendi', 'ok');
+    }catch(e){}
+  };
+
+  console.log('[CTP HIZLI BULUT] Aktif. Önce cache açılır, sonra bulut güncellenir.');
+})();
+</script>
+<!-- CTP_CHATGPT_BULUT_HIZLI_YUKLEME_FIX_END -->
 
 </body>
 </html>
